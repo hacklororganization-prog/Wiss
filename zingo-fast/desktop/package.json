@@ -1,0 +1,80 @@
+{
+  "name": "zingo-fast",
+  "productName": "ZINGO Fast",
+  "version": "1.1.0",
+  "description": "ZINGO Fast - electronic circuit design and simulation",
+  "author": "ZINGO Fast <ahmedhamdi0s10@gmail.com>",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "prepare-app": "node scripts/prepare-app.js",
+    "start": "npm run prepare-app && electron .",
+    "dist": "npm run prepare-app && electron-builder --win nsis --x64",
+    "dist:dir": "npm run prepare-app && electron-builder --win dir --x64"
+  },
+  "devDependencies": {
+    "electron": "44.9.3",
+    "electron-builder": "26.17.0"
+  },
+  "build": {
+    "appId": "com.zingofast.app",
+    "productName": "ZINGO Fast",
+    "copyright": "Copyright © 2026 ZINGO Fast",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "app/index.html",
+      "package.json"
+    ],
+    "asar": true,
+    "fileAssociations": [
+      {
+        "ext": "zingo",
+        "name": "ZINGO Fast Project",
+        "description": "ZINGO Fast circuit project",
+        "role": "Editor",
+        "icon": "build/file.ico"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "ZINGO-Fast-Setup-${version}.${ext}",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "ZINGO Fast",
+      "uninstallDisplayName": "ZINGO Fast",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "multiLanguageInstaller": true,
+      "installerLanguages": [
+        "ar_SA",
+        "en_US"
+      ],
+      "deleteAppDataOnUninstall": false
+    },
+    "publish": null
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hacklororganization-prog/Wiss.git"
+  }
+}

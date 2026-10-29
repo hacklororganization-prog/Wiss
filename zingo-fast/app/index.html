@@ -286,6 +286,12 @@ select,.ib,.btn,.seg button,.tabs button.tab,.cat>button,.sw,.dot{cursor:pointer
 .brand{display:flex;gap:10px;padding:0 10px 0 6px;font-size:15px;flex:none}
 :root[dir=rtl] .brand{padding:0 6px 0 10px}
 .brand .i{width:24px;height:24px;color:var(--acc)}
+.pj{display:flex;align-items:center;gap:7px;height:34px;max-width:240px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg2);color:var(--ink);font:600 13px var(--ui);cursor:pointer;flex:0 1 auto;min-width:120px;transition:border-color .15s,background .15s}
+@media (max-width:1360px){.brand b{display:none}}
+.pj:hover{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 8%,var(--bg2))}
+.pj .i{width:16px;height:16px;color:var(--acc);flex:none}
+#pjName{unicode-bidi:plaintext;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#pjDot{width:8px;height:8px;border-radius:50%;background:var(--warn);flex:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--warn) 25%,transparent)}
 .ib{min-width:36px;height:36px;min-height:36px;border-radius:9px}
 .ib:hover{background:var(--hov)}
 .ib.pri:hover{background:var(--acc2)}
@@ -356,6 +362,16 @@ body.rszing #cv{pointer-events:none}
 #empty b{font-size:19px}
 #empty p{margin:0;max-width:340px;color:var(--mut);font-size:13px;line-height:1.8}
 #empty .btn{pointer-events:auto;margin-top:8px;padding:0 18px;gap:8px}
+#empty .ws{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;justify-content:center;pointer-events:auto}
+.wsc{display:flex;flex-direction:column;align-items:center;gap:6px;width:168px;padding:18px 14px 16px;border:1px solid var(--line);border-radius:16px;background:var(--bg2);color:var(--ink);cursor:pointer;font:inherit;box-shadow:0 6px 24px rgba(0,0,0,.12);transition:transform .15s,border-color .15s,box-shadow .15s}
+.wsc:hover{transform:translateY(-2px);border-color:var(--acc);box-shadow:0 10px 30px color-mix(in srgb,var(--acc) 22%,transparent)}
+.wsc .i{width:30px;height:30px;padding:8px;box-sizing:content-box;border-radius:12px;color:var(--acc);background:color-mix(in srgb,var(--acc) 14%,transparent)}
+#empty .wsc b{font-size:14.5px;white-space:nowrap}.wsc small{color:var(--mut);font-size:11.5px;line-height:1.5}
+.wsr{pointer-events:auto;margin-top:14px;display:flex;flex-direction:column;gap:4px;min-width:340px;max-width:520px}
+.wsr h5{margin:0 0 4px;color:var(--mut);font-size:12px;font-weight:600}
+.wsr button{display:flex;gap:10px;align-items:center;padding:8px 12px;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--ink);font:inherit;font-size:13px;cursor:pointer;text-align:start}
+.wsr button:hover{background:var(--bg2);border-color:var(--line)}.wsr button .i{width:16px;height:16px;color:var(--acc);flex:none}
+.wsr button span{unicode-bidi:plaintext}.wsr button small{color:var(--mut);margin-inline-start:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px;direction:ltr}
 
 /* ===== part builder ===== */
 #pb{position:fixed;inset:0;z-index:70;background:rgba(5,10,18,.6);display:flex;align-items:center;justify-content:center;padding:18px}
@@ -684,6 +700,7 @@ body.focus #work{grid-template-columns:minmax(0,1fr)!important}
 <div id="app">
  <header id="top">
   <div class="brand"><span data-i="zingo"></span><b data-t="app"></b></div>
+  <button class="pj" id="pj" type="button" data-tt="pj_rename"><span data-i="file"></span><span id="pjName"></span><i id="pjDot" hidden></i></button>
   <div class="grp">
    <button class="ib pri" id="bRun" data-tt="run"><span data-i="play"></span></button>
    <button class="ib" id="bReset" data-tt="reset"><span data-i="reset"></span></button>
@@ -734,7 +751,9 @@ body.focus #work{grid-template-columns:minmax(0,1fr)!important}
     <button class="ib" id="fbExit" data-tt="exit_focus"><span data-i="shrink"></span></button>
    </div>
    <div id="board"><svg id="cv" tabindex="0" role="application"><g id="gv"><g id="gBB"></g><g id="gC"></g><g id="gW"></g><g id="gF"></g><g id="gP"></g><g id="gO"></g><g id="gH"></g></g></svg></div>
-      <div id="empty" hidden><div class="ei"><span data-i="flask"></span></div><b data-t="empty_t"></b><p data-t="empty_d"></p><button class="btn pri" id="emEx"><span data-i="flask"></span><span data-t="examples"></span></button></div>
+      <div id="empty" hidden><div class="ei"><span data-i="zingo"></span></div><b data-t="empty_t"></b><p data-t="empty_d"></p>
+       <div class="ws"><button type="button" class="wsc" id="wsNew"><span data-i="plus"></span><b data-t="pj_new"></b><small data-t="ws_new_d"></small></button><button type="button" class="wsc" id="wsOpen"><span data-i="open"></span><b data-t="pj_open"></b><small data-t="ws_open_d"></small></button><button type="button" class="wsc" id="emEx"><span data-i="flask"></span><b data-t="examples"></b><small data-t="ws_ex_d"></small></button></div>
+       <div class="wsr" id="wsRecent" hidden></div></div>
 <div id="tools">
     <div class="grp">
      <button class="ib on" id="tSel" data-tt="t_sel"><span data-i="pointer"></span></button>
@@ -801,7 +820,7 @@ body.focus #work{grid-template-columns:minmax(0,1fr)!important}
 <div class="pop" id="sndP"></div>
 <div id="modalBg"><div id="modal" role="dialog" aria-modal="true"></div></div>
 <div id="ghost"></div>
-<input type="file" id="fileIn" accept=".json,application/json" hidden>
+<input type="file" id="fileIn" accept=".zingo,.json,application/json" hidden>
 <script>
 (function(){"use strict";
 /* ===== CONTENT LOCK (JS): block selection, copy, cut, drag and drop outside input fields ===== */
@@ -992,7 +1011,7 @@ run:'Run',pause:'Pause',reset:'Reset',speed:'Simulation speed',undo:'Undo',redo:
  sc_time:'Time / div',sc_trig:'Trigger',sc_rise:'Rising edge',sc_none:'Add an oscilloscope part to see signals',off:'Off',props:'Properties',wide:'Wider panel',board:'Board',examples:'Examples',upload:'Upload',serial:'Serial monitor',clear:'Clear',send:'Send',uploaded:'Uploaded',slow:'slow',
  parts:'parts',wires:'wires',nodes:'nodes',rotate:'Rotate',flip:'Flip',duplicate:'Duplicate',copy:'Copy',paste:'Paste',replace:'Replace part',delete:'Delete',select_all:'Select all',wire_color:'Wire color',del_probe:'Remove probe',
  h_wire2:'Click a second pin to finish the wire',h_probe:'Click a pin or wire to place a voltage probe',h_multi:'Drag to select several parts',ok:'OK',cancel:'Cancel',
- name:'Name',params:'Parameters',actions:'Actions',readout:'Live values',stress:'Load',burnt:'This part is burnt out',selected:'{n} parts selected',settings:'Settings',wire_style:'Wire style',w_orth:'Right angles',w_curve:'Curved',snap:'Snap to grid',show_names:'Show part names',show_vals:'Show values on parts',volt_colors:'Color wires by voltage',
+ name:'Name',params:'Parameters',actions:'Actions',readout:'Live values',stress:'Load',burnt:'This part is burnt out',selected:'{n} parts selected',settings:'Settings',wire_style:'Wire style',w_orth:'Right angles',w_curve:'Curved',snap:'Snap to grid',pj_untitled:'Untitled project',pj_new:'New project',pj_open:'Open project…',pj_save:'Save',pj_saveas:'Save as…',pj_recent:'Recent projects',pj_name:'Project name',pj_new_t:'Create a new project',pj_unsaved_t:'Unsaved changes',pj_unsaved_q:'Save the changes to “{name}” first?',pj_dont:'Don\'t save',pj_saved:'Saved: {name}',pj_save_fail:'Could not save the file. Check that the folder still exists and is not read-only.',pj_open_fail:'Could not open that file: it is not a ZINGO Fast project',pj_rename:'Rename project',pj_show:'Show in folder',pj_created:'Project created: {name}',pj_file:'File',pj_where:'Saved in',pj_recent_none:'No recent projects',pj_missing:'That file was moved or deleted',ws_new_d:'Start from an empty workspace',ws_open_d:'Open a saved .zingo project',ws_ex_d:'Learn from a ready-made circuit',ws_title:'Welcome to ZINGO Fast',ws_sub:'Design, simulate and measure real electronic circuits.',show_names:'Show part names',show_vals:'Show values on parts',volt_colors:'Color wires by voltage',
  hint_idle:'Select a part or wire to edit it. Click a pin, then another pin, to connect them.',open_editor:'Open code editor',
  new_circuit:'New circuit',empty_t:'Start your circuit',saved:'Saved',sel_n:'selected',sc_search:'Search parts',empty_d:'Drag a part from the list, or click it to add it. You can also open a ready-made example.',sc_panels:'Parts / Properties panel',confirm_new:'Remove everything from the workspace?',confirm_replace:'This replaces the current circuit. Continue?',import:'Import JSON',paste_json:'Paste JSON',export_json:'Export JSON',export_png:'Export PNG image',export_svg:'Export SVG image',export_bom:'Export parts list (CSV)',bom_part:'Part',bom_val:'Value',bom_qty:'Qty',contact:'Contact us',l_check:'Check circuit',l_ok:'No problems found. The circuit looks good.',l_float:'{name}: pin {pin} is not connected',l_float_why:'The pin is floating, so no current can flow through this part. Connect it with a wire (or a breadboard hole), or delete the part.',l_ledr:'{name} is connected straight across a source',l_ledr_why:'With no resistor the LED draws too much current and burns out. Add a resistor (about 330Ω) in series.',l_fix_r:'Add 330Ω resistor',l_fix_del:'Delete part',l_rmwire:'Remove one wire',l_manual:'The LED sits in the breadboard: put a resistor in series by hand.',l_fixall:'Fix all',l_fixall_q:'Fix {n} problem(s) automatically?',p_solar:'Solar cell',p_isrc:'Current source',p_r7805:'Regulator 7805 (5V)',p_r7812:'Regulator 7812 (12V)',p_r1117:'Regulator LM1117 (3.3V)',p_micmod:'Sound sensor (mic)',p_joy:'Joystick',p_soil:'Soil moisture sensor',p_gas:'Gas sensor MQ-2',p_water:'Water level sensor',p_lightm:'Light sensor module',p_cur:'Current',p_snd:'Sound level',p_jx:'Horizontal (X)',p_jy:'Vertical (Y)',p_js:'Button pressed',p_moist:'Moisture',p_gasl:'Gas level',p_wl:'Water level',lab_how_ana:'Analog output: the voltage follows the measured quantity. Wire VCC to 5V, GND to GND, OUT to an analog pin and use analogRead (0 to 1023).',lab_tab:'Live Lab',lab_empty:'Add a sensor, change its value with the slider and watch the readings live. Each card explains how to wire and read it.',lab_add:'Add a sensor',lab_demo:'Ready demo: distance sensor + Arduino',lab_how:'How to read it',lab_copy:'Copy code',lab_copied:'Copied',lab_power:'Power',lab_on:'Powered',lab_off:'Not powered: connect VCC and GND',lab_out:'Output',lab_vout:'Output voltage',lab_echo:'Echo pulse',lab_calc:'Reads as',lab_graph:'Live graph',lab_hi:'HIGH',lab_lo:'LOW',
 lab_how_hcsr04:'Send a 10µs pulse on TRIG; the sensor answers with an ECHO pulse as long as the round trip. Distance (cm) = pulse (µs) ÷ 58. Wire VCC to 5V, GND to GND, TRIG and ECHO to digital pins.',lab_how_dht11:'One DATA wire carries temperature and humidity digitally. Wire VCC to 5V, GND to GND, DATA to a digital pin and read it with the DHT library.',lab_how_lm35:'Outputs 10mV per °C, so temperature = voltage × 100. Wire +Vs to 5V, GND to GND, OUT to an analog pin such as A0.',lab_how_pir:'OUT goes HIGH while motion is detected. Wire VCC to 5V, GND to GND, OUT to a digital pin and use digitalRead.',lab_how_irs:'OUT goes LOW when an obstacle is in front and HIGH when clear. Wire VCC, GND and OUT to a digital pin.',lab_how_hall:'OUT goes LOW near a magnet and floats otherwise, so use INPUT_PULLUP on the Arduino pin.',lab_how_ldr:'Resistance drops as light rises. Put it in a divider with a fixed resistor and read the middle point with analogRead.',lab_how_therm:'NTC: resistance drops as temperature rises. Put it in a divider with a fixed resistor and read the middle point with analogRead.',shortcuts:'Keyboard shortcuts',about:'About',
@@ -1026,7 +1045,7 @@ run:'تشغيل',pause:'إيقاف مؤقت',reset:'إعادة ضبط',speed:'س
  sc_time:'الزمن / قسم',sc_trig:'القدح',sc_rise:'حافة صاعدة',sc_none:'أضف راسم إشارة لعرض الإشارات',off:'متوقف',props:'الخصائص',wide:'لوحة أعرض',board:'اللوحة',examples:'أمثلة',upload:'رفع',serial:'شاشة السيريال',clear:'مسح',send:'إرسال',uploaded:'تم الرفع',slow:'بطيء',
  parts:'قطعة',wires:'سلك',nodes:'عقدة',rotate:'تدوير',flip:'قلب',duplicate:'تكرار',copy:'نسخ',paste:'لصق',replace:'استبدال القطعة',delete:'حذف',select_all:'تحديد الكل',wire_color:'لون السلك',del_probe:'إزالة المسبار',
  h_wire2:'اضغط على دبوس ثانٍ لإنهاء السلك',h_probe:'اضغط على دبوس أو سلك لوضع مسبار جهد',h_multi:'اسحب لتحديد عدة قطع',ok:'حسناً',cancel:'إلغاء',
- name:'الاسم',params:'المعاملات',actions:'إجراءات',readout:'القيم الحية',stress:'الحِمل',burnt:'هذه القطعة محترقة',selected:'تم تحديد {n} قطع',settings:'الإعدادات',wire_style:'شكل الأسلاك',w_orth:'زوايا قائمة',w_curve:'منحنية',snap:'المحاذاة للشبكة',show_names:'إظهار أسماء القطع',show_vals:'إظهار القيم على القطع',volt_colors:'تلوين الأسلاك حسب الجهد',
+ name:'الاسم',params:'المعاملات',actions:'إجراءات',readout:'القيم الحية',stress:'الحِمل',burnt:'هذه القطعة محترقة',selected:'تم تحديد {n} قطع',settings:'الإعدادات',wire_style:'شكل الأسلاك',w_orth:'زوايا قائمة',w_curve:'منحنية',snap:'المحاذاة للشبكة',pj_untitled:'مشروع بدون اسم',pj_new:'مشروع جديد',pj_open:'فتح مشروع…',pj_save:'حفظ',pj_saveas:'حفظ باسم…',pj_recent:'المشاريع الأخيرة',pj_name:'اسم المشروع',pj_new_t:'إنشاء مشروع جديد',pj_unsaved_t:'تغييرات غير محفوظة',pj_unsaved_q:'هل تريد حفظ التغييرات على «{name}» أولاً؟',pj_dont:'عدم الحفظ',pj_saved:'تم الحفظ: {name}',pj_save_fail:'تعذّر حفظ الملف. تأكد أن المجلد ما زال موجوداً وأنه غير محمي من الكتابة.',pj_open_fail:'تعذّر فتح الملف: ليس مشروع ZINGO Fast',pj_rename:'إعادة تسمية المشروع',pj_show:'عرض في المجلد',pj_created:'تم إنشاء المشروع: {name}',pj_file:'ملف',pj_where:'محفوظ في',pj_recent_none:'لا توجد مشاريع حديثة',pj_missing:'تم نقل الملف أو حذفه',ws_new_d:'ابدأ بمساحة عمل فارغة',ws_open_d:'افتح مشروعاً محفوظاً بصيغة ‎.zingo',ws_ex_d:'تعلّم من دائرة جاهزة',ws_title:'مرحباً بك في ZINGO Fast',ws_sub:'صمّم وحاكِ وقِس دوائر إلكترونية حقيقية.',show_names:'إظهار أسماء القطع',show_vals:'إظهار القيم على القطع',volt_colors:'تلوين الأسلاك حسب الجهد',
  hint_idle:'حدّد قطعة أو سلكاً لتعديله. اضغط على دبوس ثم على دبوس آخر لتوصيلهما.',open_editor:'فتح محرر الكود',
  new_circuit:'دائرة جديدة',empty_t:'ابدأ دائرتك',saved:'تم الحفظ',sel_n:'محدد',sc_search:'البحث عن قطعة',empty_d:'اسحب قطعة من القائمة أو اضغط عليها لإضافتها، أو افتح مثالاً جاهزاً.',sc_panels:'لوحة القطع / الخصائص',confirm_new:'هل تريد حذف كل شيء من مساحة العمل؟',confirm_replace:'سيتم استبدال الدائرة الحالية. هل تريد المتابعة؟',import:'استيراد JSON',paste_json:'لصق JSON',export_json:'تصدير JSON',export_png:'تصدير صورة PNG',export_svg:'تصدير صورة SVG',export_bom:'تصدير قائمة القطع (CSV)',bom_part:'القطعة',bom_val:'القيمة',bom_qty:'العدد',contact:'تواصل معنا',l_check:'فحص الدائرة',l_ok:'لا توجد مشاكل. الدائرة سليمة.',l_float:'{name}: الطرف {pin} غير موصول',l_float_why:'الطرف معلّق فلا يمر تيار في هذه القطعة. صله بسلك (أو بثقب في لوحة التجارب) أو احذف القطعة.',l_ledr:'{name} موصول مباشرة على المصدر',l_ledr_why:'بدون مقاومة يسحب الليد تياراً كبيراً فيحترق. أضف مقاومة (نحو 330Ω) على التوالي.',l_fix_r:'أضف مقاومة 330Ω',l_fix_del:'احذف القطعة',l_rmwire:'احذف سلكاً واحداً',l_manual:'الليد مركّب في لوحة التجارب: ضع المقاومة على التوالي يدوياً.',l_fixall:'أصلح الكل',l_fixall_q:'إصلاح {n} مشكلة تلقائياً؟',p_solar:'خلية شمسية',p_isrc:'مصدر تيار',p_r7805:'منظم جهد 7805 (5V)',p_r7812:'منظم جهد 7812 (12V)',p_r1117:'منظم جهد LM1117 (3.3V)',p_micmod:'حساس صوت (مايك)',p_joy:'عصا تحكم (جوي ستيك)',p_soil:'حساس رطوبة التربة',p_gas:'حساس غاز MQ-2',p_water:'حساس مستوى الماء',p_lightm:'وحدة حساس ضوء',p_cur:'التيار',p_snd:'مستوى الصوت',p_jx:'أفقي (X)',p_jy:'رأسي (Y)',p_js:'الزر مضغوط',p_moist:'الرطوبة',p_gasl:'تركيز الغاز',p_wl:'مستوى الماء',lab_how_ana:'خرج تناظري: الجهد يتبع الكمية المقاسة. صل VCC بـ5V وGND بالأرضي وOUT بمنفذ تناظري واستخدم analogRead (من 0 إلى 1023).',lab_tab:'مختبر حي',lab_empty:'أضف حساساً، غيّر قيمته بالمنزلق وشاهد القراءات مباشرة. كل بطاقة تشرح طريقة التوصيل والقراءة.',lab_add:'أضف حساساً',lab_demo:'تجربة جاهزة: حساس مسافة + Arduino',lab_how:'كيف تقرأه',lab_copy:'نسخ الكود',lab_copied:'تم النسخ',lab_power:'التغذية',lab_on:'يعمل',lab_off:'لا توجد تغذية: صل VCC وGND',lab_out:'الخرج',lab_vout:'جهد الخرج',lab_echo:'نبضة الصدى',lab_calc:'يُقرأ كـ',lab_graph:'رسم حي',lab_hi:'عالٍ HIGH',lab_lo:'منخفض LOW',
 lab_how_hcsr04:'أرسل نبضة 10µs إلى TRIG فيردّ الحساس بنبضة ECHO بطول زمن الذهاب والإياب. المسافة (سم) = زمن النبضة (µs) ÷ 58. صل VCC بـ5V وGND بالأرضي وTRIG وECHO بمنفذين رقميين.',lab_how_dht11:'سلك DATA واحد ينقل الحرارة والرطوبة رقمياً. صل VCC بـ5V وGND بالأرضي وDATA بمنفذ رقمي واقرأه بمكتبة DHT.',lab_how_lm35:'يعطي 10mV لكل درجة، فالحرارة = الجهد × 100. صل +Vs بـ5V وGND بالأرضي وOUT بمنفذ تناظري مثل A0.',lab_how_pir:'يصير OUT عالياً HIGH أثناء وجود حركة. صل VCC بـ5V وGND بالأرضي وOUT بمنفذ رقمي واستخدم digitalRead.',lab_how_irs:'يصير OUT منخفضاً LOW عند وجود عائق أمامه وعالياً عند خلو الطريق. صل VCC وGND وOUT بمنفذ رقمي.',lab_how_hall:'يصير OUT منخفضاً قرب المغناطيس ويبقى معلقاً بدونه، لذا استخدم INPUT_PULLUP في منفذ Arduino.',lab_how_ldr:'تقل المقاومة كلما زادت الإضاءة. ضعها في مقسّم جهد مع مقاومة ثابتة واقرأ النقطة الوسطى بـ analogRead.',lab_how_therm:'NTC: تقل المقاومة كلما ارتفعت الحرارة. ضعها في مقسّم جهد مع مقاومة ثابتة واقرأ النقطة الوسطى بـ analogRead.',shortcuts:'اختصارات لوحة المفاتيح',about:'حول التطبيق',
@@ -1780,10 +1799,11 @@ def('micmod','sens',80,80,[['VCC',30,70,0,1],['OUT',40,70,0,1],['GND',50,70,0,1]
 def('joy','sens',80,80,[['VCC',20,70,0,1],['VRX',30,70,0,1],['VRY',40,70,0,1],['SW',50,70,0,1],['GND',60,70,0,1]],{d:{jx:50,jy:50,js:0},props:[RNG('jx','p_jx',0,100,1,'%'),RNG('jy','p_jy',0,100,1,'%'),BOOL('js','p_js')],
  net(c,nd,add,X){digNet(c,nd,add,X,{vcc:0,gnd:4,rl:2e3,vmin:3,out:{1:{mode:'push',ro:500},2:{mode:'push',ro:500},3:{mode:'od',ro:50}},run(s){s.o={1:{v:s.vdd*P(c,'jx')/100},2:{v:s.vdd*P(c,'jy')/100},3:P(c,'js')?0:'z'}}})},
  draw:c=>[20,30,40,50,60].map(x=>vl(x,54,70)).join('')+rc(6,4,68,50,'url(#gPcb)',3)+ci(40,28,17,'#1b1d21','stroke="#000"')+ci(40+(P(c,'jx')-50)*.2,28+(P(c,'jy')-50)*.2,10,P(c,'js')?'#ff4040':'#4b5563','stroke="#000" stroke-opacity=".5"')+tx(40,50,'JOY',5.5),sch:genericSch});
-/* regulators: IN / GND / OUT, output = min(Vout, Vin - dropout) */
+/* regulators: IN / GND / OUT, output = min(Vout, Vin - dropout); drawn as a TO-220 package with its metal tab */
+const to220=lab=>vl(10,50,70)+vl(20,50,70)+vl(30,50,70)+rc(3,1,34,22,'url(#gSil)',2)+ci(20,10,4.6,'#0f1822','stroke="#000" stroke-opacity=".5"')+rc(3,20,34,31,'url(#gK)',2)+rc(5,22,30,3,'#fff',1,'opacity=".08"')+tx(20,35,lab,6.4,'#e5e7eb','font-weight="700"')+tx(20,43,'IN G OUT',3.4,'#8a96a3');
 const regDef=(id,vo,drop,lab)=>def(id,'ic',40,80,[['IN',10,70,0,1],['GND',20,70,0,1],['OUT',30,70,0,1]],{d:{},props:[],
  net(c,nd,add,X){digNet(c,nd,add,X,{vcc:0,gnd:1,rl:3e3,vmin:1.5,out:{2:{mode:'push',ro:.5}},run(s){s.o={2:{v:Math.max(0,Math.min(vo,s.vdd-drop))}}}})},
- draw:()=>to92(lab),sch:genericSch});
+ draw:()=>to220(lab),sch:genericSch});
 regDef('r7805',5,2,'7805');regDef('r7812',12,2,'7812');regDef('r1117',3.3,1.2,'1117');
 /* solar cell + ideal current source */
 def('solar','src',120,80,[['+',40,70,0,1],['−',80,70,0,1]],{d:{v:6,lit:80},props:[NUM('v','p_amp','V',[3,6,9,12,18],1,40),RNG('lit','p_light',0,100,1,'%')],
@@ -1797,13 +1817,18 @@ def('isrc','src',120,80,[['+',40,70,0,1],['−',80,70,0,1]],{d:{i:.02},props:[NU
 
 /* ============================ INSTRUMENTS ============================ */
 const CPL=SEL('cpl','p_cpl',[[0,'cp_auto'],[1,'cp_dc'],[2,'cp_ac']]);
+/* bench panel meter: dark case, reflective LCD, banana jacks right above the legs */
+const LCD=(x,y,w,h)=>rc(x,y,w,h,'#aebf98',2.5,'stroke-opacity=".6"')+`<rect x="${x+1.5}" y="${y+1.5}" width="${w-3}" height="${h/2-1}" rx="1.5" fill="#fff" opacity=".18"/>`;
+const jack=(x,y,col)=>ci(x,y,5.2,'#0b0d10')+ci(x,y,4,col,'stroke="#000" stroke-opacity=".5" stroke-width=".6"')+ci(x,y,1.6,'#0b0d10')+ci(x-1.4,y-1.6,1,'#fff','opacity=".45"');
+const panelMeter=(acc,unit,word)=>vl(30,54,70)+vl(50,54,70)+rc(3,3,74,56,'url(#gK)',8)+rc(6,6,68,50,'#20262e',6)+rc(6,6,68,3,acc,1.5)+LCD(11,12,58,21)+tx(40,26.8,'',10,'#16210f',R_('dv')+' font-weight="700"')
+ +tx(14,44,unit,9,acc,'font-weight="800"')+tx(14,51,word,3.6,'#8a96a3')+jack(30,47,'#d62b2b')+jack(50,47,'#1d1f22')+tx(62,45,'CAT II',3.4,'#8a96a3')+tx(62,50,'600V',3.4,'#8a96a3');
 def('vm','inst',80,80,[['+',30,70,0,1],['−',50,70,0,1]],{d:{cpl:0},props:[CPL],
  net(c,nd,add){const e=add(EL.R(nd(0),nd(1),1/1e7),[0,1]);e.rms=1;e.P=0},
- draw:()=>vl(30,56,70)+vl(50,56,70)+rc(6,6,68,52,'url(#gBlu)',6)+rc(12,12,56,22,'#10161d',2)+tx(40,28,'',10,'#22e55a',R_('dv'))+tx(40,50,'V',14),
+ draw:()=>panelMeter('#38bdf8','V','VOLTMETER'),
  anim:(c,v,r)=>v.s('dv','text',meterTxt(r,'v','V',+P(c,'cpl'))),sch:()=>`<circle class="sy" cx="40" cy="34" r="22"/>`+SY('M30 70V56M50 70V56')+ST(40,40,'V',16)});
 def('am','inst',80,80,[['+',30,70,0,1],['−',50,70,0,1]],{d:{cpl:0},props:[CPL],
  net(c,nd,add){const e=add(EL.R(nd(0),nd(1),100),[0,1]);e.rms=1;e.P=0},
- draw:()=>vl(30,56,70)+vl(50,56,70)+rc(6,6,68,52,'url(#gO)',6)+rc(12,12,56,22,'#10161d',2)+tx(40,28,'',10,'#22e55a',R_('dv'))+tx(40,50,'A',14),
+ draw:()=>panelMeter('#f59e0b','A','AMMETER'),
  anim:(c,v,r)=>v.s('dv','text',meterTxt(r,'i','A',+P(c,'cpl'))),sch:()=>`<circle class="sy" cx="40" cy="34" r="22"/>`+SY('M30 70V56M50 70V56')+ST(40,40,'A',16)});
 /* meter reading from the averaged mean (DC) and mean square: cpl 0 = auto, 1 = DC (average), 2 = AC (true RMS of the AC part).
    Auto shows the average unless the signal is mostly AC, so a rectifier output reads as DC, mains reads as ~RMS. */
@@ -1822,8 +1847,15 @@ def('mm','inst',80,120,[['COM',30,110,0,1],['V/Ω/A',50,110,0,1]],{d:{mode:0},pr
   else if(md===2||md===7){const D=md===7,V=D?3:1,Rs=D?1500:1e4,s=c._r;delete s.ov;const e=add(EL.TH(a,b,1/Rs,V),[1,0]);e.P=0;const a0=e.ac;
    e.ac=function(S,dt){a0.call(this,S,dt);const v=S.v(a)-S.v(b),k=Math.min(1,(dt||1e-3)/.05);s.ov=s.ov==null?v:s.ov+(v-s.ov)*k;this.P=0}}
   else{const e=add(EL.R(a,b,1/1e7),[1,0]);e.rms=1;e.P=0}},
- draw:()=>[30,50].map(x=>vl(x,100,110)).join('')+rc(6,4,68,100,'url(#gY)',8)+rc(14,12,52,24,'#10161d',2)+tx(40,30,'',9,'#22e55a',R_('dv'))+ci(40,66,16,'#222')+tx(40,70,'DMM',6)+tx(30,98,'COM',5,'#222')+tx(52,98,'V',5,'#222'),
+ /* handheld DMM: rubber holster, LCD, rotary selector that points at the active function, COM / VΩA jacks */
+ draw:c=>{const md=+P(c,'mode'),pos=MM_ORDER.indexOf(md),ang=-135+270/7*Math.max(0,pos);
+  return[30,50].map(x=>vl(x,98,110)).join('')+rc(1,1,78,106,'#e7b416',12,'stroke-opacity=".55"')+rc(3,3,74,102,'url(#gY)',10)+rc(8,8,64,92,'#262b33',6)
+   +LCD(12,12,56,22)+tx(40,27.6,'',9.6,'#16210f',R_('dv')+' font-weight="700"')+tx(18,40,'ZF-17',3.8,'#c9d1da','font-weight="700"')+tx(62,40,'TRUE RMS',3.2,'#f2c200')
+   +MM_LAB.map((l,i)=>{const a=(-135+270/7*i-90)*Math.PI/180;return tx(+(40+21*Math.cos(a)).toFixed(1),+(64.4+21*Math.sin(a)+1.3).toFixed(1),l,3.7,i===pos?'#f2c200':'#d5dbe2','font-weight="700"')}).join('')
+   +ci(40,64,15.5,'#14171b')+ci(40,64,13,'url(#gK)','stroke="#000" stroke-opacity=".6"')+`<g ${R_('kn')} transform="rotate(${ang.toFixed(1)} 40 64)"><rect x="37.6" y="51.5" width="4.8" height="25" rx="2.4" fill="#3a4049"/><rect x="39" y="52.5" width="2" height="7" rx="1" fill="#f2c200"/></g>`
+   +jack(30,92,'#1d1f22')+jack(50,92,'#d62b2b')+tx(30,85.5,'COM',3.4,'#c9d1da')+tx(50,85.5,'VΩA',3.4,'#c9d1da')},
  anim:(c,v,r)=>v.s('dv','text',mmTxt(c,r)),sch:genericSch});
+const MM_ORDER=[0,3,4,1,5,6,2,7],MM_LAB=['V','V⎓','V~','A','A⎓','A~','Ω','→|'];
 def('osc','inst',100,80,[['CH1',30,70,0,1],['CH2',50,70,0,1],['GND',70,70,0,1]],{props:[],
  net(c,nd,add){[0,1].forEach(i=>add(EL.R(nd(i),nd(2),1/1e6),[i,2]))},
  draw:()=>[30,50,70].map(x=>vl(x,58,70)).join('')+rc(6,4,88,56,'url(#gK)',5)+rc(12,10,76,36,'#06141a',2)+`<path d="M14 28H86M50 12V44" stroke="#14424f" stroke-width=".6"/><path d="M14 36q8-18 16 0t16 0t16 0t16 0" stroke="#22d3ee" stroke-width="1.4" fill="none"/>`+tx(50,56,'SCOPE',5,'#9fb0c3'),sch:genericSch});
@@ -2231,6 +2263,7 @@ const clampN=(x,a,b)=>x<a?a:x>b?b:x;
 
 /* ---- inline SVG icon set (stroke icons, no emoji) ---- */
 const ICON={
+ file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
  zingo:'<path d="M5 4h14L6 20h13"/>',lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>',bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',bell:'<path d="M6 9a6 6 0 0 1 12 0c0 6 3 7 3 7H3s3-1 3-7M10 20a2 2 0 0 0 4 0"/>',play:'<path d="M7 4v16l13-8z"/>',pause:'<path d="M8 5v14M16 5v14"/>',reset:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
  undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',redo:'<path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/>',
  scope:'<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M6 13l3-4 3 5 3-6 3 5"/><path d="M8 21h8"/>',code:'<path d="m8 8-5 4 5 4M16 8l5 4-5 4M14 5l-4 14"/>',
@@ -2275,12 +2308,12 @@ function applyTheme(){
 /* ---- history (undo/redo up to 200) + autosave ---- */
 const Hist={u:[],r:[],cur:'',cap:200,
  init(){this.cur=JSON.stringify(serialize(App));this.u=[];this.r=[];this.btn()},
- commit(){const s=JSON.stringify(serialize(App));if(s===this.cur)return;this.u.push(this.cur);if(this.u.length>this.cap)this.u.shift();this.cur=s;this.r=[];this.btn();autosave()},
+ commit(){const s=JSON.stringify(serialize(App));if(s===this.cur)return;this.u.push(this.cur);if(this.u.length>this.cap)this.u.shift();this.cur=s;this.r=[];this.btn();autosave();try{Proj.paint()}catch(e){}},
  undo(){if(!this.u.length)return;this.r.push(this.cur);this.cur=this.u.pop();restoreState(this.cur);this.btn();autosave()},
  redo(){if(!this.r.length)return;this.u.push(this.cur);this.cur=this.r.pop();restoreState(this.cur);this.btn();autosave()},
  btn(){const u=$('#bUndo'),r=$('#bRedo');if(u)u.disabled=!this.u.length;if(r)r.disabled=!this.r.length}};
 let _svT=0;
-const autosave=debounce(()=>{saveDoc(App);const e=document.getElementById('stSave');if(!e)return;e.textContent='✓ '+t('saved');e.classList.add('on');clearTimeout(_svT);_svT=setTimeout(()=>e.classList.remove('on'),1800)},350);
+const autosave=debounce(()=>{saveDoc(App);try{Proj.paint()}catch(e){}const e=document.getElementById('stSave');if(!e)return;e.textContent='✓ '+t('saved');e.classList.add('on');clearTimeout(_svT);_svT=setTimeout(()=>e.classList.remove('on'),1800)},350);
 
 /* ---- toast: single, de-duplicated, auto-dismissing; only for important events ---- */
 /* errors and warnings go to a message log (bell in the status bar) instead of popping up over the work area */
@@ -3052,7 +3085,10 @@ function vColor(v,vmax){if(v<-.02){const q=Math.min(1,-v/vmax);return'hsl(285 70
  const q=Math.round(clampN(v/vmax,0,1)*24)/24;return'hsl('+(Math.round(215-215*q))+' 85% '+(q>.35&&q<.7?52:58)+'%)'}
 function visibleRect(){const r=cv.getBoundingClientRect(),v=App.view;return{x0:-v.x/v.z,y0:-v.y/v.z,x1:(r.width-v.x)/v.z,y1:(r.height-v.y)/v.z}}
 function paintState(st){const e=$('#stState');e.className=st;e.textContent=t('s_'+st)}
-function updateInfo(){$('#empty').hidden=App.comps.length>0;$('#stInfo').textContent=App.comps.length+' '+t('parts')+' · '+App.wires.length+' '+t('wires')+' · '+Run.nodes+' '+t('nodes')}
+function paintRecent(){const r=$('#wsRecent');if(!r)return;const l=DESK?Proj.list:[];r.hidden=!l.length;if(!l.length)return;
+ r.innerHTML='<h5>'+esc(t('pj_recent'))+'</h5>'+l.slice(0,5).map((x,i)=>'<button type="button" data-i2="'+i+'">'+ic('file')+'<span>'+esc(x.name)+'</span><small>'+esc(x.path)+'</small></button>').join('');
+ r.querySelectorAll('button').forEach(b=>b.onclick=()=>{const x=l[+b.dataset.i2];if(x)Proj.openPath(x.path)})}
+function updateInfo(){$('#empty').hidden=App.comps.length>0;if(!App.comps.length)try{paintRecent()}catch(e){}$('#stInfo').textContent=App.comps.length+' '+t('parts')+' · '+App.wires.length+' '+t('wires')+' · '+Run.nodes+' '+t('nodes')}
 
 /* ---- oscilloscope canvas ---- */
 const TDIV=[5e-5,1e-4,2e-4,5e-4,1e-3,2e-3,5e-3,1e-2,2e-2,5e-2,.1,.2,.5],VDIV=[.05,.1,.2,.5,1,2,5,10,20];
@@ -3274,7 +3310,9 @@ document.addEventListener('keydown',e=>{
  if(k==='Escape'){if(Sheet.isOpen()){Sheet.close();return}if(Paywall.isOpen()){Paywall.close();return}if($('#modalBg').classList.contains('show')){Modal.close(null);return}if(Pop.cur){Pop.hide();return}
   if(App.pend){App.pend=null;clearPendUI();return}
   if(G&&G.type==='marquee'){return}setSelection([],[]);if(typing)tg.blur();return}
- if(mod&&k.toLowerCase()==='s'){e.preventDefault();exportJSON();return}
+ if(mod&&k.toLowerCase()==='s'){e.preventDefault();if(!$('#modalBg').classList.contains('show'))(e.shiftKey?Proj.saveAs():Proj.save());return}
+ if(mod&&!e.shiftKey&&k.toLowerCase()==='o'&&!$('#modalBg').classList.contains('show')){e.preventDefault();Proj.open();return}
+ if(mod&&!e.shiftKey&&k.toLowerCase()==='n'&&!$('#modalBg').classList.contains('show')){e.preventDefault();Proj.newProject();return}
  if(typing||Sheet.isOpen()||Paywall.isOpen()||$('#modalBg').classList.contains('show'))return;
  const key=k.toLowerCase();
  if(key==='h'&&!mod){e.preventDefault();setFocus(!document.body.classList.contains('focus'));return}
@@ -4464,8 +4502,69 @@ function newCircuit(){
  if(!App.comps.length)return;
  Modal.confirm(t('new_circuit'),t('confirm_new'),t('new_circuit'),true).then(ok=>{if(ok)loadDoc(EMPTY_DOC())})}
 
+/* ===== SECTION: project files (.zingo) — the same code runs in the browser and in the desktop app ===== */
+/* desktop bridge (preload.js): native open / save dialogs, recent list, close guard. Absent in a plain browser. */
+const DESK=(window.ZingoDesktop&&window.ZingoDesktop.isDesktop)?window.ZingoDesktop:null;
+const KEY_PROJ='zf_proj';
+const hashStr=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return(h>>>0).toString(36)+'.'+s.length};
+const safeName=s=>String(s||'').replace(/[\\/:*?"<>|\u0000-\u001f]+/g,' ').replace(/\s+/g,' ').trim().slice(0,80)||'ZINGO';
+/* success messages go to the status bar (the toast bar is reserved for problems) */
+function flashOk(m){const e=$('#stSave');if(!e)return;e.textContent='✓ '+m;e.classList.add('on');clearTimeout(_svT);_svT=setTimeout(()=>e.classList.remove('on'),2600)}
+const Proj={name:'',path:null,handle:null,saved:'',
+ init(){const p=Store.json(KEY_PROJ)||{};this.name=typeof p.name==='string'?p.name:'';this.path=DESK&&typeof p.path==='string'?p.path:null;this.saved=typeof p.saved==='string'?p.saved:'';this.paint()},
+ title(){return this.name||t('pj_untitled')},
+ cur(){return Hist.cur||JSON.stringify(serialize(App))},
+ dirty(){return hashStr(this.cur())!==this.saved&&(App.comps.length>0||!!this.path||!!this.handle)},
+ remember(){Store.set(KEY_PROJ,JSON.stringify({name:this.name,path:this.path,saved:this.saved}))},
+ paint(){const d=this.dirty(),n=$('#pjName'),dot=$('#pjDot'),b=$('#pj');if(n)n.textContent=this.title();if(dot)dot.hidden=!d;
+  if(b)b.title=(this.path?this.path:this.title())+(d?' •':'');
+  document.title=(d?'• ':'')+this.title()+' — ZINGO Fast';if(DESK)try{DESK.setTitle(this.title(),d,this.path||'')}catch(e){}},
+ text(){return JSON.stringify({format:'zingo-project',version:1,app:'ZINGO Fast',name:this.title(),savedAt:new Date().toISOString(),doc:serialize(App)},null,1)},
+ /* accepts a .zingo project or a bare circuit JSON from older versions */
+ parse(text){const j=JSON.parse(text);if(j&&j.format==='zingo-project'&&j.doc)return{name:typeof j.name==='string'?j.name:'',doc:cleanDoc(j.doc)};return{name:'',doc:cleanDoc(j)}},
+ markSaved(quiet){this.saved=hashStr(this.cur());this.remember();this.paint();if(!quiet)flashOk(t('pj_saved',{name:this.title()}))},
+ async write(){const txt=this.text();
+  if(DESK&&this.path){const r=await DESK.writeProject(this.path,txt).catch(()=>null);return!!(r&&r.ok)}
+  if(this.handle){try{const w=await this.handle.createWritable();await w.write(txt);await w.close();return true}catch(e){return false}}
+  return false},
+ async save(){if(!this.path&&!this.handle)return this.saveAs();
+  if(await this.write()){this.markSaved();this.recent();return true}
+  Toast.show(t('pj_save_fail'),true,{key:'pjsave'});return false},
+ async saveAs(){const sug=safeName(this.title())+'.zingo';
+  if(DESK){const r=await DESK.pickSavePath(sug).catch(()=>null);if(!r||!r.path)return false;const old=[this.path,this.name];this.path=r.path;this.name=r.name||this.name;
+   if(await this.write()){this.markSaved();this.recent();return true}[this.path,this.name]=old;Toast.show(t('pj_save_fail'),true,{key:'pjsave'});return false}
+  if(window.showSaveFilePicker){let h;try{h=await window.showSaveFilePicker({suggestedName:sug,types:[{description:'ZINGO Fast',accept:{'application/json':['.zingo']}}]})}catch(e){if(e&&e.name==='AbortError')return false;h=null}
+   if(h){const old=[this.handle,this.name];this.handle=h;this.name=String(h.name||sug).replace(/\.(zingo|json)$/i,'');if(await this.write()){this.markSaved();return true}[this.handle,this.name]=old;Toast.show(t('pj_save_fail'),true,{key:'pjsave'});return false}}
+  if(downloadBlob(sug,new Blob([this.text()],{type:'application/json'}))){this.markSaved();return true}return false},
+ /* before replacing the open project: Save / Don't save / Cancel */
+ async guard(){if(!this.dirty())return true;
+  const v=await Modal.open({title:t('pj_unsaved_t'),body:'<p>'+esc(t('pj_unsaved_q',{name:this.title()}))+'</p>',buttons:[{l:t('cancel'),v:null},{l:t('pj_dont'),v:'no',dng:1},{l:t('pj_save'),v:'save',pri:1}]});
+  if(v==='no')return true;if(v==='save')return await this.save();return false},
+ load(text,o){o=o||{};let p;try{p=this.parse(text)}catch(e){Toast.show(t('pj_open_fail'),true,{key:'pjopen'});return false}
+  loadDoc(p.doc);this.name=String(p.name||o.name||'').slice(0,80);this.path=o.path||null;this.handle=o.handle||null;this.markSaved(true);this.recent();return true},
+ async open(){if(!await this.guard())return;
+  if(DESK){const r=await DESK.openProject().catch(()=>null);if(r&&r.text!=null)this.load(r.text,{path:r.path,name:r.name});return}
+  if(window.showOpenFilePicker){try{const[h]=await window.showOpenFilePicker({types:[{description:'ZINGO Fast',accept:{'application/json':['.zingo','.json']}}]});const f=await h.getFile();this.load(await f.text(),{handle:h,name:f.name.replace(/\.(zingo|json)$/i,'')});return}catch(e){if(e&&e.name==='AbortError')return}}
+  pickFile()},
+ async openPath(path){if(!DESK)return;if(path!==this.path&&!await this.guard())return;const r=await DESK.readProject(path).catch(()=>null);
+  if(!r||r.text==null){Toast.show(t('pj_missing'),true,{key:'pjopen'});this.recent();return}this.load(r.text,{path:r.path,name:r.name})},
+ async newProject(){if(!await this.guard())return;
+  const nm=await Modal.prompt(t('pj_new_t'),t('pj_name'),'');if(nm===null||nm===undefined)return;const name=String(nm).trim().slice(0,80);
+  loadDoc(EMPTY_DOC());this.name=name;this.path=null;this.handle=null;this.markSaved(true);
+  /* desktop: the project file is created right away under Documents/ZINGO Fast/<name>.zingo */
+  if(DESK){const r=await DESK.createProject(safeName(name||t('pj_untitled'))).catch(()=>null);if(r&&r.path){this.path=r.path;if(await this.write()){this.markSaved(true);this.recent();flashOk(t('pj_created',{name:this.title()}))}}}
+  this.paint()},
+ async rename(){const nm=await Modal.prompt(t('pj_rename'),t('pj_name'),this.name);if(nm===null||nm===undefined)return;const name=String(nm).trim().slice(0,80);if(name===this.name)return;
+  if(DESK&&this.path){const r=await DESK.renameProject(this.path,safeName(name||t('pj_untitled'))).catch(()=>null);if(r&&r.path)this.path=r.path}
+  this.name=name;if(this.path||this.handle){if(await this.write())this.markSaved(true)}this.remember();this.paint();this.recent()},
+ list:[],
+ recent(){if(!DESK)return;DESK.recent().then(l=>{this.list=Array.isArray(l)?l.slice(0,8):[];if(!App.comps.length)paintRecent()}).catch(()=>{})}};
+
 /* ---- files: JSON import / export, PNG + SVG export ---- */
 function saveFile(name,blob,kind){
+ /* exports are named after the project (my-project.png, my-project-parts.csv ...) */
+ name=name.replace(/^zingo-circuit/,safeName(Proj.title())).replace(/^zingo-parts-list/,safeName(Proj.title())+'-parts');
+ if(DESK)return blob.arrayBuffer().then(b=>{let s='';const u=new Uint8Array(b);for(let i=0;i<u.length;i+=32768)s+=String.fromCharCode.apply(null,u.subarray(i,i+32768));return DESK.exportFile(name,btoa(s))}).then(r=>{if(r&&r.path)flashOk(t('pj_saved',{name:r.name||name}))}).catch(()=>Toast.show(t('pj_save_fail'),true,{key:'pjsave'}));
  if(downloadBlob(name,blob))return Promise.resolve();
  return fallbackSave(name,blob,kind)}
 function fallbackSave(name,blob,kind){
@@ -4479,7 +4578,7 @@ function importText(text){
  if(App.comps.length)Modal.confirm(t('import'),t('confirm_replace'),t('import')).then(ok=>{if(ok)go()});else go()}
 function pickFile(){$('#fileIn').value='';$('#fileIn').click()}
 $('#fileIn').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;
- const rd=new FileReader();rd.onload=()=>importText(String(rd.result));rd.onerror=()=>Toast.show(t('n_import'));rd.readAsText(f)});
+ const rd=new FileReader();rd.onload=()=>Proj.load(String(rd.result),{name:f.name.replace(/\.(zingo|json)$/i,'')});rd.onerror=()=>Toast.show(t('n_import'));rd.readAsText(f)});
 function pasteImport(){
  const ta=mk('textarea','ta');ta.placeholder='{ "v": 3, "comps": [ … ] }';ta.style.userSelect='text';
  Modal.open({title:t('paste_json'),body:ta,buttons:[{l:t('cancel'),v:null},{l:t('import'),get:()=>ta.value,pri:1}]}).then(v=>{if(v)importText(v)})}
@@ -4535,10 +4634,13 @@ function openMenu(){
  const has=App.comps.length>0;
  const extra=NARROW.matches?[{i:'reset',l:t('reset'),run:()=>$('#bReset').click()},{i:'play',l:t('speed')+': '+$('#sSpd').selectedOptions[0].text,run:cycleSpeed},{i:'sun',l:t('theme'),run:toggleTheme},{i:'globe',l:t('lang'),run:switchLang},{i:Settings.mute?'mute':'vol',l:t('sound'),run:openSound},'-']:[];
  Pop.show('menu',[...extra,
-  {i:'search',l:t('l_check'),run:()=>Lint.check()},{i:'plus',l:t('new_circuit'),run:newCircuit,off:!has},{i:'flask',l:t('examples'),run:examplesDialog},{i:'wrench',l:t('pb_title'),pro:'partbuilder',run:()=>PB.open()},'-',
-  {i:'open',l:t('import'),run:pickFile},{i:'paste',l:t('paste_json'),run:pasteImport},{i:'save',l:t('export_json'),k:'Ctrl+S',run:exportJSON},
+  {i:'plus',l:t('pj_new'),k:'Ctrl+N',run:()=>Proj.newProject()},{i:'open',l:t('pj_open'),k:'Ctrl+O',run:()=>Proj.open()},{i:'save',l:t('pj_save'),k:'Ctrl+S',run:()=>Proj.save()},{i:'save',l:t('pj_saveas'),k:'Ctrl+Shift+S',run:()=>Proj.saveAs()},
+  ...(DESK&&Proj.list.length?['-',...Proj.list.slice(0,5).map(r=>({i:'file',l:r.name,run:()=>Proj.openPath(r.path)}))]:[]),
+  ...(DESK&&Proj.path?[{i:'folder',l:t('pj_show'),run:()=>DESK.showInFolder(Proj.path)}]:[]),'-',
+  {i:'search',l:t('l_check'),run:()=>Lint.check()},{i:'trash',l:t('new_circuit'),run:newCircuit,off:!has},{i:'flask',l:t('examples'),run:examplesDialog},{i:'wrench',l:t('pb_title'),pro:'partbuilder',run:()=>PB.open()},'-',
+  {i:'paste',l:t('paste_json'),run:pasteImport},{i:'save',l:t('export_json'),run:exportJSON},
   {i:'img',l:t('export_png'),run:exportPNG,off:!has},{i:'img',l:t('export_svg'),run:exportSVG,off:!has},{i:'save',l:t('export_bom'),run:exportBOM,off:!has},'-',
-  {i:'user',l:t('ac_title'),run:()=>Account.open()},{i:'expand',l:t('focus'),k:'H',run:()=>setFocus(true)},{i:'gear',l:t('settings'),run:()=>{setSelection([],[]);openDock('props')}},{i:'keys',l:t('shortcuts'),run:shortcutsDialog},{i:'info',l:t('contact'),run:()=>{location.href='mailto:ahmedhamdi0s10@gmail.com'}},{i:'info',l:t('about'),run:aboutDialog}],0,0,$('#bMenu'))}
+  {i:'user',l:t('ac_title'),run:()=>Account.open()},{i:'expand',l:t('focus'),k:'H',run:()=>setFocus(true)},{i:'gear',l:t('settings'),run:()=>{setSelection([],[]);openDock('props')}},{i:'keys',l:t('shortcuts'),run:shortcutsDialog},{i:'info',l:t('contact'),run:()=>{if(DESK)DESK.openExternal('mailto:ahmedhamdi0s10@gmail.com');else location.href='mailto:ahmedhamdi0s10@gmail.com'}},{i:'info',l:t('about'),run:aboutDialog}],0,0,$('#bMenu'))}
 function openSound(){
  if(Pop.cur&&Pop.cur.id==='sndP'){Pop.hide();return}
  const n=mk('div');n.style.cssText='padding:8px 10px;display:flex;flex-direction:column;gap:12px;min-width:230px';
@@ -4745,6 +4847,12 @@ setInterval(()=>{try{Lab.tick()}catch(e){}},300);
  const stored=loadStoredDoc();
  loadDoc(stored||buildExample(EXAMPLES[0]),true);
  if(!stored)saveDoc(App);
+ Proj.init();if(!stored||!Proj.saved)Proj.markSaved(true);Proj.recent();
+ $('#pj').onclick=()=>Proj.rename();$('#wsNew').onclick=()=>Proj.newProject();$('#wsOpen').onclick=()=>Proj.open();
+ if(DESK){/* desktop: files opened from Explorer / a second launch, and the window close button */
+  DESK.onOpenFile(p=>Proj.openPath(p));
+  DESK.onCloseRequest(async()=>{if(await Proj.guard())DESK.closeNow()});
+  DESK.ready()}
  setMode(Settings.mode);
  requestAnimationFrame(()=>{fitView();Object.assign(App.view,App.tv);applyView()});
  requestAnimationFrame(t0=>Run.frame(t0));APP_UP=true;refreshLocks();setTimeout(()=>Life.boot(),1500);
