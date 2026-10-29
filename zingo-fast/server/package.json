@@ -1,0 +1,9 @@
+{
+  "name": "zingo-brain-server",
+  "version": "1.0.0",
+  "description": "ZINGO AI brain server: collects and curates what ZINGO Fast assistants learn, serves the shared brain, publishes a Cloudflare tunnel URL to Firebase",
+  "private": true,
+  "main": "app.js",
+  "engines": { "node": ">=18" },
+  "scripts": { "start": "node app.js" }
+}

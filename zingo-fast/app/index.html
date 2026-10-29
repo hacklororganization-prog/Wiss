@@ -362,6 +362,49 @@ body.rszing #cv{pointer-events:none}
 #empty b{font-size:19px}
 #empty p{margin:0;max-width:340px;color:var(--mut);font-size:13px;line-height:1.8}
 #empty .btn{pointer-events:auto;margin-top:8px;padding:0 18px;gap:8px}
+/* ---- ZINGO AI panel ---- */
+#tabAi.show{display:flex;flex-direction:column;min-height:0;height:100%;padding:0}
+#tabBtnA{display:inline-flex;align-items:center;gap:5px}#tabBtnA .i{width:15px;height:15px;color:var(--acc)}
+.ai-top .i{color:var(--acc)}
+.ai-h{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid var(--line);flex:none}
+.ai-hl{display:flex;align-items:center;gap:8px;flex:1;min-width:0}.ai-hl>.i{width:26px;height:26px;padding:5px;border-radius:9px;color:#fff;background:linear-gradient(135deg,#22d3ee,#0b6bcb);box-sizing:content-box;flex:none}
+.ai-hl b{display:block;font-size:13.5px}.ai-hl small{display:block;color:var(--mut);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
+.ai-sync{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mut);padding:3px 8px;border:1px solid var(--line);border-radius:20px;white-space:nowrap}
+.ai-sync i{width:7px;height:7px;border-radius:50%;background:var(--mut)}.ai-sync.ok i{background:var(--ok)}.ai-sync.err i{background:var(--warn)}.ai-sync.busy i{background:var(--acc);animation:aiPulse 1s infinite}
+@keyframes aiPulse{50%{opacity:.3}}
+.ai-list{flex:1;min-height:0;overflow:auto;padding:12px 10px;display:flex;flex-direction:column;gap:12px;user-select:text}
+.ai-m{display:flex;gap:8px;align-items:flex-start}.ai-m.u{justify-content:flex-end}
+.ai-av .i{width:16px;height:16px;padding:5px;border-radius:8px;color:#fff;background:linear-gradient(135deg,#22d3ee,#0b6bcb);box-sizing:content-box}
+.ai-b{max-width:100%;min-width:0;font-size:13px;line-height:1.75;overflow-wrap:anywhere}
+.ai-m.u .ai-b{background:var(--acc);color:var(--accink);padding:8px 12px;border-radius:14px;border-end-end-radius:4px;max-width:88%}
+.ai-m.a .ai-b{flex:1}.ai-m.s .ai-b{flex:1;background:color-mix(in srgb,var(--acc) 8%,var(--bg2));border:1px solid var(--line);padding:8px 12px;border-radius:12px;font-size:12.5px}
+.ai-b p{margin:0 0 6px}.ai-b ul{margin:4px 0 8px;padding-inline-start:20px}.ai-b li{margin:2px 0}
+.ai-b code{font-family:var(--mono);font-size:12px;background:var(--bg2);border:1px solid var(--line);border-radius:5px;padding:0 4px}
+.ai-code{direction:ltr;text-align:left;background:#0b1219;color:#d6e2ee;border-radius:10px;padding:10px;overflow:auto;font-size:12px;margin:6px 0}.ai-code code{background:none;border:0;padding:0;color:inherit}
+.ai-b.err{display:block;color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,transparent);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent);border-radius:12px;padding:8px 12px}.ai-b.err>.i{width:15px;height:15px;vertical-align:-3px;margin-inline-end:6px}
+.ai-card{margin:8px 0;padding:10px 12px;border:1px solid color-mix(in srgb,var(--acc) 45%,var(--line));border-radius:12px;background:color-mix(in srgb,var(--acc) 7%,var(--bg2))}
+.ai-card.bad{border-color:var(--warn);color:var(--warn)}
+.ai-ct{display:flex;align-items:center;gap:6px}.ai-ct .i{width:16px;height:16px;color:var(--acc)}.ai-cs{color:var(--mut);font-size:12px;margin:3px 0 8px}
+.ai-card .btn,.ai-act .btn{gap:6px;height:32px;padding:0 12px}.ai-act{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.ai-foot{display:flex;gap:2px;margin-top:4px;opacity:.75}.ai-v{border:0;background:transparent;color:var(--mut);width:28px;height:26px;border-radius:7px;display:grid;place-items:center;cursor:pointer}
+.ai-v:hover{background:var(--bg2);color:var(--ink)}.ai-v.on{color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,transparent)}.ai-v .i{width:14px;height:14px}
+.ai-dots{display:flex;gap:4px;padding:6px 0}.ai-dots i{width:7px;height:7px;border-radius:50%;background:var(--acc);animation:aiPulse 1s infinite}.ai-dots i:nth-child(2){animation-delay:.2s}.ai-dots i:nth-child(3){animation-delay:.4s}
+.ai-hello{margin:auto;text-align:center;max-width:300px;color:var(--mut);font-size:13px;line-height:1.8}.ai-hello b{display:block;color:var(--ink);font-size:16px;margin:10px 0 4px}
+.ai-hi .i{width:34px;height:34px;padding:10px;border-radius:16px;color:#fff;background:linear-gradient(135deg,#22d3ee,#0b6bcb);box-sizing:content-box}
+.ai-note{margin:0 10px 6px;color:var(--warn);font-size:12px}
+.ai-chips{display:flex;gap:6px;overflow-x:auto;padding:4px 10px 6px;flex:none;scrollbar-width:none}
+.ai-chip{flex:none;border:1px solid var(--line);background:var(--bg2);color:var(--ink);border-radius:20px;padding:4px 11px;font:inherit;font-size:12px;cursor:pointer;white-space:nowrap}.ai-chip:hover{border-color:var(--acc);color:var(--acc)}
+.ai-in{display:flex;gap:6px;align-items:flex-end;padding:8px 10px 10px;border-top:1px solid var(--line);flex:none}
+.ai-in textarea{flex:1;resize:none;min-height:42px;max-height:160px;border:1px solid var(--line);border-radius:12px;background:var(--bg2);color:var(--ink);font:inherit;font-size:13px;padding:9px 11px;outline:none;user-select:text}
+.ai-in textarea:focus{border-color:var(--acc)}.ai-in .ib.pri{width:42px;height:42px;border-radius:12px}
+.ai-set{flex:1;overflow:auto;padding:10px 12px 16px;display:flex;flex-direction:column;gap:8px}
+.ai-set h4{margin:8px 0 2px;font-size:12px;color:var(--acc);text-transform:uppercase;letter-spacing:.04em}
+.ai-set label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--mut)}
+.ai-set input,.ai-set select{height:34px;border:1px solid var(--line);border-radius:9px;background:var(--bg2);color:var(--ink);font:inherit;font-size:13px;padding:0 10px;user-select:text}
+.ai-set .row2{display:flex;align-items:center;gap:10px;justify-content:space-between;font-size:12.5px}.ai-set .row2 small{display:block;color:var(--mut);font-size:11px;line-height:1.5;margin-top:2px}
+.ai-hint{margin:0;color:var(--mut);font-size:11.5px;line-height:1.6}.ai-hint.ok{color:var(--ok)}.ai-hint.err{color:var(--warn)}
+.ai-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.ai-stats div{border:1px solid var(--line);border-radius:10px;padding:6px;text-align:center;background:var(--bg2)}.ai-stats b{display:block;font-size:16px}.ai-stats span{font-size:10.5px;color:var(--mut)}
+.ai-row{display:flex;gap:6px;flex-wrap:wrap}.ai-row .btn{gap:6px;height:32px;padding:0 10px;font-size:12px}
 #empty .ws{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;justify-content:center;pointer-events:auto}
 .wsc{display:flex;flex-direction:column;align-items:center;gap:6px;width:168px;padding:18px 14px 16px;border:1px solid var(--line);border-radius:16px;background:var(--bg2);color:var(--ink);cursor:pointer;font:inherit;box-shadow:0 6px 24px rgba(0,0,0,.12);transition:transform .15s,border-color .15s,box-shadow .15s}
 .wsc:hover{transform:translateY(-2px);border-color:var(--acc);box-shadow:0 10px 30px color-mix(in srgb,var(--acc) 22%,transparent)}
@@ -717,6 +760,7 @@ body.focus #work{grid-template-columns:minmax(0,1fr)!important}
   <div class="grp">
    <button class="ib" id="bScope" data-tt="scope" aria-pressed="false"><span data-i="scope"></span></button>
    <button class="ib" id="bCode" data-tt="code" aria-pressed="false"><span data-i="code"></span></button>
+   <button class="ib ai-top" id="bAi" data-tt="ai_open" aria-pressed="false"><span data-i="spark"></span></button>
   </div>
   <div class="grp" id="gView">
    <button class="ib" id="bPartsT" data-tt="t_parts" aria-pressed="true"><span data-i="panel"></span></button>
@@ -789,10 +833,12 @@ body.focus #work{grid-template-columns:minmax(0,1fr)!important}
     <button class="tab" id="tabBtnP" role="tab" data-tab="props" data-t="props"></button>
     <button class="tab" id="tabBtnC" role="tab" data-tab="code" data-t="code"></button>
     <button class="tab" id="tabBtnL" role="tab" data-tab="lab" data-t="lab_tab"></button>
+    <button class="tab" id="tabBtnA" role="tab" data-tab="ai"><span data-i="zingo"></span><span data-t="ai_tab"></span></button>
     <button class="ib" id="dWide" data-tt="wide"><span data-i="expand"></span></button>
    </div>
    <div class="tabpane" id="tabProps"></div>
    <div class="tabpane" id="tabLab"></div>
+   <div class="tabpane" id="tabAi"></div>
    <div class="tabpane" id="tabCode">
     <div id="edTop">
      <select id="edBoard" data-tt="board"></select>
@@ -1011,7 +1057,24 @@ run:'Run',pause:'Pause',reset:'Reset',speed:'Simulation speed',undo:'Undo',redo:
  sc_time:'Time / div',sc_trig:'Trigger',sc_rise:'Rising edge',sc_none:'Add an oscilloscope part to see signals',off:'Off',props:'Properties',wide:'Wider panel',board:'Board',examples:'Examples',upload:'Upload',serial:'Serial monitor',clear:'Clear',send:'Send',uploaded:'Uploaded',slow:'slow',
  parts:'parts',wires:'wires',nodes:'nodes',rotate:'Rotate',flip:'Flip',duplicate:'Duplicate',copy:'Copy',paste:'Paste',replace:'Replace part',delete:'Delete',select_all:'Select all',wire_color:'Wire color',del_probe:'Remove probe',
  h_wire2:'Click a second pin to finish the wire',h_probe:'Click a pin or wire to place a voltage probe',h_multi:'Drag to select several parts',ok:'OK',cancel:'Cancel',
- name:'Name',params:'Parameters',actions:'Actions',readout:'Live values',stress:'Load',burnt:'This part is burnt out',selected:'{n} parts selected',settings:'Settings',wire_style:'Wire style',w_orth:'Right angles',w_curve:'Curved',snap:'Snap to grid',pj_untitled:'Untitled project',pj_new:'New project',pj_open:'Open project…',pj_save:'Save',pj_saveas:'Save as…',pj_recent:'Recent projects',pj_name:'Project name',pj_new_t:'Create a new project',pj_unsaved_t:'Unsaved changes',pj_unsaved_q:'Save the changes to “{name}” first?',pj_dont:'Don\'t save',pj_saved:'Saved: {name}',pj_save_fail:'Could not save the file. Check that the folder still exists and is not read-only.',pj_open_fail:'Could not open that file: it is not a ZINGO Fast project',pj_rename:'Rename project',pj_show:'Show in folder',pj_created:'Project created: {name}',pj_file:'File',pj_where:'Saved in',pj_recent_none:'No recent projects',pj_missing:'That file was moved or deleted',ws_new_d:'Start from an empty workspace',ws_open_d:'Open a saved .zingo project',ws_ex_d:'Learn from a ready-made circuit',ws_title:'Welcome to ZINGO Fast',ws_sub:'Design, simulate and measure real electronic circuits.',show_names:'Show part names',show_vals:'Show values on parts',volt_colors:'Color wires by voltage',
+ name:'Name',params:'Parameters',actions:'Actions',readout:'Live values',stress:'Load',burnt:'This part is burnt out',selected:'{n} parts selected',settings:'Settings',wire_style:'Wire style',w_orth:'Right angles',w_curve:'Curved',snap:'Snap to grid',pj_untitled:'Untitled project',pj_new:'New project',pj_open:'Open project…',pj_save:'Save',pj_saveas:'Save as…',pj_recent:'Recent projects',pj_name:'Project name',pj_new_t:'Create a new project',pj_unsaved_t:'Unsaved changes',pj_unsaved_q:'Save the changes to “{name}” first?',pj_dont:'Don\'t save',pj_saved:'Saved: {name}',pj_save_fail:'Could not save the file. Check that the folder still exists and is not read-only.',pj_open_fail:'Could not open that file: it is not a ZINGO Fast project',pj_rename:'Rename project',pj_show:'Show in folder',pj_created:'Project created: {name}',pj_file:'File',pj_where:'Saved in',pj_recent_none:'No recent projects',pj_missing:'That file was moved or deleted',ws_new_d:'Start from an empty workspace',ws_open_d:'Open a saved .zingo project',ws_ex_d:'Learn from a ready-made circuit',ws_title:'Welcome to ZINGO Fast',ws_sub:'Design, simulate and measure real electronic circuits.',ai_tab:'AI',ai_open:'ZINGO AI assistant',ai_newchat:'New conversation',ai_stop:'Stop',ai_brain:'Brain',
+ai_pv_free:'ZINGO free (no key)',ai_pv_claude:'Claude (Anthropic)',ai_pv_groq:'Groq',ai_pv_gemini:'Google Gemini',ai_pv_openrouter:'OpenRouter',ai_pv_openai:'OpenAI',ai_pv_custom:'Custom (OpenAI-compatible)',
+ai_hello_t:'Hi, I am ZINGO AI',ai_hello_d:'I can read your circuit, explain it, find mistakes, build circuits for you and design new parts. Rate my answers so I keep learning.',
+ai_ph:'Ask anything, or describe the circuit or part you want…',ai_c_check:'Check my circuit',ai_c_explain:'Explain this circuit',ai_c_build:'Build a circuit',ai_c_part:'Create a new part',ai_c_calc:'Calculate a value',
+ai_c_check_q:'Check my circuit: find every mistake or risk, explain the root cause and fix it.',ai_c_explain_q:'Explain how this circuit works, step by step, with the current and voltage of each part.',
+ai_c_build_q:'Build a circuit that ',ai_c_part_q:'Create a new custom part: ',ai_c_calc_q:'Calculate ',
+ai_need_setup:'Choose an AI provider first (the free one needs no key).',ai_stopped:'(stopped)',ai_retry:'Retry',ai_good:'Good answer: remember it',ai_bad:'Bad answer',ai_copied:'Copied',
+ai_plan:'Proposed changes',ai_apply:'Apply to the workspace',ai_apply_again:'Apply again',ai_badblock:'The proposed changes could not be read. Ask again.',
+ai_pv_replace:'new workspace',ai_pv_add:'{n} parts',ai_pv_wire:'{n} wires',ai_pv_set:'{n} settings',ai_pv_del:'{n} removals',ai_pv_part:'{n} new custom parts',ai_pv_none:'no changes',
+ai_applied:'Applied. You can undo with Ctrl+Z.',ai_apply_errs:'Some steps were skipped:',ai_after_bad:'The check still finds problems:',ai_nochange:'Nothing changed.',ai_fixafter:'Ask AI to fix these',ai_q_fixafter:'Your changes were applied but there are problems. Fix them.',
+ai_x_type:'unknown part type "{type}"',ai_x_locked:'{part} needs ZINGO Pro',ai_x_prop:'{part}: unknown setting "{k}"',ai_x_val:'{part}: invalid value for "{k}"',ai_x_pin:'cannot find pins {a} / {b}',ai_x_part:'cannot find part {part}',ai_x_partdef:'the custom part has no pins',ai_x_do:'unknown action "{d}"',
+ai_d_nosrc:'There is no power source in a closed loop.',ai_d_conv:'The simulation is struggling to converge: check for impossible connections (ideal sources in parallel, floating nodes).',ai_d_burnt:'{name} is burnt out.',ai_d_stress:'{name} is at {pc}% of its rating.',ai_d_caprev:'{name} (electrolytic) is connected in reverse.',ai_d_ledrev:'{name} is reverse-biased.',ai_d_amp:'{name} carries a very large current: is the ammeter connected across a source instead of in series?',ai_d_meter0:'Both probes of {name} are on the same node: it will always read 0.',
+ai_e_key:'This provider needs an API key (Settings ⚙).',ai_e_url:'Enter a valid https:// address.',ai_e_model:'Enter a model name (Settings ⚙).',ai_e_claude_web:'Claude is available in the desktop app.',ai_e_auth:'The API key was rejected. Check it in Settings ⚙.',ai_e_rate:'Rate limit reached. Wait a moment and retry, or switch provider.',ai_e_model404:'The model or address was not found. Check the model name.',ai_e_server:'The AI service is having problems. Retry in a moment.',ai_e_empty:'The AI returned an empty answer. Retry.',
+ai_s_model:'Model',ai_s_provider:'Provider',ai_s_key:'API key',ai_s_key_ph:'Stored encrypted on this computer',ai_s_free:'Works immediately, no account or key needed.',ai_s_url:'API address',ai_s_mdl:'Model name',ai_s_claude:'Claude runs through the official Anthropic SDK in the desktop app. Default model: claude-opus-5-5 (most capable). Usage is billed to your Anthropic API key.',
+ai_s_brain:'Learning brain',ai_st_me:'learned here',ai_st_net:'from the community',ai_st_up:'answers you liked',ai_st_fix:'problems fixed',ai_s_net:'Use community knowledge',ai_s_share:'Share what I learn with the community',ai_s_server:'Brain server (optional)',ai_s_server_ph:'Automatic (from ZINGO cloud)',ai_s_outbox:'{n} waiting to upload',ai_s_sync:'Sync now',ai_s_export:'Export brain',ai_s_import:'Import brain',ai_s_clear:'Forget everything',ai_clear_q:'Delete everything the AI learned on this computer?',ai_imported:'Brain imported',
+ai_share_t:'Help ZINGO AI learn',ai_share_q:'Share the answers you like and the designs you keep with the ZINGO community, so the AI gets better for everyone?',ai_share_d:'Only rated answers and applied designs are shared, without your name, files or project names. E-mails, numbers and keys are removed. You can turn this off at any time.',ai_share_yes:'Share',ai_share_no:'Not now',
+ai_sync_ok:'Connected to {host} · brain v{rev}',ai_sync_err:'Brain server unreachable',ai_sync_busy:'Syncing…',ai_sync_off:'Community sync is off',ai_sync_nosrv:'the brain server is offline',ai_sync_notzingo:'not a ZINGO brain server',
+ai_r_short:'Keep answers short.',ai_r_long:'Explain in detail.',ai_r_ar:'Answer in Arabic.',ai_r_en:'Answer in English.',ai_r_direct:'No introductions: start with the answer.',ai_r_steps:'Explain step by step.',ai_r_beginner:'The user is a beginner: simple words, explain terms.',ai_r_pro:'The user is a professional: use engineering detail.',show_names:'Show part names',show_vals:'Show values on parts',volt_colors:'Color wires by voltage',
  hint_idle:'Select a part or wire to edit it. Click a pin, then another pin, to connect them.',open_editor:'Open code editor',
  new_circuit:'New circuit',empty_t:'Start your circuit',saved:'Saved',sel_n:'selected',sc_search:'Search parts',empty_d:'Drag a part from the list, or click it to add it. You can also open a ready-made example.',sc_panels:'Parts / Properties panel',confirm_new:'Remove everything from the workspace?',confirm_replace:'This replaces the current circuit. Continue?',import:'Import JSON',paste_json:'Paste JSON',export_json:'Export JSON',export_png:'Export PNG image',export_svg:'Export SVG image',export_bom:'Export parts list (CSV)',bom_part:'Part',bom_val:'Value',bom_qty:'Qty',contact:'Contact us',l_check:'Check circuit',l_ok:'No problems found. The circuit looks good.',l_float:'{name}: pin {pin} is not connected',l_float_why:'The pin is floating, so no current can flow through this part. Connect it with a wire (or a breadboard hole), or delete the part.',l_ledr:'{name} is connected straight across a source',l_ledr_why:'With no resistor the LED draws too much current and burns out. Add a resistor (about 330Ω) in series.',l_fix_r:'Add 330Ω resistor',l_fix_del:'Delete part',l_rmwire:'Remove one wire',l_manual:'The LED sits in the breadboard: put a resistor in series by hand.',l_fixall:'Fix all',l_fixall_q:'Fix {n} problem(s) automatically?',p_solar:'Solar cell',p_isrc:'Current source',p_r7805:'Regulator 7805 (5V)',p_r7812:'Regulator 7812 (12V)',p_r1117:'Regulator LM1117 (3.3V)',p_micmod:'Sound sensor (mic)',p_joy:'Joystick',p_soil:'Soil moisture sensor',p_gas:'Gas sensor MQ-2',p_water:'Water level sensor',p_lightm:'Light sensor module',p_cur:'Current',p_snd:'Sound level',p_jx:'Horizontal (X)',p_jy:'Vertical (Y)',p_js:'Button pressed',p_moist:'Moisture',p_gasl:'Gas level',p_wl:'Water level',lab_how_ana:'Analog output: the voltage follows the measured quantity. Wire VCC to 5V, GND to GND, OUT to an analog pin and use analogRead (0 to 1023).',lab_tab:'Live Lab',lab_empty:'Add a sensor, change its value with the slider and watch the readings live. Each card explains how to wire and read it.',lab_add:'Add a sensor',lab_demo:'Ready demo: distance sensor + Arduino',lab_how:'How to read it',lab_copy:'Copy code',lab_copied:'Copied',lab_power:'Power',lab_on:'Powered',lab_off:'Not powered: connect VCC and GND',lab_out:'Output',lab_vout:'Output voltage',lab_echo:'Echo pulse',lab_calc:'Reads as',lab_graph:'Live graph',lab_hi:'HIGH',lab_lo:'LOW',
 lab_how_hcsr04:'Send a 10µs pulse on TRIG; the sensor answers with an ECHO pulse as long as the round trip. Distance (cm) = pulse (µs) ÷ 58. Wire VCC to 5V, GND to GND, TRIG and ECHO to digital pins.',lab_how_dht11:'One DATA wire carries temperature and humidity digitally. Wire VCC to 5V, GND to GND, DATA to a digital pin and read it with the DHT library.',lab_how_lm35:'Outputs 10mV per °C, so temperature = voltage × 100. Wire +Vs to 5V, GND to GND, OUT to an analog pin such as A0.',lab_how_pir:'OUT goes HIGH while motion is detected. Wire VCC to 5V, GND to GND, OUT to a digital pin and use digitalRead.',lab_how_irs:'OUT goes LOW when an obstacle is in front and HIGH when clear. Wire VCC, GND and OUT to a digital pin.',lab_how_hall:'OUT goes LOW near a magnet and floats otherwise, so use INPUT_PULLUP on the Arduino pin.',lab_how_ldr:'Resistance drops as light rises. Put it in a divider with a fixed resistor and read the middle point with analogRead.',lab_how_therm:'NTC: resistance drops as temperature rises. Put it in a divider with a fixed resistor and read the middle point with analogRead.',shortcuts:'Keyboard shortcuts',about:'About',
@@ -1045,7 +1108,24 @@ run:'تشغيل',pause:'إيقاف مؤقت',reset:'إعادة ضبط',speed:'س
  sc_time:'الزمن / قسم',sc_trig:'القدح',sc_rise:'حافة صاعدة',sc_none:'أضف راسم إشارة لعرض الإشارات',off:'متوقف',props:'الخصائص',wide:'لوحة أعرض',board:'اللوحة',examples:'أمثلة',upload:'رفع',serial:'شاشة السيريال',clear:'مسح',send:'إرسال',uploaded:'تم الرفع',slow:'بطيء',
  parts:'قطعة',wires:'سلك',nodes:'عقدة',rotate:'تدوير',flip:'قلب',duplicate:'تكرار',copy:'نسخ',paste:'لصق',replace:'استبدال القطعة',delete:'حذف',select_all:'تحديد الكل',wire_color:'لون السلك',del_probe:'إزالة المسبار',
  h_wire2:'اضغط على دبوس ثانٍ لإنهاء السلك',h_probe:'اضغط على دبوس أو سلك لوضع مسبار جهد',h_multi:'اسحب لتحديد عدة قطع',ok:'حسناً',cancel:'إلغاء',
- name:'الاسم',params:'المعاملات',actions:'إجراءات',readout:'القيم الحية',stress:'الحِمل',burnt:'هذه القطعة محترقة',selected:'تم تحديد {n} قطع',settings:'الإعدادات',wire_style:'شكل الأسلاك',w_orth:'زوايا قائمة',w_curve:'منحنية',snap:'المحاذاة للشبكة',pj_untitled:'مشروع بدون اسم',pj_new:'مشروع جديد',pj_open:'فتح مشروع…',pj_save:'حفظ',pj_saveas:'حفظ باسم…',pj_recent:'المشاريع الأخيرة',pj_name:'اسم المشروع',pj_new_t:'إنشاء مشروع جديد',pj_unsaved_t:'تغييرات غير محفوظة',pj_unsaved_q:'هل تريد حفظ التغييرات على «{name}» أولاً؟',pj_dont:'عدم الحفظ',pj_saved:'تم الحفظ: {name}',pj_save_fail:'تعذّر حفظ الملف. تأكد أن المجلد ما زال موجوداً وأنه غير محمي من الكتابة.',pj_open_fail:'تعذّر فتح الملف: ليس مشروع ZINGO Fast',pj_rename:'إعادة تسمية المشروع',pj_show:'عرض في المجلد',pj_created:'تم إنشاء المشروع: {name}',pj_file:'ملف',pj_where:'محفوظ في',pj_recent_none:'لا توجد مشاريع حديثة',pj_missing:'تم نقل الملف أو حذفه',ws_new_d:'ابدأ بمساحة عمل فارغة',ws_open_d:'افتح مشروعاً محفوظاً بصيغة ‎.zingo',ws_ex_d:'تعلّم من دائرة جاهزة',ws_title:'مرحباً بك في ZINGO Fast',ws_sub:'صمّم وحاكِ وقِس دوائر إلكترونية حقيقية.',show_names:'إظهار أسماء القطع',show_vals:'إظهار القيم على القطع',volt_colors:'تلوين الأسلاك حسب الجهد',
+ name:'الاسم',params:'المعاملات',actions:'إجراءات',readout:'القيم الحية',stress:'الحِمل',burnt:'هذه القطعة محترقة',selected:'تم تحديد {n} قطع',settings:'الإعدادات',wire_style:'شكل الأسلاك',w_orth:'زوايا قائمة',w_curve:'منحنية',snap:'المحاذاة للشبكة',pj_untitled:'مشروع بدون اسم',pj_new:'مشروع جديد',pj_open:'فتح مشروع…',pj_save:'حفظ',pj_saveas:'حفظ باسم…',pj_recent:'المشاريع الأخيرة',pj_name:'اسم المشروع',pj_new_t:'إنشاء مشروع جديد',pj_unsaved_t:'تغييرات غير محفوظة',pj_unsaved_q:'هل تريد حفظ التغييرات على «{name}» أولاً؟',pj_dont:'عدم الحفظ',pj_saved:'تم الحفظ: {name}',pj_save_fail:'تعذّر حفظ الملف. تأكد أن المجلد ما زال موجوداً وأنه غير محمي من الكتابة.',pj_open_fail:'تعذّر فتح الملف: ليس مشروع ZINGO Fast',pj_rename:'إعادة تسمية المشروع',pj_show:'عرض في المجلد',pj_created:'تم إنشاء المشروع: {name}',pj_file:'ملف',pj_where:'محفوظ في',pj_recent_none:'لا توجد مشاريع حديثة',pj_missing:'تم نقل الملف أو حذفه',ws_new_d:'ابدأ بمساحة عمل فارغة',ws_open_d:'افتح مشروعاً محفوظاً بصيغة ‎.zingo',ws_ex_d:'تعلّم من دائرة جاهزة',ws_title:'مرحباً بك في ZINGO Fast',ws_sub:'صمّم وحاكِ وقِس دوائر إلكترونية حقيقية.',ai_tab:'الذكاء',ai_open:'مساعد ZINGO الذكي',ai_newchat:'محادثة جديدة',ai_stop:'إيقاف',ai_brain:'العقل',
+ai_pv_free:'ZINGO المجاني (بدون مفتاح)',ai_pv_claude:'Claude (Anthropic)',ai_pv_groq:'Groq',ai_pv_gemini:'Google Gemini',ai_pv_openrouter:'OpenRouter',ai_pv_openai:'OpenAI',ai_pv_custom:'مخصص (متوافق مع OpenAI)',
+ai_hello_t:'مرحباً، أنا ZINGO AI',ai_hello_d:'أقرأ دائرتك وأشرحها، وأكتشف الأخطاء، وأبني لك الدوائر، وأصمم قطعاً جديدة. قيّم إجاباتي لأستمر في التعلم.',
+ai_ph:'اسأل أي شيء، أو صف الدائرة أو القطعة التي تريدها…',ai_c_check:'افحص دائرتي',ai_c_explain:'اشرح الدائرة',ai_c_build:'ابنِ دائرة',ai_c_part:'أنشئ قطعة جديدة',ai_c_calc:'احسب قيمة',
+ai_c_check_q:'افحص دائرتي: اكتشف كل خطأ أو خطر، واشرح السبب الجذري، وأصلحه.',ai_c_explain_q:'اشرح كيف تعمل هذه الدائرة خطوة بخطوة مع التيار والجهد في كل قطعة.',
+ai_c_build_q:'ابنِ دائرة ',ai_c_part_q:'أنشئ قطعة مخصصة جديدة: ',ai_c_calc_q:'احسب ',
+ai_need_setup:'اختر مزوّد الذكاء أولاً (المجاني لا يحتاج مفتاحاً).',ai_stopped:'(تم الإيقاف)',ai_retry:'إعادة المحاولة',ai_good:'إجابة جيدة: تذكّرها',ai_bad:'إجابة سيئة',ai_copied:'تم النسخ',
+ai_plan:'التغييرات المقترحة',ai_apply:'طبّق على مساحة العمل',ai_apply_again:'طبّق مرة أخرى',ai_badblock:'تعذّرت قراءة التغييرات المقترحة. اطلب مرة أخرى.',
+ai_pv_replace:'مساحة عمل جديدة',ai_pv_add:'{n} قطع',ai_pv_wire:'{n} أسلاك',ai_pv_set:'{n} إعدادات',ai_pv_del:'{n} حذف',ai_pv_part:'{n} قطع مخصصة جديدة',ai_pv_none:'لا تغييرات',
+ai_applied:'تم التطبيق. يمكنك التراجع بـ Ctrl+Z.',ai_apply_errs:'تم تجاوز بعض الخطوات:',ai_after_bad:'ما زال الفحص يجد مشاكل:',ai_nochange:'لم يتغير شيء.',ai_fixafter:'اطلب من الذكاء إصلاحها',ai_q_fixafter:'طُبّقت تغييراتك لكن توجد مشاكل. أصلحها.',
+ai_x_type:'نوع قطعة غير معروف "{type}"',ai_x_locked:'{part} يحتاج ZINGO Pro',ai_x_prop:'{part}: إعداد غير معروف "{k}"',ai_x_val:'{part}: قيمة غير صالحة لـ "{k}"',ai_x_pin:'لم أجد الأطراف {a} / {b}',ai_x_part:'لم أجد القطعة {part}',ai_x_partdef:'القطعة المخصصة بلا أطراف',ai_x_do:'إجراء غير معروف "{d}"',
+ai_d_nosrc:'لا يوجد مصدر طاقة في حلقة مغلقة.',ai_d_conv:'المحاكاة تواجه صعوبة في الحل: ابحث عن توصيلات مستحيلة (مصادر مثالية على التوازي، عُقد معزولة).',ai_d_burnt:'{name} محترقة.',ai_d_stress:'{name} تعمل عند {pc}% من قدرتها المقننة.',ai_d_caprev:'{name} (كيميائي) موصول بقطبية معكوسة.',ai_d_ledrev:'{name} في انحياز عكسي.',ai_d_amp:'{name} يمر فيه تيار كبير جداً: هل الأميتر موصول على المصدر بدلاً من التوالي؟',ai_d_meter0:'طرفا {name} على نفس العقدة: سيقرأ دائماً 0.',
+ai_e_key:'هذا المزوّد يحتاج مفتاح API (الإعدادات ⚙).',ai_e_url:'أدخل عنواناً صحيحاً يبدأ بـ https://',ai_e_model:'أدخل اسم النموذج (الإعدادات ⚙).',ai_e_claude_web:'Claude متاح في تطبيق الكمبيوتر.',ai_e_auth:'تم رفض مفتاح API. تحقق منه في الإعدادات ⚙.',ai_e_rate:'تم بلوغ حد الطلبات. انتظر قليلاً ثم أعد المحاولة، أو غيّر المزوّد.',ai_e_model404:'لم يتم العثور على النموذج أو العنوان. تحقق من اسم النموذج.',ai_e_server:'خدمة الذكاء تواجه مشكلة. أعد المحاولة بعد قليل.',ai_e_empty:'أعاد الذكاء إجابة فارغة. أعد المحاولة.',
+ai_s_model:'النموذج',ai_s_provider:'المزوّد',ai_s_key:'مفتاح API',ai_s_key_ph:'يُحفظ مشفّراً على هذا الكمبيوتر',ai_s_free:'يعمل فوراً بدون حساب أو مفتاح.',ai_s_url:'عنوان الواجهة',ai_s_mdl:'اسم النموذج',ai_s_claude:'يعمل Claude عبر مكتبة Anthropic الرسمية في تطبيق الكمبيوتر. النموذج الافتراضي: claude-opus-5-5 (الأقوى). الاستخدام يُحسب على مفتاح Anthropic الخاص بك.',
+ai_s_brain:'عقل التعلّم',ai_st_me:'تعلّمها هنا',ai_st_net:'من المجتمع',ai_st_up:'إجابات أعجبتك',ai_st_fix:'مشاكل تم إصلاحها',ai_s_net:'استخدم معرفة المجتمع',ai_s_share:'شارك ما أتعلمه مع المجتمع',ai_s_server:'خادم العقل (اختياري)',ai_s_server_ph:'تلقائي (من سحابة ZINGO)',ai_s_outbox:'{n} بانتظار الرفع',ai_s_sync:'مزامنة الآن',ai_s_export:'تصدير العقل',ai_s_import:'استيراد عقل',ai_s_clear:'انسَ كل شيء',ai_clear_q:'حذف كل ما تعلّمه الذكاء على هذا الكمبيوتر؟',ai_imported:'تم استيراد العقل',
+ai_share_t:'ساعد ZINGO AI على التعلّم',ai_share_q:'هل تشارك الإجابات التي تعجبك والتصاميم التي تحتفظ بها مع مجتمع ZINGO، ليتحسن الذكاء للجميع؟',ai_share_d:'تُشارك فقط الإجابات التي قيّمتها والتصاميم التي طبّقتها، بدون اسمك أو ملفاتك أو أسماء مشاريعك. تُحذف البريد والأرقام والمفاتيح. يمكنك إيقاف ذلك في أي وقت.',ai_share_yes:'مشاركة',ai_share_no:'ليس الآن',
+ai_sync_ok:'متصل بـ {host} · العقل إصدار {rev}',ai_sync_err:'تعذّر الوصول إلى خادم العقل',ai_sync_busy:'جارٍ المزامنة…',ai_sync_off:'مزامنة المجتمع متوقفة',ai_sync_nosrv:'خادم العقل غير متصل',ai_sync_notzingo:'ليس خادم عقل ZINGO',
+ai_r_short:'اجعل الإجابات قصيرة.',ai_r_long:'اشرح بالتفصيل.',ai_r_ar:'أجب بالعربية.',ai_r_en:'أجب بالإنجليزية.',ai_r_direct:'بدون مقدمات: ابدأ بالإجابة.',ai_r_steps:'اشرح خطوة بخطوة.',ai_r_beginner:'المستخدم مبتدئ: كلمات بسيطة وشرح للمصطلحات.',ai_r_pro:'المستخدم محترف: استخدم تفاصيل هندسية.',show_names:'إظهار أسماء القطع',show_vals:'إظهار القيم على القطع',volt_colors:'تلوين الأسلاك حسب الجهد',
  hint_idle:'حدّد قطعة أو سلكاً لتعديله. اضغط على دبوس ثم على دبوس آخر لتوصيلهما.',open_editor:'فتح محرر الكود',
  new_circuit:'دائرة جديدة',empty_t:'ابدأ دائرتك',saved:'تم الحفظ',sel_n:'محدد',sc_search:'البحث عن قطعة',empty_d:'اسحب قطعة من القائمة أو اضغط عليها لإضافتها، أو افتح مثالاً جاهزاً.',sc_panels:'لوحة القطع / الخصائص',confirm_new:'هل تريد حذف كل شيء من مساحة العمل؟',confirm_replace:'سيتم استبدال الدائرة الحالية. هل تريد المتابعة؟',import:'استيراد JSON',paste_json:'لصق JSON',export_json:'تصدير JSON',export_png:'تصدير صورة PNG',export_svg:'تصدير صورة SVG',export_bom:'تصدير قائمة القطع (CSV)',bom_part:'القطعة',bom_val:'القيمة',bom_qty:'العدد',contact:'تواصل معنا',l_check:'فحص الدائرة',l_ok:'لا توجد مشاكل. الدائرة سليمة.',l_float:'{name}: الطرف {pin} غير موصول',l_float_why:'الطرف معلّق فلا يمر تيار في هذه القطعة. صله بسلك (أو بثقب في لوحة التجارب) أو احذف القطعة.',l_ledr:'{name} موصول مباشرة على المصدر',l_ledr_why:'بدون مقاومة يسحب الليد تياراً كبيراً فيحترق. أضف مقاومة (نحو 330Ω) على التوالي.',l_fix_r:'أضف مقاومة 330Ω',l_fix_del:'احذف القطعة',l_rmwire:'احذف سلكاً واحداً',l_manual:'الليد مركّب في لوحة التجارب: ضع المقاومة على التوالي يدوياً.',l_fixall:'أصلح الكل',l_fixall_q:'إصلاح {n} مشكلة تلقائياً؟',p_solar:'خلية شمسية',p_isrc:'مصدر تيار',p_r7805:'منظم جهد 7805 (5V)',p_r7812:'منظم جهد 7812 (12V)',p_r1117:'منظم جهد LM1117 (3.3V)',p_micmod:'حساس صوت (مايك)',p_joy:'عصا تحكم (جوي ستيك)',p_soil:'حساس رطوبة التربة',p_gas:'حساس غاز MQ-2',p_water:'حساس مستوى الماء',p_lightm:'وحدة حساس ضوء',p_cur:'التيار',p_snd:'مستوى الصوت',p_jx:'أفقي (X)',p_jy:'رأسي (Y)',p_js:'الزر مضغوط',p_moist:'الرطوبة',p_gasl:'تركيز الغاز',p_wl:'مستوى الماء',lab_how_ana:'خرج تناظري: الجهد يتبع الكمية المقاسة. صل VCC بـ5V وGND بالأرضي وOUT بمنفذ تناظري واستخدم analogRead (من 0 إلى 1023).',lab_tab:'مختبر حي',lab_empty:'أضف حساساً، غيّر قيمته بالمنزلق وشاهد القراءات مباشرة. كل بطاقة تشرح طريقة التوصيل والقراءة.',lab_add:'أضف حساساً',lab_demo:'تجربة جاهزة: حساس مسافة + Arduino',lab_how:'كيف تقرأه',lab_copy:'نسخ الكود',lab_copied:'تم النسخ',lab_power:'التغذية',lab_on:'يعمل',lab_off:'لا توجد تغذية: صل VCC وGND',lab_out:'الخرج',lab_vout:'جهد الخرج',lab_echo:'نبضة الصدى',lab_calc:'يُقرأ كـ',lab_graph:'رسم حي',lab_hi:'عالٍ HIGH',lab_lo:'منخفض LOW',
 lab_how_hcsr04:'أرسل نبضة 10µs إلى TRIG فيردّ الحساس بنبضة ECHO بطول زمن الذهاب والإياب. المسافة (سم) = زمن النبضة (µs) ÷ 58. صل VCC بـ5V وGND بالأرضي وTRIG وECHO بمنفذين رقميين.',lab_how_dht11:'سلك DATA واحد ينقل الحرارة والرطوبة رقمياً. صل VCC بـ5V وGND بالأرضي وDATA بمنفذ رقمي واقرأه بمكتبة DHT.',lab_how_lm35:'يعطي 10mV لكل درجة، فالحرارة = الجهد × 100. صل +Vs بـ5V وGND بالأرضي وOUT بمنفذ تناظري مثل A0.',lab_how_pir:'يصير OUT عالياً HIGH أثناء وجود حركة. صل VCC بـ5V وGND بالأرضي وOUT بمنفذ رقمي واستخدم digitalRead.',lab_how_irs:'يصير OUT منخفضاً LOW عند وجود عائق أمامه وعالياً عند خلو الطريق. صل VCC وGND وOUT بمنفذ رقمي.',lab_how_hall:'يصير OUT منخفضاً قرب المغناطيس ويبقى معلقاً بدونه، لذا استخدم INPUT_PULLUP في منفذ Arduino.',lab_how_ldr:'تقل المقاومة كلما زادت الإضاءة. ضعها في مقسّم جهد مع مقاومة ثابتة واقرأ النقطة الوسطى بـ analogRead.',lab_how_therm:'NTC: تقل المقاومة كلما ارتفعت الحرارة. ضعها في مقسّم جهد مع مقاومة ثابتة واقرأ النقطة الوسطى بـ analogRead.',shortcuts:'اختصارات لوحة المفاتيح',about:'حول التطبيق',
@@ -2263,6 +2343,7 @@ const clampN=(x,a,b)=>x<a?a:x>b?b:x;
 
 /* ---- inline SVG icon set (stroke icons, no emoji) ---- */
 const ICON={
+ spark:'<path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/><path d="M19 15l.8 1.9 1.9.8-1.9.8L19 20.4l-.8-1.9-1.9-.8 1.9-.8z"/>',
  file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
  zingo:'<path d="M5 4h14L6 20h13"/>',lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>',bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',bell:'<path d="M6 9a6 6 0 0 1 12 0c0 6 3 7 3 7H3s3-1 3-7M10 20a2 2 0 0 0 4 0"/>',play:'<path d="M7 4v16l13-8z"/>',pause:'<path d="M8 5v14M16 5v14"/>',reset:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
  undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',redo:'<path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/>',
@@ -3396,6 +3477,7 @@ $('#q').addEventListener('input',debounce(buildPalette,80));
 function setTab(tab,silent){if(tab==='code'&&!Entitlement.can('arduino')){if(!silent)Paywall.open('arduino');tab='props'}else if(tab==='lab'&&!Entitlement.can('lab')){if(!silent)Paywall.open('lab');tab='props'}
  App.tab=tab;
  $('#tabProps').classList.toggle('show',tab==='props');$('#tabCode').classList.toggle('show',tab==='code');$('#tabLab').classList.toggle('show',tab==='lab');$('#tabBtnL').setAttribute('aria-selected',tab==='lab');if(tab==='lab')Lab.build();
+ $('#tabAi').classList.toggle('show',tab==='ai');$('#tabBtnA').setAttribute('aria-selected',tab==='ai');if(tab==='ai'){AI.render();setTimeout(()=>{const x=$('#tabAi textarea');if(x)x.focus()},60)}
  $('#tabBtnP').setAttribute('aria-selected',tab==='props');$('#tabBtnC').setAttribute('aria-selected',tab==='code');
  if(tab==='code')Editor.sync(true);
  syncDockButtons()}
@@ -3416,7 +3498,7 @@ function applyPanels(){document.body.classList.toggle('hp',!!Settings.hp);docume
  $('#bPartsT').setAttribute('aria-pressed',String(!Settings.hp));$('#bDockT').setAttribute('aria-pressed',String(!Settings.hd))}
 function setFocus(on){on=!!on;document.body.classList.toggle('focus',on);App.focus=on;setTimeout(()=>{try{window.dispatchEvent(new Event('resize'))}catch(e){}},280)}
 function openDock(tab){if(Settings.hd){Settings.hd=false;saveSettings();applyPanels()}setTab(tab||App.tab);syncDockButtons()}
-function syncDockButtons(){const on=App.tab==='code',b=$('#bCode');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)}
+function syncDockButtons(){const on=App.tab==='code',b=$('#bCode');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);const a=$('#bAi');if(a){const o=App.tab==='ai'&&!Settings.hd;a.classList.toggle('on',o);a.setAttribute('aria-pressed',o)}}
 function toggleCode(){openDock(App.tab==='code'?'props':'code')}
 
 /* ============================================================
@@ -4659,6 +4741,392 @@ function refreshI18n(){
 function toggleTheme(){const dark=document.documentElement.dataset.theme==='dark';Settings.theme=dark?'light':'dark';saveSettings();applyTheme()}
 function switchLang(){setLang(LANG==='ar'?'en':'ar');refreshI18n()}
 
+/* ===== SECTION: ZINGO AI (assistant, circuit actions, learning brain, community sync) ===== */
+/* How it works
+   - The assistant talks to any OpenAI-compatible chat API (free built-in provider by default) or, in the desktop
+     app, to Claude through the official SDK in the main process.
+   - Every request carries a compact snapshot of the open circuit (parts, nets, live readings, detected problems),
+     the user's learned preferences and the most relevant things the brain has learned.
+   - The assistant answers in text and may attach ```zingo``` action blocks; the user reviews and applies them
+     (add / wire / set / delete parts, build a whole circuit, create a new custom part).
+   - Learning: 👍 / 👎 on answers, designs that were applied and passed the check, fixes that removed a problem,
+     and style preferences all go into a local brain that is searched (TF-IDF) for every new question.
+   - Community brain (opt-in): learned items are sent to the owner's server (app.js), which curates them and
+     serves a shared brain back; the server address is published in Firebase (Firestore) by app.js. */
+const AI_FB={apiKey:'AIzaSyDujpLY1NOWUPrbAYZHG-VPCrVydDQfF1A',projectId:'z-ai-404d2',doc:'zingo/server'};
+const AI_PRESETS={
+ free:{n:'ai_pv_free',u:'https://text.pollinations.ai/v1',m:'openai',key:false},
+ claude:{n:'ai_pv_claude',u:'',m:'claude-opus-5-5',key:true,desk:true},
+ groq:{n:'ai_pv_groq',u:'https://api.groq.com/openai/v1',m:'llama-3.3-70b-versatile',key:true},
+ gemini:{n:'ai_pv_gemini',u:'https://generativelanguage.googleapis.com/v1beta/openai',m:'gemini-2.0-flash',key:true},
+ openrouter:{n:'ai_pv_openrouter',u:'https://openrouter.ai/api/v1',m:'',key:true},
+ openai:{n:'ai_pv_openai',u:'https://api.openai.com/v1',m:'gpt-4o-mini',key:true},
+ custom:{n:'ai_pv_custom',u:'',m:'',key:'opt'}};   /* key optional: local servers (Ollama, LM Studio) need none */
+const AI_KEY_CFG='zf_ai_cfg',AI_KEY_CHAT='zf_ai_chat';
+
+/* ---------- text tools (Arabic-aware normalisation, light stemming, TF-IDF cosine, character bigrams) ---------- */
+const AIT=(()=>{
+ const STOP=new Set(['ما','ماذا','من','هو','هي','في','علي','عن','الي','هل','كيف','لماذا','متي','اين','هذا','هذه','ذلك','كان','يكون','تكون','لي','انا','او','و','ان','مع','لا','ثم','اريد','ممكن','what','is','the','a','an','of','who','how','to','in','are','do','does','me','please','i','my','it','and','or','can','you','for','with','on','this','that','لو','سمحت','ارجو']);
+ const norm=s=>String(s||'').toLowerCase().replace(/[\u064b-\u0652\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه');
+ const stem=w=>{if(w.length>4&&/^[وفبك]ال/.test(w))w=w.slice(3);else if(w.length>3&&w.startsWith('ال'))w=w.slice(2);
+  if(w.length>4&&/(ات|ون|ين|ان)$/.test(w))w=w.slice(0,-2);else if(w.length>4&&/s$/.test(w))w=w.slice(0,-1);return w};
+ const toks=s=>norm(s).split(/[^\p{L}\p{N}#+]+/u).filter(w=>w&&!STOP.has(w)).map(stem);
+ const idfMap=docs=>{const df={};docs.forEach(d=>new Set(d).forEach(t=>df[t]=(df[t]||0)+1));const N=docs.length+1;return t=>Math.log(1+N/(1+(df[t]||0)))};
+ const cos=(a,b,idf)=>{const fa={},fb={};a.forEach(t=>fa[t]=(fa[t]||0)+1);b.forEach(t=>fb[t]=(fb[t]||0)+1);let dot=0,na=0,nb=0;
+  for(const t in fa){const w=idf(t);na+=(fa[t]*w)**2;if(fb[t])dot+=fa[t]*w*fb[t]*w}for(const t in fb)nb+=(fb[t]*idf(t))**2;return dot/(Math.sqrt(na*nb)||1)};
+ const bgm=s=>{s=s.replace(/\s+/g,'');const r=new Map();let n=0;for(let i=0;i<s.length-1;i++){const k=s.substr(i,2);r.set(k,(r.get(k)||0)+1);n++}return{r,n}};
+ const dice=(a,b)=>{const A=bgm(a),B=bgm(b);if(!A.n||!B.n)return a===b?1:0;let k=0;A.r.forEach((v,t)=>{if(B.r.has(t))k+=Math.min(v,B.r.get(t))});return 2*k/(A.n+B.n)};
+ const tokEst=s=>{s=String(s||'');let ar=0;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);if(c>=1536&&c<=1791)ar++}return Math.ceil(ar/2.2+(s.length-ar)/3.4)};
+ const cap=(s,n)=>{s=String(s||'');if(tokEst(s)<=n)return s;let lo=0,hi=s.length;while(lo<hi){const m=(lo+hi+1)>>1;if(tokEst(s.slice(0,m))<=n)lo=m;else hi=m-1}return s.slice(0,lo)+' …'};
+ const h32=s=>{s=norm(s).replace(/\s+/g,' ').trim();let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return(h>>>0).toString(36)};
+ /* personal data never leaves the computer: e-mails, phone numbers, URLs with tokens, Windows user paths, long digit runs */
+ const scrub=s=>String(s||'').replace(/[\w.+-]+@[\w-]+\.[\w.]+/g,'[email]').replace(/(?:\+|00)?\d[\d\s-]{8,}\d/g,'[number]').replace(/https?:\/\/\S+/g,u=>/[?&](key|token|sig|auth)=/i.test(u)?'[link]':u).replace(/[A-Z]:\\Users\\[^\\\s]+/gi,'C:\\Users\\[user]').replace(/sk-[A-Za-z0-9_-]{12,}/g,'[key]');
+ return{norm,toks,idfMap,cos,dice,tokEst,cap,h32,scrub}})();
+
+/* ---------- storage: desktop data files (userData) or localStorage in the browser ---------- */
+const AIStore={
+ async get(name){try{if(DESK&&DESK.dataRead){const t=await DESK.dataRead(name);return t?JSON.parse(t):null}}catch(e){}return Store.json('zf_ai_'+name)},
+ async set(name,obj){const s=JSON.stringify(obj);try{if(DESK&&DESK.dataWrite){const r=await DESK.dataWrite(name,s);if(r&&r.ok)return true}}catch(e){}Store.set('zf_ai_'+name,s);return true}};
+
+/* ---------- the brain ----------
+   facts:   question -> answer that the user rated up (kind chat), or a fix that removed a detected problem (kind fix)
+   designs: circuits / custom parts the assistant built and the user kept (they pass the circuit check)
+   rules:   style preferences learned from what the user says ("short answers", "answer in Arabic", ...)
+   net:     the community brain served by the owner's server (read-only here) */
+const Brain={me:{v:1,facts:[],designs:[],rules:[],stats:{asked:0,learned:0,up:0,down:0,applied:0,fixed:0},nid:1},net:{rev:0,facts:[],designs:[],rules:[]},outbox:[],ready:false,_t:0,
+ async load(){const m=await AIStore.get('brain'),n=await AIStore.get('net'),o=await AIStore.get('outbox');
+  if(m&&Array.isArray(m.facts))this.me=Object.assign(this.me,m,{stats:Object.assign({},this.me.stats,m.stats||{})});
+  if(n&&Array.isArray(n.facts))this.net=Object.assign({rev:0,facts:[],designs:[],rules:[]},n);
+  if(Array.isArray(o))this.outbox=o.slice(-400);this.ready=true},
+ save(){clearTimeout(this._t);this._t=setTimeout(()=>{AIStore.set('brain',this.me);AIStore.set('outbox',this.outbox)},400)},
+ find(list,q,th){const qt=AIT.toks(q);if(!qt.length)return null;const docs=list.map(f=>AIT.toks(f.q||f.name||'')),idf=AIT.idfMap(docs.concat([qt]));
+  for(let i=0;i<docs.length;i++)if(AIT.cos(qt,docs[i],idf)>(th||.86))return list[i];return null},
+ learnFact(q,a,kind,o){q=String(q||'').trim();a=String(a||'').trim();if(q.length<4||a.length<8)return null;o=o||{};
+  let f=this.find(this.me.facts,q);
+  if(f){f.a=a;f.kind=kind||f.kind;f.up=(f.up||0)+(o.up||0);f.t=Date.now()}
+  else{f={id:this.me.nid++,q:q.slice(0,600),a:a.slice(0,6000),kind:kind||'chat',up:o.up||0,down:0,uses:0,t:Date.now(),lang:LANG};this.me.facts.push(f);this.me.stats.learned++}
+  if(this.me.facts.length>2500){this.me.facts.sort((x,y)=>((y.up||0)-(y.down||0)+(y.uses||0)*.2)-((x.up||0)-(x.down||0)+(x.uses||0)*.2));this.me.facts.length=2000}
+  this.save();if(o.share!==false)this.share({kind:f.kind,q:f.q,a:f.a,lang:LANG});return f},
+ learnDesign(name,desc,kind,data,q){const d={id:this.me.nid++,name:String(name||'').slice(0,80),q:String(q||desc||name||'').slice(0,400),desc:String(desc||'').slice(0,600),kind,data,up:1,t:Date.now()};
+  const old=this.find(this.me.designs,d.q,.9);if(old)Object.assign(old,d,{id:old.id,up:(old.up||0)+1});else this.me.designs.push(d);
+  if(this.me.designs.length>300)this.me.designs.splice(0,this.me.designs.length-300);
+  this.me.stats.applied++;this.save();this.share({kind:'design',q:d.q,a:d.desc,name:d.name,dkind:kind,data,lang:LANG});return d},
+ vote(fid,v){const f=this.me.facts.find(x=>x.id===fid);if(!f)return;if(v>0)f.up=(f.up||0)+1;else f.down=(f.down||0)+1;
+  if((f.down||0)>=2&&(f.down||0)>(f.up||0))this.me.facts=this.me.facts.filter(x=>x!==f);this.save()},
+ /* style rules: phrases in the user's own words */
+ PREFS:[[/(باختصار|اختصر|مختصر|briefly|short answer|be brief)/i,'ai_r_short'],[/(بالتفصيل|اشرح اكثر|شرح مفصل|in detail|explain more)/i,'ai_r_long'],
+  [/(بالعربي|بالعربيه|in arabic)/i,'ai_r_ar'],[/(in english|بالانجليزي)/i,'ai_r_en'],[/(بدون مقدمات|مباشره|get to the point|no intro)/i,'ai_r_direct'],
+  [/(خطوه بخطوه|step by step)/i,'ai_r_steps'],[/(للمبتدئين|انا مبتدئ|beginner)/i,'ai_r_beginner'],[/(احترافي|مهندس|engineer|professional level)/i,'ai_r_pro']],
+ learnPrefs(q){const n=AIT.norm(q);this.PREFS.forEach(([re,k])=>{if(re.test(n)||re.test(q)){const r=this.me.rules.find(x=>x.k===k);if(r){r.w++;r.t=Date.now()}else this.me.rules.push({k,w:1,t:Date.now()})}});
+  if(this.me.rules.length>20){this.me.rules.sort((a,b)=>b.w-a.w);this.me.rules.length=20}this.save()},
+ rulesText(){return this.me.rules.slice().sort((a,b)=>b.w-a.w).slice(0,6).map(r=>'- '+t(r.k)).join('\n')},
+ /* retrieval over my facts + designs + the community brain */
+ recall(q,k){const qt=AIT.toks(q);if(!qt.length)return[];const pool=[];
+  this.me.facts.forEach(f=>pool.push({f,src:'me',d:AIT.toks(f.q)}));this.net.facts.forEach(f=>pool.push({f,src:'net',d:AIT.toks(f.q)}));
+  this.me.designs.forEach(f=>pool.push({f,src:'me',d:AIT.toks(f.q+' '+f.name),design:1}));this.net.designs.forEach(f=>pool.push({f,src:'net',d:AIT.toks((f.q||'')+' '+(f.name||'')),design:1}));
+  if(!pool.length)return[];const idf=AIT.idfMap(pool.map(p=>p.d).concat([qt])),qj=qt.join(' ');
+  pool.forEach(p=>{let s=.75*AIT.cos(qt,p.d,idf)+.25*AIT.dice(qj,p.d.join(' '));const f=p.f;s*=1+Math.min(f.up||f.votes||0,5)*.06;s-=(f.down||0)*.12;if(p.src==='net')s*=.92;if(f.kind==='fix')s*=1.05;p.s=s});
+  return pool.filter(p=>p.s>.28).sort((a,b)=>b.s-a.s).slice(0,k||4)},
+ /* community sharing: only items the user approved of, scrubbed of personal data, only when sharing is on */
+ share(it){if(!AI.cfg.share)return;const x=Object.assign({},it);x.q=AIT.scrub(x.q).slice(0,600);if(x.a)x.a=AIT.scrub(x.a).slice(0,6000);if(x.name)x.name=AIT.scrub(x.name).slice(0,80);
+  x.h=AIT.h32(x.kind+'|'+x.q);if(this.outbox.some(o=>o.h===x.h))return;this.outbox.push(x);if(this.outbox.length>400)this.outbox.splice(0,this.outbox.length-400);this.save()},
+ counts(){return{me:this.me.facts.length+this.me.designs.length,rules:this.me.rules.length,net:this.net.facts.length+this.net.designs.length,out:this.outbox.length}}};
+
+/* ---------- circuit snapshot for the model (compact, deterministic) ---------- */
+function aiNodeName(n){return n===0?'0V':n>0?'N'+n:'open'}   /* 0V = ground, or the reference of a circuit without a ground symbol */
+function aiPropText(c){const T=TY[c.ty];return(T.props||[]).filter(p=>p.k!=='bs'&&p.k!=='lg').map(p=>{const v=P(c,p.k);if(v==null)return'';return p.k+'='+(p.t==='num'&&T.u&&p.k==='v'?fmtU(v,T.u):(typeof v==='number'?+(+v).toPrecision(4):v))}).filter(Boolean).join(' ')}
+function aiReading(c){const r=c._r||{};const num=x=>typeof x==='number'&&Number.isFinite(x);
+ const sm=(x,m,q,u)=>{if(!num(m)||!num(q))return num(x)?si(x,u):'';const a=Math.sqrt(Math.max(0,q-m*m));return a>.05*Math.abs(m)&&a>1e-9?(a>Math.abs(m)?'~'+si(a,u):si(m,u)+' (ripple '+si(a,u)+')'):si(num(x)?x:m,u)};
+ if(c.ty==='vm')return'shows '+meterTxt(r,'v','V',+P(c,'cpl'));if(c.ty==='am')return'shows '+meterTxt(r,'i','A',+P(c,'cpl'));if(c.ty==='mm')return'shows '+mmTxt(c,r);
+ const a=[];if(num(r.v))a.push('V='+sm(r.v,r.sv,r.sv2,'V'));if(num(r.i))a.push('I='+sm(r.i,r.si,r.si2,'A'));if(num(r.p)&&r.p>1e-6)a.push('P='+si(num(r.sp)?r.sp:r.p,'W'));return a.join(' ')}
+function aiStress(c){const ws=Run.sim&&Run.sim.watch?Run.sim.watch.filter(w=>w.c===c):[];let s=0;ws.forEach(w=>{let q=0;try{q=w.f()}catch(e){}if(Number.isFinite(q)&&q>s)s=q});return ws.length?Math.round(s*100):null}
+function aiSnapshot(maxParts){
+ try{if(Run.dirty)Run.rebuild()}catch(e){}
+ const sm=Run.sim,nd=(c,j)=>sm&&sm.nodeOf?sm.nodeOf(c.id+'.'+j):-1,L=[];
+ const comps=App.comps.filter(c=>c.ty!=='jn'&&!TY[c.ty].bb);
+ L.push('Project: '+Proj.title()+' | view: '+(App.mode==='sch'?'schematic':'breadboard')+' | status: '+t('s_'+(Run.stat||Run.status()))+' | sim t='+(sm?sm.t.toFixed(2):0)+'s');
+ if(!comps.length){L.push('The workspace is empty.');return L.join('\n')}
+ const sel=new Set(App.sel);
+ comps.slice(0,maxParts||120).forEach(c=>{const T=TY[c.ty];
+  const pins=T.pins.map((p,j)=>(p.n||String(j+1))+'→'+aiNodeName(nd(c,j))).join(', ');
+  const st=aiStress(c),rd=aiReading(c),pr=aiPropText(c);
+  L.push('#'+c.id+' '+c.ty+' "'+partName(c)+'"'+(pr?' ['+pr+']':'')+' pins: '+pins+(rd?' | '+rd:'')+(st!=null&&st>=50?' | load '+st+'%':'')+(c.burn?' | BURNT':'')+(sel.has(c.id)?' | SELECTED':''))});
+ if(comps.length>(maxParts||120))L.push('… and '+(comps.length-(maxParts||120))+' more parts');
+ return L.join('\n')}
+
+/* ---------- diagnosis: everything we can detect locally, as structured findings ---------- */
+function aiDiagnose(){
+ try{if(Run.dirty)Run.rebuild()}catch(e){}
+ const out=[],sm=Run.sim,st=Run.status(),nd=(c,j)=>sm&&sm.nodeOf?sm.nodeOf(c.id+'.'+j):-1,add=(sev,msg,comps)=>out.push({sev,msg,comps:comps||[]});
+ if(!App.comps.length)return out;
+ if(st==='short'){const d=shortDiag();add('err',d.msg+(d.why?' — '+d.why:''),d.comps)}
+ if(st==='nosrc')add('warn',t('ai_d_nosrc'));
+ if(st==='conv')add('warn',t('ai_d_conv'));
+ App.comps.forEach(c=>{const T=TY[c.ty],r=c._r||{};if(!T)return;
+  if(c.burn)add('err',t('ai_d_burnt',{name:partName(c)}),[c.id]);
+  const s=aiStress(c);if(!c.burn&&s!=null&&s>=85)add(s>=100?'err':'warn',t('ai_d_stress',{name:partName(c),pc:s}),[c.id]);
+  if(c.ty==='cap'&&!c.burn&&(r.v||0)<-.5)add('err',t('ai_d_caprev',{name:partName(c)}),[c.id]);
+  if(c.ty==='led'&&!c.burn&&(r.v||0)<-1)add('warn',t('ai_d_ledrev',{name:partName(c)}),[c.id]);
+  if(c.ty==='am'&&Math.abs(r.im||0)>2)add('warn',t('ai_d_amp',{name:partName(c)}),[c.id]);
+  if((c.ty==='vm'||c.ty==='mm')&&T.pins.length===2){const a=nd(c,0),b=nd(c,1);if(a>=0&&a===b)add('info',t('ai_d_meter0',{name:partName(c)}),[c.id])}});
+ try{(Lint.scan()||[]).forEach(i=>add('warn',i.msg+(i.why?' — '+i.why:''),i.comps))}catch(e){}
+ return out}
+
+/* ---------- part catalogue + part-builder reference for the system prompt ---------- */
+function aiCatalog(){return Object.keys(TY).filter(k=>k!=='jn'&&!TY[k].bb).map(k=>{const T=TY[k];
+ const pr=(T.props||[]).filter(p=>p.k!=='bs'&&p.k!=='lg').map(p=>p.k+(p.t==='sel'?'∈{'+p.opts.map(o=>o[0]).join('|')+'}':p.t==='bool'?'∈{0|1}':(p.u?'('+p.u+')':''))).join(',');
+ return k+': '+(I18N.en['p_'+k]||k)+' pins['+T.pins.map(p=>p.n||'').join('|')+']'+(pr?' props{'+pr+'}':'')}).join('\n')}
+function aiPartSpec(){return Object.keys(PB_BLOCKS).map(k=>k+'('+(k==='logic'?'in:[pin],out:[pin],vcc:pin,gnd:pin,tt:["01.."] one truth-table string per output':PB_BLOCKS[k].f.map(f=>f[0]+':'+(f[1]==='pin'?'pin':f[1]==='sel'?f[3].map(o=>o[0]).join('|'):'expr')).join(','))+')').join('; ')}
+const AI_PART_HINT=`CUSTOM PART JSON ("do":"part","def":{...}) — the same format as the Part Builder:
+{"name":"…","desc":"…","w":120,"h":80 (multiples of 10),"pins":[{"n":"A","x":10,"y":40,"s":"l|r|t|b"}…] (pins on the 10-grid, on the body edge),
+ "shapes":[{"k":"rect|ell|line|tri|text","x":..,"y":..,"w":..,"h":..,"r":4,"fill":"#hex","stroke":"#hex","tx":"label or {param}","fs":9}…],
+ "params":[{"k":"rv","l":"Resistance","t":"num|rng|bool|sel","def":1000,"min":1,"max":1e6,"u":"Ω"}…],
+ "blocks":[ behaviour built from simulator elements; pin fields are pin indexes (0-based), expressions may use params, vin, t, pressed, I1/V1 (current/voltage of block 1)… ],
+ "fx":[{"s":shapeIndex,"prop":"fill|opacity|rotate|scale|text","expr":"…","i0":0,"i1":1,"c1":"#hex","c2":"#hex"}]}
+Blocks: `;
+
+/* ---------- system prompt ---------- */
+function aiSystem(intent){
+ const ar=LANG==='ar';
+ return[`You are ZINGO AI, the built-in senior electronics engineer of ZINGO Fast — a circuit design and real-time simulation app (nodal analysis, AC/DC, meters, oscilloscope, Arduino). You help users design circuits, create new devices (custom parts), find and fix mistakes, and learn electronics.`,
+ `Rules:
+- Reply in the user's language (${ar?'Arabic by default':'English by default'}); keep part ids, units and code in Latin script.
+- Be accurate and practical: give values with units, explain the reason briefly (Ohm's law, power, ratings). Never invent readings: use the circuit snapshot.
+- When the user asks you to build, change, connect, fix or create something in the workspace, include ONE fenced block \`\`\`zingo … \`\`\` with JSON {"title":"short title","replace":false,"actions":[…]}. The user reviews it and presses Apply. Outside the block, explain what it does in a few lines.
+- Actions: {"do":"add","ref":"r1","type":"res","props":{"v":220},"at":[gx,gy],"rot":0..3,"name":"optional"} | {"do":"wire","a":"r1.2","b":"#5.A"} | {"do":"set","part":"#5","props":{…}} | {"do":"delete","part":"#5"} | {"do":"unwire","a":"…","b":"…"} | {"do":"part","ref":"x1","def":{…custom part…},"place":true,"at":[gx,gy]}.
+- Part references: "#id" for existing parts (from the snapshot), or the "ref" you gave a new part. Pin = part + "." + pin name or 1-based pin number (e.g. "#3.+", "led1.A", "r1.1"). Grid coordinates gx,gy are in 15-px cells; leave space (parts are 4–12 cells wide).
+- Use only part types from the catalogue, only listed props, values in base units (Ω, V, A, Hz; capacitance in µF, inductance in mH). Every circuit needs a source and a closed loop; add current-limiting resistors for LEDs; respect ratings.
+- "replace":true clears the workspace first (only when the user asks for a new circuit).
+- To answer "what is wrong", use the DIAGNOSIS list and readings, give the root cause first, then the fix (as actions when possible).
+- If something is impossible in the simulator, say so plainly.`,
+ intent.part?AI_PART_HINT+aiPartSpec():'',
+ 'PART CATALOGUE (type: name pins props):\n'+aiCatalog()].filter(Boolean).join('\n\n')}
+function aiIntent(q){const n=AIT.norm(q);return{part:/(قطعه جديده|قطعه مخصصه|جهاز جديد|انشئ قطعه|اصنع قطعه|صمم قطعه|custom part|new part|new device|create (a )?part|make (a )?part|part builder)/i.test(n),
+ build:/(ابن|صمم|انشئ|اصنع|ركب|اضف|وصل|build|design|create|make|add|connect|wire)/i.test(n),check:/(خطا|اخطاء|مشكله|لا يعمل|لماذا|افحص|احترق|error|wrong|problem|fix|check|why|burn)/i.test(n)}}
+
+/* ---------- the model call: desktop main process (no CORS, Claude via SDK) or fetch in the browser ---------- */
+const AIRun={id:0,
+ async stream(cfg,system,msgs,onText,signal){
+  const pv=AI_PRESETS[cfg.p]||AI_PRESETS.free,base=(cfg.p==='custom'||cfg.p==='openrouter'?cfg.u:'')||pv.u,model=cfg.m||pv.m;
+  if(cfg.p==='claude'&&!DESK)throw new Error(t('ai_e_claude_web'));
+  if(pv.key===true&&!cfg.k)throw new Error(t('ai_e_key'));
+  if(cfg.p!=='claude'&&!/^(https:\/\/|http:\/\/(127\.0\.0\.1|localhost)(:\d+)?\/)/.test(base||''))throw new Error(t('ai_e_url'));
+  if(!model)throw new Error(t('ai_e_model'));
+  if(DESK&&DESK.aiStream){const id=++this.id;let full='';
+   return await new Promise((res,rej)=>{const off=DESK.aiStream({id,provider:cfg.p==='claude'?'claude':'openai',base,model,key:cfg.k||'',system,messages:msgs,temperature:.3},ev=>{
+     if(ev.type==='delta'){full+=ev.text;onText(full)}else if(ev.type==='done'){off&&off();res({text:full||ev.text||'',finish:ev.finish||''})}else if(ev.type==='error'){off&&off();rej(new Error(ev.message||'error'))}});
+    if(signal)signal.addEventListener('abort',()=>{DESK.aiAbort(id);off&&off();rej(Object.assign(new Error('aborted'),{name:'AbortError'}))})})}
+  const url=base.replace(/\/+$/,'')+'/chat/completions',hdr={'Content-Type':'application/json'};if(cfg.k)hdr.Authorization='Bearer '+cfg.k;
+  const res=await fetch(url,{method:'POST',headers:hdr,signal,body:JSON.stringify({model,messages:[{role:'system',content:system}].concat(msgs),stream:true,temperature:.3})});
+  if(!res.ok){const tx=await res.text().catch(()=>'');throw new Error(aiHttpErr(res.status,tx))}
+  let full='',finish='';
+  if(res.body&&res.body.getReader){const rd=res.body.getReader(),dec=new TextDecoder();let buf='';
+   for(;;){const{done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});let i;
+    while((i=buf.indexOf('\n'))>=0){const line=buf.slice(0,i).trim();buf=buf.slice(i+1);if(line.indexOf('data:')!==0)continue;const d=line.slice(5).trim();if(d==='[DONE]')continue;
+     try{const j=JSON.parse(d),ch=j.choices&&j.choices[0];if(ch){const c=ch.delta&&ch.delta.content;if(c){full+=c;onText(full)}if(ch.finish_reason)finish=ch.finish_reason}}catch(e){}}}}
+  else{const j=await res.json(),ch=j.choices&&j.choices[0];full=(ch&&ch.message&&ch.message.content)||'';onText(full)}
+  return{text:full.replace(/\n*(?:---\s*)?\**\s*(?:Powered by Pollinations|Support Pollinations)[\s\S]*$/i,''),finish}}};
+function aiHttpErr(s,tx){const m=(()=>{try{const j=JSON.parse(tx);return(j.error&&(j.error.message||j.error))||j.message||''}catch(e){return String(tx||'').slice(0,160)}})();
+ if(s===401||s===403)return t('ai_e_auth');if(s===429)return t('ai_e_rate');if(s===404)return t('ai_e_model404');if(s>=500)return t('ai_e_server');return'HTTP '+s+(m?': '+m:'')}
+
+/* ---------- actions: parse ```zingo``` blocks, validate everything, apply as one undoable step ---------- */
+function aiBlocks(text){const out=[],re=/```zingo\s*\n?([\s\S]*?)```/g;let m;while((m=re.exec(text))){try{const j=JSON.parse(m[1]);if(j&&Array.isArray(j.actions))out.push(j)}catch(e){out.push({bad:1,raw:m[1]})}}return out}
+function aiStrip(text){return String(text||'').replace(/```zingo\s*\n?[\s\S]*?(```|$)/g,'').trim()}
+function aiPinIdx(T,p){if(p==null)return-1;const s=String(p).trim().replace(/^-$/,'−');const i=T.pins.findIndex(x=>x.n===s);if(i>=0)return i;
+ const lo=T.pins.findIndex(x=>String(x.n).toLowerCase()===s.toLowerCase());if(lo>=0)return lo;if(/^\d+$/.test(s)){const k=+s-1;if(k>=0&&k<T.pins.length)return k}return-1}
+function aiCleanProps(T,props,errs,label){const o={};if(!props||typeof props!=='object')return o;
+ Object.keys(props).forEach(k=>{if(k==='name'){o.name=String(props[k]).slice(0,40);return}const p=(T.props||[]).find(x=>x.k===k);if(!p){errs.push(t('ai_x_prop',{k,part:label}));return}
+  let v=props[k];
+  if(p.t==='bool')v=v&&v!=='0'?1:0;
+  else if(p.t==='sel'){const opt=p.opts.find(x=>String(x[0])===String(v));if(!opt){errs.push(t('ai_x_val',{k,part:label}));return}v=opt[0]}
+  else{v=typeof v==='string'?parseVal(v,p.u):+v;if(!Number.isFinite(v)){errs.push(t('ai_x_val',{k,part:label}));return}if(p.min!=null&&v<p.min)v=p.min;if(p.max!=null&&v>p.max)v=p.max}
+  o[k]=v});return o}
+function aiPreview(plan){const a=plan.actions||[],n=k=>a.filter(x=>x&&x.do===k).length;const parts=[];
+ if(plan.replace)parts.push(t('ai_pv_replace'));if(n('add'))parts.push(t('ai_pv_add',{n:n('add')}));if(n('wire'))parts.push(t('ai_pv_wire',{n:n('wire')}));if(n('set'))parts.push(t('ai_pv_set',{n:n('set')}));
+ if(n('delete')+n('unwire'))parts.push(t('ai_pv_del',{n:n('delete')+n('unwire')}));if(n('part'))parts.push(t('ai_pv_part',{n:n('part')}));return parts.join(' · ')||t('ai_pv_none')}
+function aiApply(plan){
+ const errs=[],refs=new Map(),added=[],acts=(plan.actions||[]).slice(0,200);
+ const before=JSON.stringify(serialize(App));
+ if(plan.replace){App.comps.length=0;App.wires.length=0;App.probes=[];reindex();syncComps();syncWires()}
+ /* placement: requested grid cell, otherwise a tidy grid to the right of what is already there */
+ let gx0=0,gy0=0;{let x1=-1e9,y0=1e9;App.comps.forEach(c=>{const b=bboxOf(c);x1=Math.max(x1,b.x1);y0=Math.min(y0,b.y0)});if(x1>-1e9){gx0=Math.round((x1+90)/GRID);gy0=Math.round(y0/GRID)}}
+ let slot=0;const place=(c,at)=>{const T=TY[c.ty];if(Array.isArray(at)&&at.length===2&&at.every(Number.isFinite)){c.x=snapG(at[0]*GRID);c.y=snapG(at[1]*GRID);return}
+  c.x=snapG((gx0+(slot%4)*12)*GRID);c.y=snapG((gy0+Math.floor(slot/4)*10)*GRID);slot++;void T};
+ const part=r=>{if(r==null)return null;r=String(r).trim();if(r[0]==='#')return cmap.get(+r.slice(1))||null;return refs.get(r)||App.comps.find(c=>c.name===r)||null};
+ const pin=s=>{s=String(s||'');const i=s.lastIndexOf('.');if(i<1)return null;const c=part(s.slice(0,i));if(!c)return null;const j=aiPinIdx(TY[c.ty],s.slice(i+1));return j<0?null:c.id+'.'+j};
+ let newParts=acts.filter(a=>a&&(a.do==='add'||(a.do==='part'&&a.place!==false))).length;
+ if(newParts&&capBlocked(newParts)){errs.push(t('pw_cap',{n:FREE_TIER.maxParts}));return{errs,added,changed:false}}
+ for(const a of acts){if(!a||typeof a!=='object')continue;const lab=a.ref||a.part||a.type||'';
+  try{
+   if(a.do==='add'){const T=TY[a.type];if(!T||T.bb){errs.push(t('ai_x_type',{type:a.type}));continue}
+    const f=featureOfPart(a.type);if(f&&!Entitlement.can(f)){errs.push(t('ai_x_locked',{part:t('p_'+a.type)}));continue}
+    const c={id:App.uid++,ty:a.type,x:0,y:0,r:((a.rot|0)%4+4)%4};Object.assign(c,aiCleanProps(T,Object.assign({},a.props,a.name?{name:a.name}:{}),errs,lab));
+    if(T.ard)c.code=SKETCHES[0].code;place(c,a.at);App.comps.push(c);cmap.set(c.id,c);if(a.ref)refs.set(String(a.ref),c);added.push(c.id)}
+   else if(a.do==='part'){if(!Entitlement.can('partbuilder')){errs.push(t('ai_x_locked',{part:t('pb_title')}));continue}
+    const d=cleanPart(Object.assign({},a.def||{},{id:'cu_'+Math.random().toString(36).slice(2,8)}));if(!d||!d.pins.length){errs.push(t('ai_x_partdef'));continue}
+    CULIB.push(d);pbSaveLib();registerCustom(d);buildPalette();
+    if(a.place!==false){const c={id:App.uid++,ty:d.id,x:0,y:0,r:0};place(c,a.at);App.comps.push(c);cmap.set(c.id,c);if(a.ref)refs.set(String(a.ref),c);added.push(c.id)}
+    Brain.learnDesign(d.name,d.desc||'', 'part',d,plan.q)}
+   else if(a.do==='wire'){const A=pin(a.a),B=pin(a.b);if(!A||!B){errs.push(t('ai_x_pin',{a:a.a,b:a.b}));continue}
+    if(A!==B&&!App.wires.some(w=>(w.a===A&&w.b===B)||(w.a===B&&w.b===A)))App.wires.push({a:A,b:B,col:''})}
+   else if(a.do==='unwire'){const A=pin(a.a),B=pin(a.b);App.wires=App.wires.filter(w=>!((w.a===A&&w.b===B)||(w.a===B&&w.b===A)))}
+   else if(a.do==='set'){const c=part(a.part);if(!c){errs.push(t('ai_x_part',{part:a.part}));continue}Object.assign(c,aiCleanProps(TY[c.ty],a.props,errs,a.part));delete c.burn}
+   else if(a.do==='delete'){const c=part(a.part);if(!c){errs.push(t('ai_x_part',{part:a.part}));continue}if(isLockedComp(c))continue;
+    App.comps=App.comps.filter(x=>x!==c);cmap.delete(c.id);App.wires=App.wires.filter(w=>!w.a.startsWith(c.id+'.')&&!w.b.startsWith(c.id+'.'))}
+   else errs.push(t('ai_x_do',{d:String(a.do)}))}
+  catch(e){errs.push(String(e&&e.message||e))}}
+ reindex();syncComps();syncWires();relayoutAll();refreshInserted();Run.dirty=true;
+ const changed=JSON.stringify(serialize(App))!==before;
+ if(changed){Hist.commit();updateInfo();if(added.length){setSelection(added,[]);fitView()}}
+ return{errs,added,changed}}
+
+/* ---------- chat state + UI ---------- */
+const AI={cfg:{p:'free',k:'',m:'',u:'',share:false,net:true,server:'',asked:false},chat:[],busy:false,ctrl:null,el:null,view:'chat',sync:{state:'off',url:'',rev:0,last:0,msg:''},
+ async init(){const c=Store.json(AI_KEY_CFG);if(c)Object.assign(this.cfg,c);
+  await this.loadKey();
+  const ch=Store.json(AI_KEY_CHAT);if(Array.isArray(ch))this.chat=ch.slice(-60);
+  await Brain.load();AISync.start()},
+ saveCfg(){const c=Object.assign({},this.cfg);delete c.k;Store.set(AI_KEY_CFG,JSON.stringify(c))},
+ /* API keys: encrypted by the operating system in the desktop app; plain local storage only when that is unavailable */
+ async setKey(k){this.cfg.k=k;let ok=false;if(DESK&&DESK.secretSet){try{ok=await DESK.secretSet('ai_key_'+this.cfg.p,k)}catch(e){}}
+  if(ok)Store.set('zf_ai_key_'+this.cfg.p,'');else Store.set('zf_ai_key_'+this.cfg.p,k)},
+ async loadKey(){let k='';if(DESK&&DESK.secretGet){try{k=(await DESK.secretGet('ai_key_'+this.cfg.p))||''}catch(e){}}this.cfg.k=k||Store.get('zf_ai_key_'+this.cfg.p)||''},
+ saveChat(){Store.set(AI_KEY_CHAT,JSON.stringify(this.chat.slice(-60).map(m=>({r:m.r,c:m.c,q:m.q,fid:m.fid,v:m.v,err:m.err,applied:m.applied}))))},
+ ready(){const pv=AI_PRESETS[this.cfg.p];return!!pv&&(pv.key!==true||!!this.cfg.k)&&(this.cfg.p!=='claude'||!!DESK)},
+ /* ---- conversation ---- */
+ async ask(q,o){o=o||{};q=String(q||'').trim();if(!q||this.busy)return;
+  if(!this.ready()){this.view='set';this.render();this.note(t('ai_need_setup'));return}
+  Brain.learnPrefs(q);Brain.me.stats.asked++;Brain.save();
+  this.chat.push({r:'u',c:q});const m={r:'a',c:'',q,pending:1};this.chat.push(m);this.busy=true;this.render();
+  const intent=aiIntent(q),diag=aiDiagnose(),mem=Brain.recall(q,4);
+  const ctx=['CIRCUIT SNAPSHOT:\n'+aiSnapshot(),'DIAGNOSIS:\n'+(diag.length?diag.map(d=>'['+d.sev+'] '+d.msg+(d.comps.length?' (parts '+d.comps.map(i=>'#'+i).join(',')+')':'')).join('\n'):'no problems detected')];
+  if(mem.length)ctx.push('LEARNED KNOWLEDGE (from earlier conversations and the ZINGO community; use it if relevant, verify against the snapshot):\n'+mem.map((x,i)=>'['+(i+1)+'] '+(x.design?'Design "'+(x.f.name||'')+'": '+AIT.cap(x.f.desc||x.f.a||'',200)+(x.f.data?'\n'+AIT.cap(JSON.stringify(x.f.data),500):''):'Q: '+AIT.cap(x.f.q,120)+'\nA: '+AIT.cap(x.f.a,450))).join('\n'));
+  const rules=Brain.rulesText();if(rules)ctx.push('USER PREFERENCES:\n'+rules);
+  if(o.extra)ctx.push(o.extra);
+  const hist=[];let budget=3500;for(let i=this.chat.length-3;i>=0&&budget>0;i--){const x=this.chat[i];if(x.err||x.pending)continue;const c=x.r==='a'?aiStrip(x.c)+(aiBlocks(x.c).length?'\n[proposed actions omitted]':''):x.c;budget-=AIT.tokEst(c);if(budget<0)break;hist.unshift({role:x.r==='u'?'user':'assistant',content:AIT.cap(c,900)})}
+  const msgs=hist.concat([{role:'user',content:ctx.join('\n\n')+'\n\nUSER MESSAGE:\n'+q}]);
+  this.ctrl=new AbortController();mem.forEach(x=>{if(x.src==='me')x.f.uses=(x.f.uses||0)+1});
+  try{const r=await AIRun.stream(this.cfg,aiSystem(intent),msgs,txt=>{m.c=txt;this.paintLast()},this.ctrl.signal);m.c=r.text||m.c;if(!m.c.trim())throw new Error(t('ai_e_empty'))}
+  catch(e){if(e&&e.name==='AbortError'){m.c=m.c||t('ai_stopped')}else{m.err=1;m.c=(e&&e.message)||String(e)}}
+  delete m.pending;this.busy=false;this.ctrl=null;this.saveChat();this.render();this.scroll()},
+ stop(){if(this.ctrl)this.ctrl.abort()},
+ vote(i,v){const m=this.chat[i];if(!m||m.r!=='a'||m.err)return;if(m.v===v)return;m.v=v;
+  if(v>0){const f=Brain.learnFact(m.q,aiStrip(m.c)+(aiBlocks(m.c).length?'\n'+aiBlocks(m.c).map(b=>'```zingo\n'+JSON.stringify(b)+'\n```').join('\n'):''),aiIntent(m.q||'').check?'fix':'chat',{up:1});if(f)m.fid=f.id;Brain.me.stats.up++;
+   if(!this.cfg.asked&&!this.cfg.share){this.cfg.asked=true;this.saveCfg();this.askShare()}}
+  else{if(m.fid)Brain.vote(m.fid,-1);Brain.me.stats.down++}
+  Brain.save();this.saveChat();this.render()},
+ async apply(i,bi){const m=this.chat[i];if(!m)return;const plan=aiBlocks(m.c)[bi||0];if(!plan||plan.bad)return;plan.q=m.q;
+  const before=aiDiagnose().length,r=aiApply(plan);m.applied=(m.applied||0)+1;
+  /* let the simulation settle, then judge the result and learn from it */
+  await new Promise(res=>setTimeout(res,900));const after=aiDiagnose(),bad=after.filter(d=>d.sev==='err');
+  if(r.changed&&!bad.length){if((plan.actions||[]).some(a=>a&&a.do==='add'))Brain.learnDesign(plan.title||m.q,aiStrip(m.c).slice(0,600),'circuit',{actions:plan.actions,replace:!!plan.replace},m.q);
+   if(before>after.length){Brain.me.stats.fixed++;Brain.learnFact(m.q,aiStrip(m.c),'fix',{up:1})}}
+  const lines=[];if(r.changed)lines.push('✓ '+t('ai_applied'));if(r.errs.length)lines.push(t('ai_apply_errs')+'\n- '+r.errs.slice(0,8).join('\n- '));if(bad.length)lines.push(t('ai_after_bad')+'\n- '+bad.slice(0,5).map(d=>d.msg).join('\n- '));
+  this.chat.push({r:'s',c:lines.join('\n\n')||t('ai_nochange'),fix:!!(r.errs.length||bad.length)});this.saveChat();this.render();this.scroll()},
+ askFix(){const last=[...this.chat].reverse().find(x=>x.r==='s');this.ask(t('ai_q_fixafter'),{extra:'RESULT OF APPLYING YOUR LAST ACTIONS:\n'+(last?last.c:'')})},
+ askShare(){Modal.open({title:t('ai_share_t'),body:'<p>'+esc(t('ai_share_q'))+'</p><p style="color:var(--mut);font-size:12.5px">'+esc(t('ai_share_d'))+'</p>',buttons:[{l:t('ai_share_no'),v:false},{l:t('ai_share_yes'),v:true,pri:1}]}).then(v=>{this.cfg.share=!!v;this.saveCfg();if(v){Brain.me.facts.filter(f=>f.up>0).slice(-50).forEach(f=>Brain.share({kind:f.kind,q:f.q,a:f.a,lang:f.lang}));AISync.kick()}this.render()})},
+ note(s){const e=this.el&&this.el.querySelector('.ai-note');if(e){e.textContent=s;e.hidden=!s}},
+ /* ---- rendering ---- */
+ md(s){/* small, safe markdown: code blocks, inline code, bold, lists, paragraphs */
+  const parts=String(s||'').split(/```/);let h='';
+  parts.forEach((p,i)=>{if(i%2){const nl=p.indexOf('\n'),code=nl>=0?p.slice(nl+1):p;h+='<pre class="ai-code"><code>'+esc(code.replace(/\n$/,''))+'</code></pre>'}
+   else{const L=p.split('\n');let ul=false;L.forEach(line=>{let x=esc(line).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/^#{1,4}\s*(.+)$/,'<b>$1</b>');
+    if(/^\s*([-*•]|\d+[.)])\s+/.test(line)){if(!ul){h+='<ul>';ul=true}h+='<li>'+x.replace(/^\s*([-*•]|\d+[.)])\s+/,'')+'</li>'}else{if(ul){h+='</ul>';ul=false}h+=x.trim()?'<p>'+x+'</p>':''}});if(ul)h+='</ul>'}});return h},
+ msgHtml(m,i){if(m.r==='u')return'<div class="ai-m u"><div class="ai-b" dir="auto">'+esc(m.c).replace(/\n/g,'<br>')+'</div></div>';
+  if(m.r==='s')return'<div class="ai-m s"><div class="ai-b" dir="auto">'+this.md(m.c)+(m.fix?'<div class="ai-act"><button class="btn" data-a="fixafter">'+ic('wrench')+'<span>'+esc(t('ai_fixafter'))+'</span></button></div>':'')+'</div></div>';
+  if(m.err)return'<div class="ai-m a"><div class="ai-b err" dir="auto">'+ic('warn')+'<span>'+esc(m.c)+'</span><div class="ai-act"><button class="btn" data-a="retry" data-i="'+i+'">'+ic('reset')+'<span>'+esc(t('ai_retry'))+'</span></button><button class="btn" data-a="set">'+ic('gear')+'<span>'+esc(t('settings'))+'</span></button></div></div></div>';
+  const blocks=aiBlocks(m.c),body=this.md(aiStrip(m.c))||(m.pending?'<p class="ai-dots"><i></i><i></i><i></i></p>':'');
+  const cards=blocks.map((b,bi)=>b.bad?'<div class="ai-card bad">'+esc(t('ai_badblock'))+'</div>':'<div class="ai-card"><div class="ai-ct">'+ic('bolt')+'<b dir="auto">'+esc(b.title||t('ai_plan'))+'</b></div><div class="ai-cs">'+esc(aiPreview(b))+'</div>'+(m.pending?'':'<button class="btn pri" data-a="apply" data-i="'+i+'" data-b="'+bi+'">'+ic('check')+'<span>'+esc(t(m.applied?'ai_apply_again':'ai_apply'))+'</span></button>')+'</div>').join('');
+  const foot=m.pending?'':'<div class="ai-foot"><button class="ai-v'+(m.v>0?' on':'')+'" data-a="up" data-i="'+i+'" title="'+esc(t('ai_good'))+'">'+ic('check')+'</button><button class="ai-v'+(m.v<0?' on':'')+'" data-a="down" data-i="'+i+'" title="'+esc(t('ai_bad'))+'">'+ic('close')+'</button><button class="ai-v" data-a="copy" data-i="'+i+'" title="'+esc(t('copy'))+'">'+ic('copy')+'</button></div>';
+  return'<div class="ai-m a"><div class="ai-av">'+ic('zingo')+'</div><div class="ai-b" dir="auto">'+body+cards+foot+'</div></div>'},
+ paintLast(){const box=this.el&&this.el.querySelector('.ai-list');if(!box)return;const i=this.chat.length-1,n=box.lastElementChild;if(!n)return;
+  const tmp=document.createElement('div');tmp.innerHTML=this.msgHtml(this.chat[i],i);n.replaceWith(tmp.firstElementChild);this.scroll(true)},
+ scroll(soft){const b=this.el&&this.el.querySelector('.ai-list');if(!b)return;if(soft&&b.scrollHeight-b.scrollTop-b.clientHeight>160)return;b.scrollTop=b.scrollHeight},
+ render(){const el=this.el;if(!el)return;const pv=AI_PRESETS[this.cfg.p]||AI_PRESETS.free,cn=Brain.counts();
+  const head='<div class="ai-h"><div class="ai-hl">'+ic('zingo')+'<div><b>ZINGO AI</b><small>'+esc(t(pv.n))+(this.cfg.m?' · '+esc(this.cfg.m):'')+'</small></div></div>'
+   +'<span class="ai-sync '+this.syncCls()+'" title="'+esc(this.syncTip())+'"><i></i><span>'+esc(t('ai_brain'))+' '+cn.me+(cn.net?' + '+cn.net:'')+'</span></span>'
+   +'<button class="ib" data-a="new" data-tt="ai_newchat">'+ic('plus')+'</button><button class="ib'+(this.view==='set'?' on':'')+'" data-a="set" data-tt="settings">'+ic('gear')+'</button></div>';
+  if(this.view==='set'){el.innerHTML=head+this.setHtml();this.bindSet();return}
+  const list=this.chat.length?this.chat.map((m,i)=>this.msgHtml(m,i)).join(''):'<div class="ai-hello"><div class="ai-hi">'+ic('zingo')+'</div><b>'+esc(t('ai_hello_t'))+'</b><p>'+esc(t('ai_hello_d'))+'</p></div>';
+  const chips=['ai_c_check','ai_c_explain','ai_c_build','ai_c_part','ai_c_calc'].map(k=>'<button class="ai-chip" data-a="chip" data-k="'+k+'">'+esc(t(k))+'</button>').join('');
+  el.innerHTML=head+'<div class="ai-list">'+list+'</div><p class="ai-note" hidden></p><div class="ai-chips">'+chips+'</div>'
+   +'<div class="ai-in"><textarea rows="2" dir="auto" placeholder="'+esc(t('ai_ph'))+'"></textarea>'+(this.busy?'<button class="ib pri" data-a="stop" data-tt="ai_stop">'+ic('pause')+'</button>':'<button class="ib pri" data-a="send" data-tt="send">'+ic('play')+'</button>')+'</div>';
+  const ta=el.querySelector('textarea');ta.value=this._draft||'';ta.oninput=()=>{this._draft=ta.value};
+  ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();this.send()}};
+  this.scroll()},
+ send(){const ta=this.el&&this.el.querySelector('textarea');const q=ta?ta.value:'';if(!q.trim())return;this._draft='';this.ask(q)},
+ /* refresh only the sync indicators, so typing in the chat or the settings is never interrupted */
+ paintSync(){const el=this.el;if(!el)return;const c=Brain.counts(),cls=this.syncCls(),tip=this.syncTip(),chip=el.querySelector('.ai-sync');
+  if(chip){chip.className='ai-sync '+cls;chip.title=tip;chip.lastChild.textContent=t('ai_brain')+' '+c.me+(c.net?' + '+c.net:'')}
+  const h=el.querySelector('#aiSyncHint');if(h){h.className='ai-hint '+cls;h.textContent=tip+(AISync.st.last?' · '+new Date(AISync.st.last).toLocaleTimeString():'')+(c.out?' · '+t('ai_s_outbox',{n:c.out}):'')}},
+ syncCls(){const s=AISync.st.state;return s==='ok'?'ok':s==='busy'?'busy':s==='err'?'err':''},
+ syncTip(){const s=AISync.st;return s.state==='ok'?t('ai_sync_ok',{host:s.host||'',rev:s.rev}):s.state==='err'?t('ai_sync_err')+(s.msg?': '+s.msg:''):s.state==='busy'?t('ai_sync_busy'):t('ai_sync_off')},
+ setHtml(){const c=this.cfg,pv=AI_PRESETS[c.p]||AI_PRESETS.free,cn=Brain.counts(),s=AISync.st;
+  const opts=Object.keys(AI_PRESETS).filter(k=>!AI_PRESETS[k].desk||DESK).map(k=>'<option value="'+k+'"'+(k===c.p?' selected':'')+'>'+esc(t(AI_PRESETS[k].n))+'</option>').join('');
+  return'<div class="ai-set">'
+   +'<h4>'+esc(t('ai_s_model'))+'</h4>'
+   +'<label>'+esc(t('ai_s_provider'))+'<select id="aiP">'+opts+'</select></label>'
+   +(pv.key?'<label>'+esc(t('ai_s_key'))+'<input id="aiK" type="password" autocomplete="off" spellcheck="false" placeholder="'+esc(t('ai_s_key_ph'))+'" value="'+esc(c.k||'')+'"></label>':'<p class="ai-hint">'+esc(t('ai_s_free'))+'</p>')
+   +(c.p==='custom'||c.p==='openrouter'?'<label>'+esc(t('ai_s_url'))+'<input id="aiU" type="url" spellcheck="false" placeholder="https://…/v1" value="'+esc(c.u||pv.u||'')+'"></label>':'')
+   +'<label>'+esc(t('ai_s_mdl'))+'<input id="aiM" type="text" spellcheck="false" placeholder="'+esc(pv.m||'model-id')+'" value="'+esc(c.m||'')+'"></label>'
+   +(c.p==='claude'?'<p class="ai-hint">'+esc(t('ai_s_claude'))+'</p>':'')
+   +'<h4>'+esc(t('ai_s_brain'))+'</h4>'
+   +'<div class="ai-stats"><div><b>'+cn.me+'</b><span>'+esc(t('ai_st_me'))+'</span></div><div><b>'+cn.net+'</b><span>'+esc(t('ai_st_net'))+'</span></div><div><b>'+Brain.me.stats.up+'</b><span>'+esc(t('ai_st_up'))+'</span></div><div><b>'+Brain.me.stats.fixed+'</b><span>'+esc(t('ai_st_fix'))+'</span></div></div>'
+   +'<div class="row2"><span>'+esc(t('ai_s_net'))+'</span><button class="sw" role="switch" id="aiNet" aria-checked="'+!!c.net+'"></button></div>'
+   +'<div class="row2"><span>'+esc(t('ai_s_share'))+'<small>'+esc(t('ai_share_d'))+'</small></span><button class="sw" role="switch" id="aiShare" aria-checked="'+!!c.share+'"></button></div>'
+   +'<label>'+esc(t('ai_s_server'))+'<input id="aiSrv" type="url" spellcheck="false" placeholder="'+esc(t('ai_s_server_ph'))+'" value="'+esc(c.server||'')+'"></label>'
+   +'<p id="aiSyncHint" class="ai-hint '+this.syncCls()+'">'+esc(this.syncTip())+(s.last?' · '+esc(new Date(s.last).toLocaleTimeString()):'')+(cn.out?' · '+esc(t('ai_s_outbox',{n:cn.out})):'')+'</p>'
+   +'<div class="ai-row"><button class="btn" id="aiSyncNow">'+ic('reset')+'<span>'+esc(t('ai_s_sync'))+'</span></button><button class="btn" id="aiExp">'+ic('save')+'<span>'+esc(t('ai_s_export'))+'</span></button><button class="btn" id="aiImp">'+ic('open')+'<span>'+esc(t('ai_s_import'))+'</span></button><button class="btn dng" id="aiClr">'+ic('trash')+'<span>'+esc(t('ai_s_clear'))+'</span></button></div>'
+   +'<div class="ai-row"><button class="btn pri" id="aiDone">'+ic('check')+'<span>'+esc(t('ok'))+'</span></button></div></div>'},
+ bindSet(){const el=this.el,c=this.cfg,$e=s=>el.querySelector(s);
+  $e('#aiP').onchange=async e=>{c.p=e.target.value;c.m='';if(c.p!=='custom'&&c.p!=='openrouter')c.u='';await this.loadKey();this.saveCfg();this.render()};
+  const k=$e('#aiK');if(k)k.onchange=()=>{this.setKey(k.value.trim())};
+  const u=$e('#aiU');if(u)u.onchange=()=>{c.u=u.value.trim();this.saveCfg()};
+  $e('#aiM').onchange=e=>{c.m=e.target.value.trim();this.saveCfg()};
+  $e('#aiNet').onclick=()=>{c.net=!c.net;this.saveCfg();this.render();if(c.net)AISync.kick()};
+  $e('#aiShare').onclick=()=>{if(!c.share){this.askShare()}else{c.share=false;this.saveCfg();this.render()}};
+  $e('#aiSrv').onchange=e=>{const v=e.target.value.trim();if(v&&!/^(https:\/\/|http:\/\/(127\.0\.0\.1|localhost)(:\d+)?)[^\s]*$/.test(v)){this.note(t('ai_e_url'));return}c.server=v.replace(/\/+$/,'');this.saveCfg();AISync.kick()};
+  $e('#aiSyncNow').onclick=()=>AISync.kick(true);
+  $e('#aiExp').onclick=()=>saveFile('zingo-ai-brain.json',new Blob([JSON.stringify({format:'zingo-brain',v:1,me:Brain.me},null,1)],{type:'application/json'}),'text');
+  $e('#aiImp').onclick=()=>{const i=document.createElement('input');i.type='file';i.accept='.json';i.onchange=()=>{const f=i.files&&i.files[0];if(!f)return;f.text().then(tx=>{try{const j=JSON.parse(tx),me=j&&j.me;if(!me||!Array.isArray(me.facts))throw 0;
+    me.facts.forEach(x=>{if(x&&x.q&&x.a)Brain.learnFact(x.q,x.a,x.kind,{up:x.up||0,share:false})});(me.designs||[]).forEach(d=>{if(d&&d.name&&!Brain.me.designs.some(y=>y.q===d.q))Brain.me.designs.push(d)});Brain.save();this.render();flashOk(t('ai_imported'))}catch(e){Toast.show(t('pj_open_fail'),true,{key:'aiimp'})}})};i.click()};
+  $e('#aiClr').onclick=()=>Modal.confirm(t('ai_s_clear'),t('ai_clear_q'),t('ai_s_clear'),true).then(ok=>{if(!ok)return;Brain.me={v:1,facts:[],designs:[],rules:[],stats:{asked:0,learned:0,up:0,down:0,applied:0,fixed:0},nid:1};Brain.outbox=[];Brain.save();this.render()});
+  $e('#aiDone').onclick=()=>{this.view='chat';this.render()}},
+ bind(){const el=this.el;el.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||!el.contains(b))return;const a=b.dataset.a,i=+b.dataset.i;
+  if(a==='send')this.send();else if(a==='stop')this.stop();else if(a==='set'){this.view=this.view==='set'?'chat':'set';this.render()}
+  else if(a==='new'){if(this.busy)this.stop();this.chat=[];this.saveChat();this.view='chat';this.render()}
+  else if(a==='chip'){const k=b.dataset.k;if(k==='ai_c_build'||k==='ai_c_part'||k==='ai_c_calc'){const ta=el.querySelector('textarea');ta.value=t(k+'_q');ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);this._draft=ta.value}else this.ask(t(k+'_q'))}
+  else if(a==='up')this.vote(i,1);else if(a==='down')this.vote(i,-1);
+  else if(a==='copy'){try{navigator.clipboard.writeText(aiStrip(this.chat[i].c))}catch(_){}flashOk(t('ai_copied'))}
+  else if(a==='apply')this.apply(i,+b.dataset.b);else if(a==='fixafter')this.askFix();
+  else if(a==='retry'){const m=this.chat[i],q=m&&m.q;this.chat.splice(i-1,2);if(q)this.ask(q);else this.render()}})},
+ mount(){this.el=$('#tabAi');if(!this.el)return;this.bind();this.render()}};
+
+/* ---------- community sync: resolve the server (Firestore doc written by app.js, or a manual URL), pull the shared brain, push the outbox ---------- */
+const AISync={st:{state:'off',host:'',rev:0,last:0,msg:''},timer:0,busy:false,
+ start(){clearInterval(this.timer);this.timer=setInterval(()=>this.run(),15*60*1000);setTimeout(()=>this.run(),4000)},
+ kick(force){this.run(force)},
+ async http(method,url,body,ms){
+  if(DESK&&DESK.net){const r=await DESK.net({method,url,body:body?JSON.stringify(body):'',timeout:ms||20000});if(!r||!r.ok)throw new Error(r&&r.error||'HTTP '+(r&&r.status));return r.text?JSON.parse(r.text):{}}
+  const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),ms||20000);
+  try{const res=await fetch(url,{method,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,signal:ctl.signal});if(!res.ok)throw new Error('HTTP '+res.status);const tx=await res.text();return tx?JSON.parse(tx):{}}finally{clearTimeout(to)}},
+ async resolve(){if(AI.cfg.server)return AI.cfg.server;
+  const u='https://firestore.googleapis.com/v1/projects/'+AI_FB.projectId+'/databases/(default)/documents/'+AI_FB.doc+'?key='+AI_FB.apiKey;
+  const j=await this.http('GET',u,null,12000),f=j&&j.fields||{},url=f.url&&f.url.stringValue,on=!f.online||f.online.booleanValue!==false;
+  if(!url||!on)throw new Error(t('ai_sync_nosrv'));if(!/^https:\/\/[a-z0-9.-]+(:\d+)?(\/[^\s]*)?$/i.test(url))throw new Error('bad url');return url.replace(/\/+$/,'')},
+ client(){let id=Store.get('zf_ai_client');if(!id){id='c'+Math.random().toString(36).slice(2,12)+Date.now().toString(36);Store.set('zf_ai_client',id)}return id},
+ async run(force){if(this.busy||(!AI.cfg.net&&!AI.cfg.share))return;if(!Brain.ready)return;this.busy=true;this.set('busy');
+  try{const base=await this.resolve();this.st.host=base.replace(/^https:\/\//,'').split('/')[0];
+   const h=await this.http('GET',base+'/api/health',null,12000);if(!h||h.app!=='zingo-brain')throw new Error(t('ai_sync_notzingo'));
+   if(AI.cfg.share&&Brain.outbox.length){const batch=Brain.outbox.slice(0,50);const r=await this.http('POST',base+'/api/contribute',{client:this.client(),app:'zingo-fast',ver:1,items:batch},25000);
+    if(r&&r.ok){Brain.outbox.splice(0,batch.length);Brain.save()}}
+   if(AI.cfg.net&&(force||h.rev!==Brain.net.rev)){const b=await this.http('GET',base+'/api/brain?rev='+(force?0:Brain.net.rev),null,30000);
+    if(b&&!b.unchanged&&Array.isArray(b.facts)){Brain.net={rev:+b.rev||0,facts:b.facts.slice(0,20000),designs:Array.isArray(b.designs)?b.designs.slice(0,2000):[],rules:[]};AIStore.set('net',Brain.net)}}
+   this.st.rev=Brain.net.rev;this.st.last=Date.now();this.set('ok')}
+  catch(e){this.set('err',String(e&&e.message||e).slice(0,120))}
+  finally{this.busy=false}},
+ set(s,msg){this.st.state=s;this.st.msg=msg||'';AI.paintSync()}};
+
 /* ============================================================
    Start-up
    ============================================================ */
@@ -4819,7 +5287,8 @@ setInterval(()=>{try{Lab.tick()}catch(e){}},300);
  $('#tMulti').onclick=()=>{const on=!App.multi;setTool('sel');App.multi=on;$('#tMulti').classList.toggle('on',on);updateHint()};
  const mid=()=>{const r=cv.getBoundingClientRect();return[r.left+r.width/2,r.top+r.height/2]};
  $('#zIn').onclick=()=>zoomAt(...mid(),1.25);$('#zOut').onclick=()=>zoomAt(...mid(),.8);$('#zFit').onclick=fitView;
- $('#tabBtnP').onclick=()=>openDock('props');$('#tabBtnC').onclick=()=>openDock('code');$('#tabBtnL').onclick=()=>openDock('lab');
+ $('#tabBtnP').onclick=()=>openDock('props');$('#tabBtnC').onclick=()=>openDock('code');$('#tabBtnL').onclick=()=>openDock('lab');$('#tabBtnA').onclick=()=>openDock('ai');
+ $('#bAi').onclick=()=>{if(App.tab==='ai'&&!Settings.hd){openDock('props')}else openDock('ai')};AI.mount();AI.init().then(()=>AI.render());
   $('#bPartsT').onclick=()=>{Settings.hp=!Settings.hp;saveSettings();applyPanels()};
   $('#bDockT').onclick=()=>{Settings.hd=!Settings.hd;saveSettings();applyPanels()};
   $('#bFocus').onclick=()=>setFocus(true);$('#fbExit').onclick=()=>setFocus(false);
