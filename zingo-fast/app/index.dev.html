@@ -443,6 +443,34 @@ body.ai-busy #stage::after{box-shadow:inset 0 0 0 2px var(--acc),inset 0 0 40px 
 #veil .vl-in>.i{width:30px;height:30px;padding:12px;border-radius:18px;color:#fff;background:linear-gradient(135deg,#22d3ee,#2563eb 55%,#4c1d95);box-sizing:content-box;box-shadow:0 10px 30px color-mix(in srgb,var(--acc) 35%,transparent)}
 #veil .vl-in>i{width:90px;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,var(--acc),transparent);background-size:200% 100%;animation:vlBar 1s linear infinite}
 @keyframes vlBar{from{background-position:200% 0}to{background-position:-200% 0}}
+#bAcct{padding:0;width:36px}#bAcct .av{box-shadow:0 0 0 2px var(--acc)}
+.av{position:relative;display:inline-grid;place-items:center;border-radius:50%;overflow:hidden;flex:none;background:linear-gradient(135deg,var(--acc),var(--acc2));color:var(--accink);font-weight:700}
+.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}.av i{font-style:normal;font-size:.9em}
+.sx-prof{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--bg2);margin:6px 0 12px}.sx-prof>div{flex:1;min-width:0}.sx-prof b{display:flex;align-items:center;gap:6px}.sx-prof>div>span{display:block;color:var(--mut);font-size:12.5px;overflow:hidden;text-overflow:ellipsis}
+.vbadge{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:#1d9bf0;color:#fff}.vbadge .i{width:11px;height:11px;stroke-width:3}
+.pw-test{margin-top:14px;padding:12px;border:1px dashed var(--warn);border-radius:12px;display:flex;flex-direction:column;gap:6px}.pw-test span{color:var(--mut);font-size:12px}.pw-test div{display:flex;gap:6px;flex-wrap:wrap}.pw-test button{border:1px solid var(--line);background:var(--bg2);color:var(--ink);border-radius:9px;padding:6px 12px;cursor:pointer;font:inherit}
+#login{position:fixed;inset:0;z-index:650;display:none;overflow:auto;background:var(--bg)}#login.show{display:block;animation:lgIn .35s ease}
+@keyframes lgIn{from{opacity:0}to{opacity:1}}
+body.login-on #app,body.login-on #top{filter:blur(2px)}
+.lg-bg{position:fixed;inset:0;overflow:hidden;pointer-events:none}.lg-bg i{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35;animation:lgF 18s ease-in-out infinite alternate}
+.lg-bg i:nth-child(1){width:520px;height:520px;background:var(--acc);top:-160px;inset-inline-start:-140px}.lg-bg i:nth-child(2){width:460px;height:460px;background:#6366f1;bottom:-180px;inset-inline-end:-120px;animation-delay:-6s}.lg-bg i:nth-child(3){width:300px;height:300px;background:#ffd54a;top:40%;left:55%;opacity:.12;animation-delay:-12s}
+@keyframes lgF{to{transform:translate(60px,40px) scale(1.15)}}
+.lg-bg::after{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--grid2) 1px,transparent 1px),linear-gradient(90deg,var(--grid2) 1px,transparent 1px);background-size:32px 32px;opacity:.35;mask-image:radial-gradient(circle at 50% 40%,#000,transparent 75%)}
+.lg-wrap{position:relative;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:32px 16px}
+.lg-brand{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}.lg-brand>.i{width:34px;height:34px;padding:14px;border-radius:22px;color:#fff;background:linear-gradient(135deg,#22d3ee,#2563eb 55%,#4c1d95);box-sizing:content-box;box-shadow:0 14px 40px color-mix(in srgb,var(--acc) 35%,transparent)}
+.lg-brand b{font-size:28px;letter-spacing:.02em;margin-top:6px}.lg-brand span{color:var(--mut);font-size:13px}
+.lg-card{width:100%;max-width:400px;display:flex;flex-direction:column;gap:10px;padding:24px;border-radius:20px;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);backdrop-filter:blur(14px)}
+.lg-card h2{margin:0;font-size:20px}.lg-sub{margin:0 0 6px;color:var(--mut);font-size:13px;line-height:1.6}
+.lg-card label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--mut)}
+.lg-card input{height:44px;border:1px solid var(--line);border-radius:12px;background:var(--bg2);color:var(--ink);font:inherit;font-size:14px;padding:0 12px;outline:none;user-select:text}.lg-card input:focus{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 20%,transparent)}
+.lg-g{display:flex;align-items:center;justify-content:center;gap:10px;height:46px;border-radius:12px;border:1px solid var(--line);background:#fff;color:#1f1f1f;font:600 14px inherit;cursor:pointer}.lg-g:hover{box-shadow:0 4px 14px rgba(0,0,0,.15)}
+.lg-or{display:flex;align-items:center;gap:10px;color:var(--mut);font-size:12px}.lg-or::before,.lg-or::after{content:'';flex:1;height:1px;background:var(--line)}
+.lg-link{border:0;background:none;color:var(--acc);font:inherit;font-size:13px;cursor:pointer;padding:2px}.lg-forgot{align-self:flex-end;margin-top:-4px}
+.lg-go{height:46px;border-radius:12px;font-size:15px;justify-content:center;margin-top:2px}
+.lg-err{margin:0;min-height:18px;color:var(--bad);font-size:12.5px}.lg-err.ok{color:var(--ok)}
+.lg-sw{margin:4px 0 0;text-align:center;color:var(--mut);font-size:13px}
+.lg-lang{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:20px;padding:6px 14px;font:inherit;font-size:12.5px;cursor:pointer}.lg-lang .i{width:15px;height:15px}
+#login.busy .lg-card{opacity:.65;pointer-events:none}#login.busy .lg-go{position:relative}
 .ai-row{display:flex;gap:6px;flex-wrap:wrap}.ai-row .btn{gap:6px;height:32px;padding:0 10px;font-size:12px}
 /* ---- phone layout ---- */
 #mnav,#mobBg{display:none}
@@ -864,6 +892,7 @@ body.focus #work{grid-template-columns:minmax(0,1fr)!important}
    <button class="ib" id="bTheme" data-tt="theme"><span data-i="sun"></span></button>
    <button class="ib" id="bLang" data-tt="lang"><span data-i="globe"></span></button>
    <button class="ib" id="bSnd" data-tt="sound"><span data-i="vol"></span></button>
+   <button class="ib" id="bAcct" hidden></button>
    <button class="ib" id="bMenu" data-tt="menu"><span data-i="menu"></span></button>
   </div>
  </header>
@@ -1053,7 +1082,8 @@ const FEATURES={
 const OfflineStubAdapter={verify:()=>Promise.resolve({ok:false,reason:'offline_stub'}),refresh:()=>Promise.resolve({ok:false,reason:'offline_stub'})};
 
 function createEntitlement(env){
- const TOL=3e5,MIN_TS=Date.UTC(2025,0,1),MAX_TS=Date.UTC(2100,0,1),MAXSUB=400*864e5,KA='_zq1',BAD={bad:1};
+ const TOL=3e5,MIN_TS=Date.UTC(2025,0,1),MAX_TS=Date.UTC(2100,0,1),MAXSUB=400*864e5,BAD={bad:1};
+ let KA='_zq1';   /* storage key: one record per signed-in account ('_zq1' = no account) */
  const PL=BILLING.plans,KX='zf\u00b7x7!k2q9';
  /* ---- keyed hash + obfuscation (sync, no deps). Not cryptographic secrecy: the key ships with the file. ---- */
  const h53=(s,seed)=>{let a=0xdeadbeef^seed,b=0x41c6ce57^seed;for(let i=0,c;i<s.length;i++){c=s.charCodeAt(i);a=Math.imul(a^c,2654435761);b=Math.imul(b^c,1597334677)}
@@ -1119,6 +1149,12 @@ function createEntitlement(env){
   const x=+info.expiresAt,y=+info.startedAt||n;if(!(x>n)||x-n>MAXSUB||!(y<=n+TOL)||!(x>y))return false;
   rec.p=info.plan;rec.x=x;rec.y=y;rec.d=true;save(true);tick();return true}      /* a purchase burns the trial for good */
  function revoke(){if(!rec)return;rec.p='';rec.x=0;rec.y=0;save(true);tick()}
+ /* the account server is the authority on the trial start and on plans granted to the account */
+ function serverSync(me){if(!rec||!me)return false;const n=clock(),ts=+me.trialStart;
+  if(Number.isFinite(ts)&&ts>=MIN_TS&&ts<=n+TOL)rec.a=Math.min(ts,n);rec.e=false;rec.d=false;reason='';
+  const pro=me.pro;if(pro&&PL[pro.plan]&&+pro.until>n){rec.p=pro.plan;rec.x=Math.min(+pro.until,n+MAXSUB);rec.y=Math.max(MIN_TS,Math.min(n,rec.x-1));rec.d=true}else{rec.p='';rec.x=0;rec.y=0}
+  rec.b=Math.max(rec.b,n);save(true);tick();return true}
+ async function useKey(k){if(typeof k!=='string'||!/^_zq1(_[a-z0-9]{1,16})?$/.test(k))return;if(k===KA&&rec)return;save(true);KA=k;rec=null;mode='pending';reason='';lastSig='';await init()}
  function force(k){if(!rec&&k!=='wipe')return false;const n=clock(),H=36e5;
   if(k==='wipe'){const w=idb.ok?idb.set(KA,null).then(()=>true,()=>true):Promise.resolve(true);if(ls.ok)ls.set(KA,'');rec=null;mode='pending';return w}
   const pl=BILLING.plans[k],r=Object.assign({},rec,{b:Math.max(rec.b,n),e:false,d:false,p:'',x:0,y:0});
@@ -1131,6 +1167,7 @@ function createEntitlement(env){
  const api={ready,
   state:snap,
   can:id=>{if(!FEATURES[id])return false;const s=snap().status;return s==='trial'||s==='active'},
+  serverSync,useKey,
   on:(ev,fn)=>{if(!L[ev]||typeof fn!=='function')return()=>{};L[ev].push(fn);return()=>{const i=L[ev].indexOf(fn);if(i>=0)L[ev].splice(i,1)}},
   setAdapter:a=>{if(a&&typeof a.verify==='function'&&typeof a.refresh==='function')adapter=a},
   activate:async token=>{await ready;const r=await adapter.verify(token);return r&&r.ok&&grant(r)?{ok:true}:{ok:false,reason:(r&&r.reason)||'invalid'}},
@@ -1457,6 +1494,9 @@ I18N.fr={"app":"Voltra","ld_start":"Démarrage…","ld_net":"Vérification de la
 Object.assign(I18N.en,{"st_look": "Appearance", "th_auto": "Automatic", "th_dark": "Dark", "th_light": "Light", "st_accent": "Accent color", "st_bg": "Background", "st_bg_def": "Ocean", "st_bg_mid": "Midnight", "st_bg_gra": "Graphite", "st_density": "Density", "st_dn_norm": "Comfortable", "st_dn_comp": "Compact", "st_motion": "Animations"});
 Object.assign(I18N.ar,{"st_look": "المظهر", "th_auto": "تلقائي", "th_dark": "داكن", "th_light": "فاتح", "st_accent": "اللون المميز", "st_bg": "الخلفية", "st_bg_def": "محيطي", "st_bg_mid": "منتصف الليل", "st_bg_gra": "جرافيت", "st_density": "الكثافة", "st_dn_norm": "مريحة", "st_dn_comp": "مضغوطة", "st_motion": "الحركات"});
 Object.assign(I18N.fr,{"st_look": "Apparence", "th_auto": "Automatique", "th_dark": "Sombre", "th_light": "Clair", "st_accent": "Couleur d'accent", "st_bg": "Arrière-plan", "st_bg_def": "Océan", "st_bg_mid": "Minuit", "st_bg_gra": "Graphite", "st_density": "Densité", "st_dn_norm": "Confortable", "st_dn_comp": "Compacte", "st_motion": "Animations"});
+Object.assign(I18N.en,{"au_tag": "Circuit design & simulation studio", "au_welcome": "Welcome back", "au_welcome_d": "Sign in to continue to Voltra.", "au_create": "Create account", "au_create_d": "Your projects, extensions and Voltra AI, everywhere.", "au_reset": "Reset password", "au_reset_d": "We will e-mail you a link to choose a new password.", "au_google": "Continue with Google", "au_or": "or", "au_name": "Name", "au_email": "E-mail", "au_pass": "Password", "au_forgot": "Forgot password?", "au_signin": "Sign in", "au_create_btn": "Create account", "au_reset_btn": "Send link", "au_back": "Back to sign in", "au_have": "Already have an account?", "au_new": "New to Voltra?", "au_reset_sent": "Check your inbox for the reset link.", "au_signout": "Sign out", "au_signout_q": "Sign out of this account on this device?", "au_test": "Test mode", "au_test_d": "Switch this account between plans to test the app.", "au_test_ok": "Account updated", "au_e_exists": "An account with this e-mail already exists.", "au_e_cred": "Wrong e-mail or password.", "au_e_disabled": "This account is disabled.", "au_e_weak": "The password needs at least 6 characters.", "au_e_email": "Enter a valid e-mail address.", "au_e_many": "Too many attempts. Try again in a few minutes.", "au_e_cfg": "This sign-in method is not enabled yet.", "au_e_net": "No connection. Check your internet and try again.", "au_e_gen": "Something went wrong. Try again.", "au_e_gweb": "Google sign-in is available in the Windows and Android apps.", "au_e_gcfg": "Google sign-in is not set up yet. Use e-mail for now.", "au_e_google": "Google sign-in failed. Try again.", "au_e_srv": "The Voltra server is offline. Try again later.", "mk_verified": "Verified developer"});
+Object.assign(I18N.ar,{"au_tag": "استوديو تصميم ومحاكاة الدوائر", "au_welcome": "مرحباً بعودتك", "au_welcome_d": "سجّل الدخول للمتابعة إلى Voltra.", "au_create": "إنشاء حساب", "au_create_d": "مشاريعك وإضافاتك وVoltra AI في كل مكان.", "au_reset": "استعادة كلمة المرور", "au_reset_d": "سنرسل لك رابطاً لاختيار كلمة مرور جديدة.", "au_google": "المتابعة باستخدام Google", "au_or": "أو", "au_name": "الاسم", "au_email": "البريد الإلكتروني", "au_pass": "كلمة المرور", "au_forgot": "نسيت كلمة المرور؟", "au_signin": "تسجيل الدخول", "au_create_btn": "إنشاء الحساب", "au_reset_btn": "إرسال الرابط", "au_back": "العودة لتسجيل الدخول", "au_have": "لديك حساب؟", "au_new": "جديد في Voltra؟", "au_reset_sent": "تفقد بريدك، أرسلنا رابط الاستعادة.", "au_signout": "تسجيل الخروج", "au_signout_q": "تسجيل الخروج من هذا الحساب على هذا الجهاز؟", "au_test": "وضع الاختبار", "au_test_d": "بدّل خطة هذا الحساب لاختبار التطبيق.", "au_test_ok": "تم تحديث الحساب", "au_e_exists": "يوجد حساب بهذا البريد مسبقاً.", "au_e_cred": "البريد أو كلمة المرور غير صحيحة.", "au_e_disabled": "هذا الحساب معطّل.", "au_e_weak": "كلمة المرور يجب أن تكون 6 أحرف على الأقل.", "au_e_email": "أدخل بريداً إلكترونياً صحيحاً.", "au_e_many": "محاولات كثيرة. حاول بعد دقائق.", "au_e_cfg": "طريقة الدخول هذه غير مفعّلة بعد.", "au_e_net": "لا يوجد اتصال. تحقق من الإنترنت وحاول مجدداً.", "au_e_gen": "حدث خطأ. حاول مجدداً.", "au_e_gweb": "الدخول بـ Google متاح في تطبيقي Windows وAndroid.", "au_e_gcfg": "الدخول بـ Google غير مُعدّ بعد. استخدم البريد حالياً.", "au_e_google": "فشل الدخول بـ Google. حاول مجدداً.", "au_e_srv": "خادم Voltra غير متصل. حاول لاحقاً.", "mk_verified": "مطوّر موثّق"});
+Object.assign(I18N.fr,{"au_tag": "Studio de conception et simulation de circuits", "au_welcome": "Bon retour", "au_welcome_d": "Connectez-vous pour continuer sur Voltra.", "au_create": "Créer un compte", "au_create_d": "Vos projets, extensions et Voltra AI, partout.", "au_reset": "Réinitialiser le mot de passe", "au_reset_d": "Nous vous enverrons un lien pour choisir un nouveau mot de passe.", "au_google": "Continuer avec Google", "au_or": "ou", "au_name": "Nom", "au_email": "E-mail", "au_pass": "Mot de passe", "au_forgot": "Mot de passe oublié ?", "au_signin": "Se connecter", "au_create_btn": "Créer le compte", "au_reset_btn": "Envoyer le lien", "au_back": "Retour à la connexion", "au_have": "Déjà un compte ?", "au_new": "Nouveau sur Voltra ?", "au_reset_sent": "Consultez votre boîte de réception.", "au_signout": "Se déconnecter", "au_signout_q": "Se déconnecter de ce compte sur cet appareil ?", "au_test": "Mode test", "au_test_d": "Changez l'offre de ce compte pour tester l'application.", "au_test_ok": "Compte mis à jour", "au_e_exists": "Un compte existe déjà avec cet e-mail.", "au_e_cred": "E-mail ou mot de passe incorrect.", "au_e_disabled": "Ce compte est désactivé.", "au_e_weak": "Le mot de passe doit contenir au moins 6 caractères.", "au_e_email": "Saisissez une adresse e-mail valide.", "au_e_many": "Trop de tentatives. Réessayez dans quelques minutes.", "au_e_cfg": "Cette méthode de connexion n'est pas encore activée.", "au_e_net": "Pas de connexion. Vérifiez Internet et réessayez.", "au_e_gen": "Une erreur est survenue. Réessayez.", "au_e_gweb": "La connexion Google est disponible dans les applications Windows et Android.", "au_e_gcfg": "La connexion Google n'est pas encore configurée. Utilisez l'e-mail pour l'instant.", "au_e_google": "La connexion Google a échoué. Réessayez.", "au_e_srv": "Le serveur Voltra est hors ligne. Réessayez plus tard.", "mk_verified": "Développeur vérifié"});
 const LANGS=[['ar','العربية'],['en','English'],['fr','Français']];
 let LANG=(()=>{const s=Settings.lang;if(LANGS.some(l=>l[0]===s))return s;const n=((navigator.language||'en')+'').toLowerCase();return n.indexOf('ar')===0?'ar':n.indexOf('fr')===0?'fr':'en'})();
 function t(k,v){let s=(I18N[LANG]&&I18N[LANG][k])||I18N.en[k]||k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s}
@@ -2791,7 +2831,7 @@ const Paywall=(()=>{
    +'<button type="button" class="btn pri pw-go" id="pwGo"'+(act?' disabled':'')+'>'+esc(t(act?'pw_active_btn':'pw_subscribe'))+'</button>'
    +'<p class="pw-msg" id="pwMsg" role="status" aria-live="polite"></p>'
    +'<div class="pw-links"><button type="button" data-r="1">'+esc(t('pw_restore'))+'</button><button type="button" data-l="terms">'+esc(t('pw_terms'))+'</button><button type="button" data-l="privacy">'+esc(t('pw_privacy'))+'</button></div>'
-   +'<p class="pw-legal">'+esc(t('pw_legal'))+'</p>'+dev+'</section>';
+   +'<p class="pw-legal">'+esc(t('pw_legal'))+'</p>'+dev+(Auth.me&&Auth.me.tester?'<div class="pw-test"><b>'+esc(t('au_test'))+'</b><span>'+esc(t('au_test_d'))+'</span><div>'+[['free','ac_free'],['trial','ac_trial'],['pro','pw_pro']].map(a=>'<button type="button" data-tm="'+a[0]+'">'+esc(t(a[1]))+'</button>').join('')+'</div></div>':'')+'</section>';
   if(note)setMsg(note.m,note.ok)}
  async function buy(){if(busy)return;busy=true;note=null;const go=el.querySelector('#pwGo');if(go)go.disabled=true;setMsg(t('pay_busy'));
   let r;try{r=await provider().purchase(sel)}catch(e){r={ok:false,reason:'error'}}
@@ -2813,6 +2853,7 @@ const Paywall=(()=>{
    if(b.dataset.x){close();return}if(b.dataset.p){pick(b.dataset.p);return}if(b.dataset.r){restore();return}if(b.dataset.l){link(b.dataset.l);return}
    if(b.dataset.f){const k=b.dataset.f,d=Entitlement._dev;if(d&&d.force)Promise.resolve(d.force(k)).then(()=>{if(k==='wipe')location.reload();else render()});return}
    if(b.id==='pwGo')buy()});
+  el.addEventListener('click',e=>{const b=e.target.closest('[data-tm]');if(!b)return;setMsg(t('pay_busy'));Auth.test(b.dataset.tm).then(()=>{render();setMsg(t('au_test_ok'),true)},()=>setMsg(t('au_e_srv')))});
   el.addEventListener('change',e=>{if(e.target.id==='pwDev')Store.set('zf_dev_sim',e.target.checked?'1':'0')});
   el.addEventListener('keydown',e=>{
    if(e.key==='Tab'){const f=[...el.querySelectorAll('button:not(:disabled),input')].filter(x=>x.tabIndex>=0);if(!f.length)return;const a=f[0],z=f[f.length-1];
@@ -2930,7 +2971,8 @@ const Sheet={el:null,kind:null,back:null,msg:null,
   if(s.status==='trial'){rows.push(row(t('ac_status'),esc(t('ac_trial'))),row(t('ac_left'),esc(fmtLeft(s.remainingMs))),row(t('ac_ends'),esc(fmtDate(s.trialEndsAt))))}
   else if(s.status==='active'){rows.push(row(t('ac_status'),esc(t('pw_pro'))),row(t('ac_plan'),esc(t('plan_'+s.plan))),row(t('ac_until'),esc(fmtDate(s.expiresAt))))}
   else{rows.push(row(t('ac_status'),esc(t('ac_free'))));if(s.lastPlan)rows.push(row(t('ac_last'),esc(t('plan_'+s.lastPlan)+' · '+fmtDate(s.lastExpiresAt))))}
-  return this.head(t('ac_title'))+'<div class="sx-rows">'+rows.join('')+'</div>'
+  const pf=Auth.u?'<div class="sx-prof">'+Auth.avatar(48)+'<div><b>'+esc(Auth.u.name||Auth.u.email.split('@')[0])+(Auth.me&&Auth.me.verified?' <span class="vbadge" title="'+esc(t('mk_verified'))+'">'+ic('check')+'</span>':'')+'</b><span dir="ltr">'+esc(Auth.u.email)+'</span></div><button type="button" class="btn" data-a="signout">'+esc(t('au_signout'))+'</button></div>':'';
+  return this.head(t('ac_title'))+pf+'<div class="sx-rows">'+rows.join('')+'</div>'
    +(s.status!=='active'?'<button type="button" class="btn pri pw-go" data-a="plans" id="sxGo">'+esc(t('nag_see'))+'</button>':'')
    +'<p class="pw-msg" id="sxMsg" role="status" aria-live="polite"></p>'
    +'<div class="pw-links"><button type="button" data-a="restore">'+esc(t('pw_restore'))+'</button><button type="button" data-a="manage">'+esc(t('ac_manage'))+'</button><a class="sx-mail" href="mailto:'+CONTACT_MAIL+'?subject=Voltra">'+esc(t('ac_contact'))+'</a></div>'},
@@ -2939,6 +2981,7 @@ const Sheet={el:null,kind:null,back:null,msg:null,
  say(m,ok){this.msg={m,ok};const p=this.el&&this.el.querySelector('#sxMsg');if(p){p.textContent=m||'';p.classList.toggle('ok',!!ok)}},
  async act(a){
   if(a==='plans'){this.close();Paywall.open();return}
+  if(a==='signout'){const ok=await Modal.confirm(t('au_signout'),t('au_signout_q'),t('au_signout'));if(ok){this.close();Auth.signOut()}return}
   if(a==='manage'){this.say(t('pay_busy'));let r;try{r=await Paywall.manage()}catch(e){r={ok:false}}this.say(r&&r.ok?'':(r&&r.reason==='disabled'?t('pay_off'):t('pay_fail')));return}
   if(a==='restore'){this.say(t('pay_busy'));let r;try{r=await Paywall.provider().restore()}catch(e){r={ok:false,reason:'error'}}
    if(r&&r.ok){const x=await Entitlement.activate(r);this.render();this.say(x.ok?t('restore_ok'):t('restore_none'),x.ok)}else this.say(r&&r.reason==='disabled'?t('pay_off'):t('restore_none'))}},
@@ -2962,7 +3005,7 @@ const Chip={el:null,k:'',
  c.addEventListener('click',()=>{if(Entitlement.state().status==='active')Account.open();else Paywall.open()})})();
 /* lifecycle: each message is shown once (flags kept in Store), only at a natural moment, and always through the shared anti-annoyance budget */
 const Life={prev:null,pendEnded:false,booted:false,
- seen:k=>Store.get('zf_'+k)==='1',mark:k=>Store.set('zf_'+k,'1'),
+ seen:k=>Store.get('zf_'+k+(window.__acctSfx||''))==='1',mark:k=>Store.set('zf_'+k+(window.__acctSfx||''),'1'),
  idle:ms=>performance.now()-Nag.act>=ms,
  busy:()=>Nag.busy(),
  sync(){if(Paywall.provider().id!=='android'||Paywall.isOpen()||Sheet.isOpen())return;this.lastSync=performance.now();Entitlement.refresh().catch(()=>{})},
@@ -2982,6 +3025,90 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Life.boot
 window.ZingoNative={back:()=>{if(Sheet.close())return true;if(Paywall.close())return true;if($('#modalBg').classList.contains('show')){Modal.close(null);return true}return false}};
 setInterval(()=>{try{Life.tick()}catch(e){}},1000);Chip.paint();
 /* ===== END SECTION: trial lifecycle ===== */
+/* ===== SECTION: Voltra accounts (Firebase Auth: Google or e-mail; profile, trial and plan from the Voltra server) ===== */
+const GOOGLE_G='<svg viewBox="0 0 48 48" width="18" height="18" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+const Auth={u:null,me:null,KEY:'zf_acct',
+ load(){const a=Store.json(this.KEY);this.u=a&&a.uid&&a.refresh?a:null;this.sfx();const m=this.u&&Store.json('zf_me_'+this.u.uid);if(m)this.me=m},
+ save(){Store.set(this.KEY,this.u?JSON.stringify(this.u):'');this.sfx()},
+ sfx(){window.__acctSfx=this.u?'_'+AIT.h32(this.u.uid):''},
+ key(){return this.u?'_zq1_'+AIT.h32(this.u.uid):'_zq1'},
+ /* one HTTP helper for Firebase and the Voltra server (desktop / Android go through the native side) */
+ async req(method,url,body,o){o=o||{};const payload=body==null?'':(o.form?body:JSON.stringify(body));
+  if(DESK&&DESK.net){const r=await DESK.net({method,url,body:payload,timeout:o.timeout||20000,auth:o.auth,form:!!o.form});let j={};try{j=r&&r.text?JSON.parse(r.text):{}}catch(e){}return{ok:!!(r&&r.ok),status:(r&&r.status)||0,json:j,err:r&&r.error}}
+  const h={};if(body!=null)h['Content-Type']=o.form?'application/x-www-form-urlencoded':'application/json';if(o.auth)h.Authorization='Bearer '+o.auth;
+  const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),o.timeout||20000);
+  try{const r=await fetch(url,{method,headers:h,body:body==null?undefined:payload,signal:ctl.signal});const tx=await r.text();let j={};try{j=tx?JSON.parse(tx):{}}catch(e){}return{ok:r.ok,status:r.status,json:j}}
+  catch(e){return{ok:false,status:0,json:{},err:String(e&&e.message||e)}}finally{clearTimeout(to)}},
+ idtk(path,body){return this.req('POST','https://identitytoolkit.googleapis.com/v1/'+path+'?key='+AI_FB.apiKey,body)},
+ err(r){const c=String((r.json&&r.json.error&&r.json.error.message)||'').split(/[ :]/)[0];
+  const m={EMAIL_EXISTS:'au_e_exists',EMAIL_NOT_FOUND:'au_e_cred',INVALID_PASSWORD:'au_e_cred',INVALID_LOGIN_CREDENTIALS:'au_e_cred',USER_DISABLED:'au_e_disabled',WEAK_PASSWORD:'au_e_weak',INVALID_EMAIL:'au_e_email',TOO_MANY_ATTEMPTS_TRY_LATER:'au_e_many',OPERATION_NOT_ALLOWED:'au_e_cfg'};
+  return t(m[c]||(r.status===0?'au_e_net':'au_e_gen'))},
+ setFrom(j,provider){this.u={uid:j.localId,email:String(j.email||'').toLowerCase(),name:j.displayName||j.fullName||'',photo:j.photoUrl||'',id:j.idToken,refresh:j.refreshToken,exp:Date.now()+(+j.expiresIn||3600)*1e3,provider};this.save()},
+ async signIn(email,pw){const r=await this.idtk('accounts:signInWithPassword',{email,password:pw,returnSecureToken:true});if(!r.ok)throw new Error(this.err(r));this.setFrom(r.json,'password');await this.after()},
+ async signUp(name,email,pw){const r=await this.idtk('accounts:signUp',{email,password:pw,returnSecureToken:true});if(!r.ok)throw new Error(this.err(r));this.setFrom(r.json,'password');
+  if(name){const x=await this.idtk('accounts:update',{idToken:this.u.id,displayName:name,returnSecureToken:false});if(x.ok){this.u.name=name;this.save()}}await this.after()},
+ async reset(email){const r=await this.idtk('accounts:sendOobCode',{requestType:'PASSWORD_RESET',email});if(!r.ok)throw new Error(this.err(r))},
+ cfg:null,
+ async config(){if(this.cfg)return this.cfg;const r=await this.req('GET','https://firestore.googleapis.com/v1/projects/'+AI_FB.projectId+'/databases/(default)/documents/'+AI_FB.doc+'?key='+AI_FB.apiKey,null,{timeout:12000});
+  const f=r.json&&r.json.fields||{},s=k=>f[k]&&f[k].stringValue||'';if(!r.ok)throw new Error(t('au_e_net'));this.cfg={gWeb:s('gWeb'),gDesk:s('gDesk'),gDeskS:s('gDeskS')};return this.cfg},
+ googleOk(){return!!(DESK&&DESK.googleSignIn)},
+ async google(){if(!this.googleOk())throw new Error(t('au_e_gweb'));const c=await this.config();const and=DESK.platform==='android';
+  const id=and?c.gWeb:c.gDesk;if(!id)throw new Error(t('au_e_gcfg'));
+  const r=await DESK.googleSignIn({clientId:id,secret:c.gDeskS});
+  if(!r||!r.ok){if(r&&(r.error==='cancelled'||r.error==='access_denied'))return false;throw new Error(r&&r.error==='not_configured'?t('au_e_gcfg'):t('au_e_google'))}
+  const x=await this.idtk('accounts:signInWithIdp',{postBody:'id_token='+encodeURIComponent(r.idToken)+'&providerId=google.com',requestUri:'http://localhost',returnSecureToken:true,returnIdpCredential:true});
+  if(!x.ok)throw new Error(this.err(x));this.setFrom(x.json,'google');await this.after();return true},
+ async token(){if(!this.u)return'';if(this.u.id&&Date.now()<this.u.exp-60e3)return this.u.id;
+  const r=await this.req('POST','https://securetoken.googleapis.com/v1/token?key='+AI_FB.apiKey,'grant_type=refresh_token&refresh_token='+encodeURIComponent(this.u.refresh),{form:true});
+  if(!r.ok){if(r.status===400&&/TOKEN_EXPIRED|USER_DISABLED|USER_NOT_FOUND|INVALID_REFRESH_TOKEN/.test(JSON.stringify(r.json)))this.signOut();return''}
+  this.u.id=r.json.id_token;this.u.refresh=r.json.refresh_token||this.u.refresh;this.u.exp=Date.now()+(+r.json.expires_in||3600)*1e3;this.save();return this.u.id},
+ async after(){await Entitlement.useKey(this.key());this.me=Store.json('zf_me_'+this.u.uid);if(this.me)Entitlement.serverSync(this.me);
+  Login.close();this.paint();if(APP_UP){Life.booted=false;setTimeout(()=>Life.boot(),900)}this.sync()},
+ /* the server knows the account's trial start and plan; offline, the last answer is used */
+ async api(method,path,body){const base=await AISync.resolve(),tok=await this.token();if(!tok)throw new Error('auth');const r=await this.req(method,base+path,body,{auth:tok,timeout:30000});
+  if(!r.ok)throw Object.assign(new Error((r.json&&r.json.error)||r.err||('HTTP '+r.status)),{status:r.status});return r.json},
+ async sync(){if(!this.u)return;try{const me=await this.api('GET','/api/me');this.apply(me)}catch(e){}},
+ apply(me){if(!me||!me.uid||!this.u||me.uid!==this.u.uid)return;this.me=me;Store.set('zf_me_'+me.uid,JSON.stringify(me));
+  if(me.name&&me.name!==this.u.name){this.u.name=me.name;this.save()}if(me.photo&&!this.u.photo){this.u.photo=me.photo;this.save()}
+  Entitlement.serverSync(me);this.paint();Sheet.refresh();if(Paywall.isOpen())Paywall.refresh()},
+ async test(mode){const me=await this.api('POST','/api/me/test',{mode});this.apply(me)},
+ signOut(){const was=!!this.u;this.u=null;this.me=null;this.save();Entitlement.useKey('_zq1').then(()=>{this.paint();if(was&&APP_UP)Login.open()})},
+ avatar(sz){const u=this.u;if(!u)return'';const ini=esc((u.name||u.email||'?').trim().charAt(0).toUpperCase());
+  return'<span class="av" style="width:'+sz+'px;height:'+sz+'px">'+(u.photo&&/^(https:|data:image\/)/.test(u.photo)?'<img src="'+esc(u.photo)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':'')+'<i>'+ini+'</i></span>'},
+ paint(){const b=$('#bAcct');if(!b)return;b.hidden=!this.u;if(this.u){b.innerHTML=this.avatar(26);b.title=(this.u.name||'')+' · '+this.u.email}}};
+setInterval(()=>{if(Auth.u&&!document.hidden)Auth.sync()},15*60e3);
+
+/* ---- sign-in screen ---- */
+const Login={el:null,mode:'in',busy:false,
+ isOpen(){return!!(this.el&&this.el.classList.contains('show'))},
+ open(){if(!this.el)this.build();this.mode='in';this.render();this.el.classList.add('show');document.body.classList.add('login-on')},
+ close(){if(!this.el)return;this.el.classList.remove('show');document.body.classList.remove('login-on')},
+ build(){const e=this.el=document.createElement('div');e.id='login';e.setAttribute('role','dialog');e.setAttribute('aria-modal','true');document.body.appendChild(e);
+  e.addEventListener('submit',ev=>{ev.preventDefault();this.submit()});
+  e.addEventListener('click',ev=>{const b=ev.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
+   if(a==='google')this.run(()=>Auth.google());else if(a==='mode'){this.mode=this.mode==='in'?'up':'in';this.render()}else if(a==='forgot'){this.mode='reset';this.render()}else if(a==='back'){this.mode='in';this.render()}
+   else if(a==='lang'){const i=LANGS.findIndex(l=>l[0]===LANG);chooseLang(LANGS[(i+1)%LANGS.length][0])}})},
+ render(){const m=this.mode,g=Auth.googleOk();
+  this.el.innerHTML='<div class="lg-bg"><i></i><i></i><i></i></div><div class="lg-wrap"><div class="lg-brand">'+ic('zingo')+'<b>Voltra</b><span>'+esc(t('au_tag'))+'</span></div>'
+   +'<form class="lg-card" novalidate><h2>'+esc(t(m==='up'?'au_create':m==='reset'?'au_reset':'au_welcome'))+'</h2><p class="lg-sub">'+esc(t(m==='up'?'au_create_d':m==='reset'?'au_reset_d':'au_welcome_d'))+'</p>'
+   +(m!=='reset'&&g?'<button type="button" class="lg-g" data-a="google">'+GOOGLE_G+'<span>'+esc(t('au_google'))+'</span></button><div class="lg-or"><span>'+esc(t('au_or'))+'</span></div>':'')
+   +(m==='up'?'<label>'+esc(t('au_name'))+'<input name="n" autocomplete="name" maxlength="60" required></label>':'')
+   +'<label>'+esc(t('au_email'))+'<input name="e" type="email" autocomplete="email" inputmode="email" dir="ltr" required></label>'
+   +(m!=='reset'?'<label>'+esc(t('au_pass'))+'<input name="p" type="password" autocomplete="'+(m==='up'?'new-password':'current-password')+'" dir="ltr" minlength="6" required></label>':'')
+   +(m==='in'?'<button type="button" class="lg-link lg-forgot" data-a="forgot">'+esc(t('au_forgot'))+'</button>':'')
+   +'<p class="lg-err" role="alert"></p><button type="submit" class="btn pri lg-go">'+esc(t(m==='up'?'au_create_btn':m==='reset'?'au_reset_btn':'au_signin'))+'</button>'
+   +(m==='reset'?'<button type="button" class="lg-link" data-a="back">'+esc(t('au_back'))+'</button>':'<p class="lg-sw">'+esc(t(m==='up'?'au_have':'au_new'))+' <button type="button" class="lg-link" data-a="mode">'+esc(t(m==='up'?'au_signin':'au_create'))+'</button></p>')
+   +'</form><button type="button" class="lg-lang" data-a="lang">'+ic('globe')+'<span>'+esc((LANGS.find(l=>l[0]===LANG)||[])[1]||'')+'</span></button></div>';
+  const f=this.el.querySelector('input');if(f&&!MOB.on)setTimeout(()=>f.focus(),60)},
+ say(m,ok){const p=this.el.querySelector('.lg-err');if(p){p.textContent=m||'';p.classList.toggle('ok',!!ok)}},
+ async run(fn){if(this.busy)return;this.busy=true;this.say('');this.el.classList.add('busy');try{await fn()}catch(e){this.say(e&&e.message||t('au_e_gen'))}finally{this.busy=false;if(this.el)this.el.classList.remove('busy')}},
+ submit(){const q=n=>{const i=this.el.querySelector('[name='+n+']');return i?i.value.trim():''};const e=q('e'),p=q('p'),n=q('n');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e))return this.say(t('au_e_email'));
+  if(this.mode==='reset')return this.run(async()=>{await Auth.reset(e);this.say(t('au_reset_sent'),true)});
+  if(p.length<6)return this.say(t('au_e_weak'));
+  if(this.mode==='up')return this.run(()=>Auth.signUp(n,e,p));this.run(()=>Auth.signIn(e,p))}};
+/* ===== END SECTION: Voltra accounts ===== */
+
 
 /* ---- popover menus (menu / context / sound) ---- */
 const Pop={cur:null,
@@ -5042,7 +5169,7 @@ function toggleTheme(){const dark=document.documentElement.dataset.theme==='dark
 const Veil={el:null,
  async run(fn,ms){const v=this.el||(this.el=document.getElementById('veil'));if(!v){await fn();return}
   v.classList.add('show');await new Promise(r=>setTimeout(r,170));try{await fn()}finally{await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));setTimeout(()=>v.classList.remove('show'),ms||120)}}};
-function chooseLang(l){if(l===LANG)return;Veil.run(()=>{setLang(l);refreshI18n();try{AI.render()}catch(e){}})}
+function chooseLang(l){if(l===LANG)return;Veil.run(()=>{setLang(l);refreshI18n();try{AI.render()}catch(e){}if(Login.isOpen())Login.render()})}
 function switchLang(){const b=$('#bLang');Pop.show('langP',LANGS.map(([k,n])=>({i:k===LANG?'check':'globe',l:n,run:()=>chooseLang(k)})),0,0,b)}
 
 /* ===== SECTION: Voltra AI (assistant, virtual lab, circuit actions, learning brain, community sync) ===== */
@@ -5783,7 +5910,9 @@ setInterval(()=>{try{Lab.tick()}catch(e){}},300);
  document.addEventListener('contextmenu',e=>{if(!e.target.closest('textarea,input'))e.preventDefault()});
  /* document */
  setTab('props');
+ Auth.load();Auth.paint();$('#bAcct').onclick=()=>Account.open();
  try{await Promise.race([Entitlement.ready,new Promise(r=>setTimeout(r,2500))])}catch(e){}
+ if(Auth.u){try{await Promise.race([Entitlement.useKey(Auth.key()),new Promise(r=>setTimeout(r,2500))])}catch(e){}if(Auth.me)Entitlement.serverSync(Auth.me);Auth.sync()}
  syncPro();
  const stored=loadStoredDoc();
  loadDoc(stored||buildExample(EXAMPLES[0]),true);
@@ -5796,11 +5925,11 @@ setInterval(()=>{try{Lab.tick()}catch(e){}},300);
   DESK.ready()}
  setMode(Settings.mode);
  requestAnimationFrame(()=>{fitView();Object.assign(App.view,App.tv);applyView()});
- requestAnimationFrame(t0=>Run.frame(t0));APP_UP=true;refreshLocks();setTimeout(()=>Life.boot(),1500);
+ requestAnimationFrame(t0=>Run.frame(t0));APP_UP=true;refreshLocks();setTimeout(()=>{if(Auth.u)Life.boot()},1500);
  document.addEventListener('pointerdown',()=>Aud.ensure(),true);
  /* hide the splash once the first frame is ready */
  Ld.set(96,'ld_doc');await tick();await tick();
- Ld.set(100,'ld_ready');await Ld.sleep(420);Ld.hide();
+ Ld.set(100,'ld_ready');if(!Auth.u)Login.open();await Ld.sleep(420);Ld.hide();
 })().catch(e=>{try{Run.fault(e)}catch(_){}const sp=$('#splash');if(sp){sp.classList.add('out');setTimeout(()=>sp.remove(),600)}});
 
 </script>
