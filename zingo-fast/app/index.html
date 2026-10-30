@@ -682,7 +682,7 @@ body.mob #scopeP{inset-inline-start:8px;inset-inline-end:8px;width:auto;bottom:8
 #plist .it.cu{position:relative;border-style:dashed}
 #plist .cuE{position:absolute;top:2px;inset-inline-end:5px;opacity:0;font-style:normal;font-size:13px;cursor:pointer;color:var(--acc);transition:opacity .12s}
 #plist .it.cu:hover .cuE{opacity:1}
-#pbNew{margin:0 12px 10px;width:calc(100% - 24px);justify-content:center;gap:8px}
+
 .pbh .btn,.pbt,.pbt b{white-space:nowrap;flex:none}
 @media (max-width:760px),(max-height:540px) and (pointer:coarse){
  #pb{padding:0}.pbw{border-radius:0;border:0}
@@ -944,6 +944,69 @@ body.focus #work{grid-template-columns:minmax(0,1fr)!important}
 #trialChip[hidden]{display:none}
 #trialChip svg{width:16px;height:16px;color:var(--acc)}
 #trialChip.warn{border-color:var(--warn)}#trialChip.warn svg{color:var(--warn)}
+/* ===== v3 polish: top bar, parts panel, start screen ===== */
+#top{gap:6px;padding:0 10px;background:color-mix(in srgb,var(--panel2) 92%,transparent);backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--line),0 6px 20px rgba(0,0,0,.08);border-bottom:0}
+#top .grp{border:0;background:transparent;padding:0;gap:1px}
+#top .ib{width:36px;height:36px;border-radius:10px;color:var(--mut)}#top .ib:hover{background:var(--hov);color:var(--ink)}#top .ib[aria-pressed=true]{color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,transparent)}#top .ib .i{width:18px;height:18px}
+.tdv{width:1px;height:22px;background:var(--line);flex:none;margin:0 4px}
+.brand{gap:9px;padding:0 6px 0 2px;font-size:16px;letter-spacing:.01em}.brand b{font-weight:800}
+.lgm{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#22d3ee,#2563eb 55%,#4c1d95);box-shadow:0 4px 14px color-mix(in srgb,#2563eb 35%,transparent);flex:none}.brand .lgm .i{width:18px;height:18px;color:#fff}
+.pj{height:36px;max-width:300px;border-radius:11px;border:1px solid var(--line);background:var(--bg2);padding:0 12px 0 10px}.pj #pjName{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#bRun{width:40px!important;height:40px!important;border-radius:50%!important;color:var(--accink)!important;background:linear-gradient(135deg,var(--acc),var(--acc2))!important;box-shadow:0 4px 14px color-mix(in srgb,var(--acc) 40%,transparent)}
+#bRun[aria-pressed=true],body.running #bRun{animation:runGlow 2s ease-in-out infinite}@keyframes runGlow{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--acc) 18%,transparent),0 4px 14px color-mix(in srgb,var(--acc) 40%,transparent)}}
+#sSpd{height:32px;border-radius:9px;border:1px solid var(--line2);background:var(--bg2);color:var(--ink);font:600 12px var(--ui);padding:0 6px}
+#top .seg{background:var(--bg2);border:1px solid var(--line2);border-radius:12px;padding:3px}#top .seg button{height:30px;border-radius:9px}
+#top .seg button[aria-pressed=true]{background:var(--panel2);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.aib{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 14px 0 12px;border:0;border-radius:11px;color:#fff;font:700 13px var(--ui);cursor:pointer;white-space:nowrap;flex:none;
+ background:linear-gradient(135deg,#22d3ee,#2563eb 55%,#7c3aed);background-size:160% 160%;box-shadow:0 4px 14px color-mix(in srgb,#2563eb 35%,transparent);transition:background-position .4s,transform .1s}
+.aib:hover{background-position:100% 0}.aib:active{transform:scale(.97)}.aib .i{width:16px;height:16px}.aib[aria-pressed=true]{box-shadow:0 0 0 3px color-mix(in srgb,#2563eb 30%,transparent)}
+#trialChip{min-height:32px;height:32px;padding:0 12px;border-radius:999px;font-size:12px;background:color-mix(in srgb,var(--acc) 8%,var(--bg2));border:1px solid color-mix(in srgb,var(--acc) 35%,var(--line))}
+#bAcct{width:36px;height:36px;border-radius:50%}
+@media (max-width:1380px){.aib b{display:none}.aib{padding:0 10px}}
+@media (max-width:1180px){#top .tdv{display:none}}
+/* parts panel */
+.phd{display:flex;align-items:center;gap:8px;padding:14px 14px 4px}.phd>div{flex:1;min-width:0}.phd b{display:block;font-size:15px;font-weight:800}.phd small{display:block;color:var(--mut);font-size:11.5px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pbn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--line);border-radius:10px;background:var(--bg2);color:var(--ink);font:600 12px var(--ui);cursor:pointer;white-space:nowrap;flex:none}.pbn:hover{border-color:var(--acc);color:var(--acc)}.pbn .i{width:15px;height:15px;color:var(--acc)}
+#parts .search{position:relative;margin:8px 14px 10px;height:40px;border-radius:12px;background:var(--bg2);border:1px solid var(--line);transition:border-color .15s,box-shadow .15s}
+#parts .search:focus-within{border-color:var(--acc);box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 14%,transparent)}
+#parts .search kbd{position:absolute;inset-inline-end:10px;top:50%;transform:translateY(-50%);font:600 11px var(--mono);color:var(--mut);border:1px solid var(--line);border-radius:6px;padding:1px 6px;background:var(--panel2);pointer-events:none}
+#parts .search:focus-within kbd{display:none}
+#plist{padding:0 12px 18px}
+.cat{margin-bottom:4px}
+.cat>button{min-height:40px;gap:10px;justify-content:flex-start;border:0!important;background:transparent!important;border-radius:10px;padding:0 8px;font-size:13.5px}
+.cat>button:hover{background:var(--hov)!important}
+.cat>button .cnm{flex:1;text-align:start}
+.cic{display:grid;place-items:center;width:26px;height:26px;border-radius:8px;background:color-mix(in srgb,var(--acc) 12%,transparent);color:var(--acc);flex:none}.cat>button .cic .i{width:14px;height:14px;transform:none!important}
+.cat .cnt{margin:0;padding:1px 7px;border-radius:20px;background:var(--bg2);border:1px solid var(--line2);font-size:11px;color:var(--mut)}
+.cat>button>.i{color:var(--mut)}
+.cat.rec .cic{background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn)}
+.cat .grid{gap:6px;padding:4px 2px 10px}
+.it{min-height:88px;border:1px solid var(--line2);border-radius:12px;background:var(--bg2);padding:8px 4px 6px;gap:4px;transition:transform .12s,border-color .12s,box-shadow .12s,background .12s}
+.it:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--acc) 60%,var(--line));background:var(--bg2);box-shadow:0 8px 20px color-mix(in srgb,var(--acc) 15%,transparent)}
+.it span{font-weight:500}
+/* start screen */
+#empty .wsx{pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:6px;max-width:640px;width:100%;padding:28px 28px 22px;border-radius:24px;border:1px solid var(--line);
+ background:color-mix(in srgb,var(--panel2) 88%,transparent);backdrop-filter:blur(18px);box-shadow:0 24px 70px rgba(0,0,0,.18);animation:wsIn .45s cubic-bezier(.2,.8,.2,1) both}
+@keyframes wsIn{from{opacity:0;transform:translateY(14px) scale(.98)}}
+#empty .ei{width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#22d3ee,#2563eb 55%,#4c1d95);color:#fff;box-shadow:0 14px 40px color-mix(in srgb,#2563eb 40%,transparent);margin-bottom:8px}#empty .ei svg{width:32px;height:32px}
+#empty .wsx>b{font-size:23px;font-weight:800;letter-spacing:-.01em}#empty .wsx>p{max-width:440px;font-size:13.5px}
+#empty .ws{margin-top:16px;gap:10px;width:100%;flex-wrap:nowrap}
+.wsc{flex:1;width:auto;min-width:0;align-items:flex-start;text-align:start;padding:14px;border-radius:16px;gap:4px;box-shadow:none;background:var(--bg2)}
+.wsc .i{width:22px;height:22px;padding:8px;border-radius:11px;margin-bottom:6px}
+#wsNew{background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 16%,var(--bg2)),var(--bg2));border-color:color-mix(in srgb,var(--acc) 45%,var(--line))}#wsNew .i{color:var(--accink);background:linear-gradient(135deg,var(--acc),var(--acc2))}
+#empty .wsc b{font-size:14px}
+.wsf{width:100%;margin-top:14px;text-align:start}.wsf h5,.wsr h5{margin:0 0 8px;font-size:11.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.wsf>div{display:flex;gap:8px;flex-wrap:wrap}
+.wsf button{position:relative;display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 12px;border:1px solid var(--line);border-radius:20px;background:var(--bg2);color:var(--ink);font:500 12.5px var(--ui);cursor:pointer;transition:border-color .12s,background .12s}
+.wsf button:hover{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 8%,var(--bg2))}.wsf button .i{width:15px;height:15px;color:var(--acc)}.wsf .lkx .i{width:11px;height:11px;color:var(--mut)}
+.wsr{width:100%;min-width:0;max-width:none;margin-top:14px;text-align:start}
+.wsh{margin:14px 0 0!important;font-size:11.5px!important;color:var(--mut);opacity:.8}
+body.mob #empty{padding-block:12px;padding-inline:64px 12px;justify-content:center}
+body.mob #empty .wsx{padding:20px 16px 16px;border-radius:20px}body.mob #empty .ei{width:52px;height:52px;border-radius:16px}body.mob #empty .ei svg{width:26px;height:26px}body.mob #empty .wsx>b{font-size:19px}
+body.mob #empty .ws{flex-direction:column;gap:8px;margin-top:12px}body.mob .wsc{width:100%;flex-direction:row;align-items:center;padding:10px 12px;gap:12px}body.mob .wsc .i{margin:0;width:20px;height:20px}body.mob #empty .wsc b{font-size:13.5px}body.mob .wsc small{display:block}
+body.mob .wsc>small{margin-inline-start:auto;display:none}body.mob .wsh{display:none}
+body.mob .phd{padding-top:12px}
+body.mob .pj #pjName{display:none}body.mob .pj{padding:0 10px}body.mob #parts .search kbd{display:none}body.mob .phd small{white-space:normal}
 </style>
 </head>
 <body>
@@ -952,7 +1015,7 @@ body.focus #work{grid-template-columns:minmax(0,1fr)!important}
 <div id="splash" role="status" aria-live="polite"><div class="sp-in"><div class="lg"><span data-i="zingo"></span></div><b data-t="app"></b><div class="sp-bar"><i id="spBar"></i></div><div class="sp-row"><span id="spMsg"></span><span id="spPct" class="mono">0%</span></div></div></div>
 <div id="app">
  <header id="top">
-  <div class="brand"><span data-i="zingo"></span><b data-t="app"></b></div>
+  <div class="brand"><span class="lgm"><span data-i="zingo"></span></span><b data-t="app"></b></div>
   <button class="pj" id="pj" type="button" data-tt="pj_rename"><span data-i="file"></span><span id="pjName"></span><i id="pjDot" hidden></i></button>
   <div class="grp">
    <button class="ib pri" id="bRun" data-tt="run"><span data-i="play"></span></button>
@@ -970,8 +1033,10 @@ body.focus #work{grid-template-columns:minmax(0,1fr)!important}
   <div class="grp">
    <button class="ib" id="bScope" data-tt="scope" aria-pressed="false"><span data-i="scope"></span></button>
    <button class="ib" id="bCode" data-tt="code" aria-pressed="false"><span data-i="code"></span></button>
-   <button class="ib ai-top" id="bAi" data-tt="ai_open" aria-pressed="false"><span data-i="spark"></span></button>
   </div>
+  <button class="aib" id="bAi" data-tt="ai_open" aria-pressed="false"><span data-i="spark"></span><b>Voltra AI</b></button>
+  <button class="ib extb" id="bExt" data-tt="mk_title"><span data-i="plug"></span></button>
+  <i class="tdv"></i>
   <div class="grp" id="gView">
    <button class="ib" id="bPartsT" data-tt="t_parts" aria-pressed="true"><span data-i="panel"></span></button>
    <button class="ib" id="bDockT" data-tt="t_dock" aria-pressed="true"><span data-i="panel"></span></button>
@@ -981,10 +1046,9 @@ body.focus #work{grid-template-columns:minmax(0,1fr)!important}
    <button class="ib" id="bTheme" data-tt="theme"><span data-i="sun"></span></button>
    <button class="ib" id="bLang" data-tt="lang"><span data-i="globe"></span></button>
    <button class="ib" id="bSnd" data-tt="sound"><span data-i="vol"></span></button>
-   <button class="ib" id="bExt" data-tt="mk_title"><span data-i="plug"></span></button>
-   <button class="ib" id="bAcct" hidden></button>
-   <button class="ib" id="bMenu" data-tt="menu"><span data-i="menu"></span></button>
   </div>
+  <button class="ib" id="bAcct" hidden></button>
+  <button class="ib" id="bMenu" data-tt="menu"><span data-i="menu"></span></button>
  </header>
  <div id="errBar" hidden>
   <button class="eb-main" id="ebToggle" type="button" aria-expanded="false"><i class="eb-dot"></i><span class="eb-msg" id="ebMsg"></span></button>
@@ -995,8 +1059,8 @@ body.focus #work{grid-template-columns:minmax(0,1fr)!important}
  <div id="errList" hidden></div>
  <main id="work">
   <aside id="parts" aria-label="Parts">
-   <button class="btn pri" id="pbNew"><span data-i="plus"></span><span data-t="pb_create"></span></button>
-   <div class="search"><span data-i="search"></span><input id="q" type="search" data-tp="search" autocomplete="off" spellcheck="false"></div>
+   <div class="phd"><div><b data-t="add_parts"></b><small data-t="ph_hint"></small></div><button class="pbn" id="pbNew" type="button" data-tt="pb_create"><span data-i="sliders"></span><span data-t="pb_new_s"></span></button></div>
+   <div class="search"><span data-i="search"></span><input id="q" type="search" data-tp="search" autocomplete="off" spellcheck="false"><kbd>/</kbd></div>
    <div id="plist"></div>
   </aside>
   <div class="rsz" id="rszP"></div><div class="rsz" id="rszD"></div>
@@ -1007,9 +1071,10 @@ body.focus #work{grid-template-columns:minmax(0,1fr)!important}
     <button class="ib" id="fbExit" data-tt="exit_focus"><span data-i="shrink"></span></button>
    </div>
    <div id="board"><svg id="cv" tabindex="0" role="application"><g id="gv"><g id="gBB"></g><g id="gC"></g><g id="gW"></g><g id="gF"></g><g id="gP"></g><g id="gO"></g><g id="gH"></g></g></svg></div>
-      <div id="empty" hidden><div class="ei"><span data-i="zingo"></span></div><b data-t="empty_t"></b><p data-t="empty_d"></p>
+      <div id="empty" hidden><div class="wsx"><div class="ei"><span data-i="zingo"></span></div><b data-t="ws_title"></b><p data-t="ws_sub2"></p>
        <div class="ws"><button type="button" class="wsc" id="wsNew"><span data-i="plus"></span><b data-t="pj_new"></b><small data-t="ws_new_d"></small></button><button type="button" class="wsc" id="wsOpen"><span data-i="open"></span><b data-t="pj_open"></b><small data-t="ws_open_d"></small></button><button type="button" class="wsc" id="emEx"><span data-i="flask"></span><b data-t="examples"></b><small data-t="ws_ex_d"></small></button></div>
-       <div class="wsr" id="wsRecent" hidden></div></div>
+       <div class="wsf" id="wsFeat"></div>
+       <div class="wsr" id="wsRecent" hidden></div><p class="wsh" data-t="empty_d"></p></div></div>
 <div id="tools">
     <div class="grp">
      <button class="ib on" id="tSel" data-tt="t_sel"><span data-i="pointer"></span></button>
@@ -1510,6 +1575,9 @@ Object.assign(I18N.fr,{"sk_game": "Jeu Volt Runner"});
 Object.assign(I18N.en,{"ai_upload": "Upload to board", "ai_worked": "Worked through {n} steps", "ai_typing": "Voltra AI is thinking", "ai_regen": "Regenerate", "ai_mode": "Answer mode", "ai_m_fast_d": "Quick, direct answers", "ai_m_think_d": "Plans, searches the web and tests circuits in a virtual lab before answering", "ai_m_loop_d": "Builds on your workspace and keeps fixing until the circuit works", "ai_c_check_d": "Find mistakes and risks and fix them", "ai_c_build_d": "Describe it, Voltra wires it", "ai_c_code_d": "Write and upload a sketch", "ai_c_explain_d": "Step by step, with live values", "ai_hello_d2": "Your electronics engineer: designs and wires circuits, finds faults, writes Arduino code and tests everything in a virtual lab.", "ai_bot_hello": "Assistant bot from Voltra Extensions. Ask it anything.", "ai_ph_bot": "Ask the assistant…", "ai_keys": "Enter to send · Shift + Enter for a new line"});
 Object.assign(I18N.ar,{"ai_upload": "رفع إلى اللوحة", "ai_worked": "أنجز {n} خطوات", "ai_typing": "Voltra AI يفكّر", "ai_regen": "إعادة الإجابة", "ai_mode": "وضع الإجابة", "ai_m_fast_d": "إجابات سريعة ومباشرة", "ai_m_think_d": "يخطط ويبحث في الإنترنت ويختبر الدوائر في مختبر افتراضي قبل الإجابة", "ai_m_loop_d": "يعمل على مساحة عملك ويواصل الإصلاح حتى تعمل الدائرة", "ai_c_check_d": "اكتشف الأخطاء والمخاطر وأصلحها", "ai_c_build_d": "صِف ما تريد وسيبنيه لك Voltra", "ai_c_code_d": "اكتب كوداً وارفعه للوحة", "ai_c_explain_d": "خطوة بخطوة مع القيم الحية", "ai_hello_d2": "مهندس الإلكترونيات الخاص بك: يصمّم الدوائر ويوصّلها، يكتشف الأعطال، يكتب كود Arduino ويختبر كل شيء في مختبر افتراضي.", "ai_bot_hello": "بوت مساعد من متجر الإضافات. اسأله ما تريد.", "ai_ph_bot": "اسأل المساعد…", "ai_keys": "Enter للإرسال · Shift + Enter لسطر جديد"});
 Object.assign(I18N.fr,{"ai_upload": "Téléverser sur la carte", "ai_worked": "{n} étapes réalisées", "ai_typing": "Voltra AI réfléchit", "ai_regen": "Régénérer", "ai_mode": "Mode de réponse", "ai_m_fast_d": "Réponses rapides et directes", "ai_m_think_d": "Planifie, cherche sur le web et teste les circuits au labo virtuel avant de répondre", "ai_m_loop_d": "Travaille sur votre espace et corrige jusqu’à ce que le circuit fonctionne", "ai_c_check_d": "Trouver les erreurs et les risques, puis corriger", "ai_c_build_d": "Décrivez-le, Voltra le câble", "ai_c_code_d": "Écrire et téléverser un programme", "ai_c_explain_d": "Étape par étape, avec les valeurs en direct", "ai_hello_d2": "Votre ingénieur électronicien : conçoit et câble des circuits, trouve les pannes, écrit du code Arduino et teste tout au labo virtuel.", "ai_bot_hello": "Bot assistant des Extensions Voltra. Posez-lui vos questions.", "ai_ph_bot": "Demandez à l’assistant…", "ai_keys": "Entrée pour envoyer · Maj + Entrée pour une nouvelle ligne"});
+Object.assign(I18N.en,{"add_parts": "Parts", "ph_hint": "Click to add · drag onto the canvas", "pb_new_s": "New part", "cat_recent": "Recently used", "ws_sub2": "Design, simulate and measure real circuits — with Voltra AI at your side.", "ws_try": "Start from an example"});
+Object.assign(I18N.ar,{"add_parts": "القطع", "ph_hint": "انقر للإضافة · أو اسحبها إلى اللوحة", "pb_new_s": "قطعة جديدة", "cat_recent": "المستخدمة مؤخراً", "ws_sub2": "صمّم وحاكِ وقِس دوائر حقيقية، ومعك مساعد ذكي في كل خطوة.", "ws_try": "ابدأ من مثال"});
+Object.assign(I18N.fr,{"add_parts": "Composants", "ph_hint": "Cliquez pour ajouter · glissez sur le canevas", "pb_new_s": "Nouveau", "cat_recent": "Utilisés récemment", "ws_sub2": "Concevez, simulez et mesurez de vrais circuits — avec Voltra AI à vos côtés.", "ws_try": "Commencer avec un exemple"});
 const LANGS=[['ar','العربية'],['en','English'],['fr','Français']];
 let LANG=(()=>{const s=Settings.lang;if(LANGS.some(l=>l[0]===s))return s;const n=((navigator.language||'en')+'').toLowerCase();return n.indexOf('ar')===0?'ar':n.indexOf('fr')===0?'fr':'en'})();
 function t(k,v){let s=(I18N[LANG]&&I18N[LANG][k])||I18N.en[k]||k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s}
@@ -3731,7 +3799,12 @@ function paintState(st){const e=$('#stState');e.className=st;e.textContent=t('s_
 function paintRecent(){const r=$('#wsRecent');if(!r)return;const l=DESK?Proj.list:[];r.hidden=!l.length;if(!l.length)return;
  r.innerHTML='<h5>'+esc(t('pj_recent'))+'</h5>'+l.slice(0,5).map((x,i)=>'<button type="button" data-i2="'+i+'">'+ic('file')+'<span>'+esc(x.name)+'</span><small>'+esc(x.path)+'</small></button>').join('');
  r.querySelectorAll('button').forEach(b=>b.onclick=()=>{const x=l[+b.dataset.i2];if(x)Proj.openPath(x.path)})}
-function updateInfo(){$('#empty').hidden=App.comps.length>0;if(!App.comps.length)try{paintRecent()}catch(e){}$('#stInfo').textContent=App.comps.length+' '+t('parts')+' · '+App.wires.length+' '+t('wires')+' · '+Run.nodes+' '+t('nodes')}
+const WS_FEAT=[['led','bolt'],['bridge','plug'],['a_game','chip'],['555','clock']];
+function paintFeat(){const f=$('#wsFeat');if(!f)return;const k=LANG+'|'+PRO_ON;if(f._k===k)return;f._k=k;
+ f.innerHTML='<h5>'+esc(t('ws_try'))+'</h5><div>'+WS_FEAT.map(([id,i])=>{const ex=EXAMPLES.find(e=>e.id===id);if(!ex)return'';const lk=!EX_FREE.has(id)&&!PRO_ON;
+  return'<button type="button" data-ex="'+id+'">'+ic(i)+'<span>'+esc(t(ex.n))+'</span>'+(lk?'<i class="lkx">'+ic('lock')+'</i>':'')+'</button>'}).join('')+'</div>';
+ f.querySelectorAll('[data-ex]').forEach(b=>b.onclick=()=>{const ex=EXAMPLES.find(e=>e.id===b.dataset.ex);if(ex)Veil.run(()=>{loadExample(ex);try{fitView()}catch(e){}},80)})}
+function updateInfo(){$('#empty').hidden=App.comps.length>0;if(!App.comps.length)try{paintRecent();paintFeat()}catch(e){}$('#stInfo').textContent=App.comps.length+' '+t('parts')+' · '+App.wires.length+' '+t('wires')+' · '+Run.nodes+' '+t('nodes')}
 
 /* ---- oscilloscope canvas ---- */
 const TDIV=[5e-5,1e-4,2e-4,5e-4,1e-3,2e-3,5e-3,1e-2,2e-2,5e-2,.1,.2,.5],VDIV=[.05,.1,.2,.5,1,2,5,10,20];
@@ -3791,7 +3864,7 @@ function addPart(ty,pos){const f0=featureOfPart(ty);if(f0&&!Entitlement.can(f0))
  if(T.ard)c.code=SKETCHES[0].code;
  App.comps.push(c);reindex();ensureComp(c,true);setSelection([c.id],[]);Run.dirty=true;Aud.place();Hist.commit();updateInfo();
  if(ty==='osc'&&!Scope.open)Scope.toggle(true);
- refreshInserted();return c}
+ refreshInserted();{const r=(Settings.recent||[]).filter(x=>x!==ty);r.unshift(ty);Settings.recent=r.slice(0,8);saveSettings();if(!$('#q').value)setTimeout(buildPalette,0)}return c}
 function addWire(a,b){
  if(!a||!b||a===b)return false;if(App.wires.some(w=>(w.a===a&&w.b===b)||(w.a===b&&w.b===a)))return false;
  App.wires.push({a,b,col:''});syncWires();const p=pinPos(b);if(p)ringAt(p.x,p.y);Aud.wire();Hist.commit();updateInfo();return true}
@@ -4025,15 +4098,17 @@ function thumbOf(ty){
  try{s='<svg class="th" viewBox="-4 -4 '+(T.w+8)+' '+(T.h+8)+'" aria-hidden="true">'+T.draw({id:0,ty,x:0,y:0,r:0,_r:{}})+'</svg>'}catch(e){s='<svg class="th" viewBox="0 0 10 10"></svg>'}
  Pal.thumbs.set(ty,s);return s}
 function fillThumbs(grid){$$('.it:not([data-f])',grid).forEach(b=>{b.dataset.f=1;b.insertAdjacentHTML('afterbegin',thumbOf(b.dataset.ty))})}
+const CAT_IC={recent:'clock',src:'bolt',pas:'sliders',semi:'chip',sw:'pointer',load:'vol',disp:'panel',ic:'chip',sens:'eye',inst:'scope',board:'code',cu:'wrench'};
 function buildPalette(){
  const q=($('#q').value||'').trim().toLowerCase(),host=$('#plist');host.innerHTML='';let any=false;
- CATS.forEach(cat=>{
-  const ids=Object.keys(TY).filter(id=>{const T=TY[id];if(T.cat!==cat||HIDDEN_TYPES.has(id))return false;if(!q)return true;return t('p_'+id).toLowerCase().indexOf(q)>=0||id.indexOf(q)>=0||t('cat_'+cat).toLowerCase().indexOf(q)>=0});
+ const rec=q?[]:(Settings.recent||[]).filter(id=>TY[id]&&!HIDDEN_TYPES.has(id)).slice(0,6);
+ (rec.length?['recent']:[]).concat(CATS).forEach(cat=>{
+  const ids=cat==='recent'?rec:Object.keys(TY).filter(id=>{const T=TY[id];if(T.cat!==cat||HIDDEN_TYPES.has(id))return false;if(!q)return true;return t('p_'+id).toLowerCase().indexOf(q)>=0||id.indexOf(q)>=0||t('cat_'+cat).toLowerCase().indexOf(q)>=0});
   if(!ids.length)return;any=true;
-  const box=mk('div','cat'+((q||Pal.open.has(cat))?' open':'')),hd=mk('button',null,'<span>'+esc(t('cat_'+cat))+'<span class="cnt">'+ids.length+'</span></span>'+ic('chev')),grid=mk('div','grid');
+  const box=mk('div','cat'+((q||Pal.open.has(cat)||cat==='recent'&&!Pal.closedRecent)?' open':'')+(cat==='recent'?' rec':'')),hd=mk('button',null,'<span class="cic">'+ic(CAT_IC[cat]||'chip')+'</span><span class="cnm">'+esc(t('cat_'+cat))+'</span><span class="cnt">'+ids.length+'</span>'+ic('chev')),grid=mk('div','grid');
   hd.setAttribute('aria-expanded',box.classList.contains('open'));
   ids.forEach(id=>{const b=mk('button','it','<span>'+esc(t('p_'+id))+'</span>');b.dataset.ty=id;b.title=t('p_'+id);if(isLockedTy(id)){b.classList.add('plk');b.insertAdjacentHTML('beforeend','<i class="lk">'+ic('lock')+'</i>')}grid.appendChild(b)});
-  hd.onclick=()=>{const o=box.classList.toggle('open');hd.setAttribute('aria-expanded',o);if(!q){o?Pal.open.add(cat):Pal.open.delete(cat)}if(o)fillThumbs(grid)};
+  hd.onclick=()=>{const o=box.classList.toggle('open');hd.setAttribute('aria-expanded',o);if(cat==='recent')Pal.closedRecent=!o;else if(!q){o?Pal.open.add(cat):Pal.open.delete(cat)}if(o)fillThumbs(grid)};
   box.appendChild(hd);box.appendChild(grid);host.appendChild(box);if(box.classList.contains('open'))fillThumbs(grid)});
  if(!any)host.appendChild(mk('div','empty',esc(t('no_results'))));if(window.pbDecorate)pbDecorate()}
 
