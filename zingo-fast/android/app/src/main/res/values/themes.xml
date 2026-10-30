@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ZingoTheme" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/zf_bg</item>
+        <item name="android:colorPrimary">@color/zf_acc</item>
+        <item name="android:colorAccent">@color/zf_acc</item>
+        <item name="android:statusBarColor">@color/zf_bar</item>
+        <item name="android:navigationBarColor">@color/zf_bar</item>
+    </style>
+</resources>

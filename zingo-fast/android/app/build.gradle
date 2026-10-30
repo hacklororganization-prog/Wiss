@@ -1,0 +1,49 @@
+plugins { id 'com.android.application' }
+
+/* Release signing: set ZF_KEYSTORE (path), ZF_KS_PASS, ZF_KEY_ALIAS, ZF_KEY_PASS.
+   Without them the release APK is signed with the debug key (fine for testing, but it cannot update an APK signed with the real key). */
+def ks = System.getenv('ZF_KEYSTORE')
+def hasKey = ks != null && file(ks).exists()
+
+android {
+    namespace 'com.zingofast.app'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'com.zingofast.app'
+        minSdk 24
+        targetSdk 35
+        versionCode 3
+        versionName '1.3.0'
+    }
+    signingConfigs {
+        if (hasKey) {
+            release {
+                storeFile file(ks)
+                storePassword System.getenv('ZF_KS_PASS')
+                keyAlias System.getenv('ZF_KEY_ALIAS')
+                keyPassword System.getenv('ZF_KEY_PASS')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig hasKey ? signingConfigs.release : signingConfigs.debug
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    buildFeatures { buildConfig true }
+    applicationVariants.all { v ->
+        v.outputs.all { o -> outputFileName = "ZINGO-Fast-${v.versionName}.apk" }
+    }
+}
+
+/* the web app (release build of index.dev.html) is packaged as assets/index.html */
+tasks.register('copyWebApp', Copy) {
+    from(file('../../app/index.html'))
+    into(file('src/main/assets'))
+}
+preBuild.dependsOn copyWebApp

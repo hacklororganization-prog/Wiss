@@ -1,0 +1,50 @@
+name: ZINGO Fast - Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'zingo-fast/**'
+      - '.github/workflows/zingo-android.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Build the web app
+        working-directory: zingo-fast/app
+        run: python build.py index.dev.html index.html
+      - name: Release signing key (from repository secrets, if set)
+        env:
+          ZF_KEYSTORE_B64: ${{ secrets.ZF_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$ZF_KEYSTORE_B64" ]; then
+            echo "$ZF_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/zingo-release.jks"
+            echo "ZF_KEYSTORE=$RUNNER_TEMP/zingo-release.jks" >> "$GITHUB_ENV"
+            echo "Signing with the release key."
+          else
+            echo "::warning::No ZF_KEYSTORE_B64 secret: the APK is signed with a temporary debug key."
+          fi
+      - name: Build APK
+        working-directory: zingo-fast/android
+        env:
+          ZF_KS_PASS: ${{ secrets.ZF_KS_PASS }}
+          ZF_KEY_ALIAS: ${{ secrets.ZF_KEY_ALIAS }}
+          ZF_KEY_PASS: ${{ secrets.ZF_KEY_PASS }}
+        run: gradle --no-daemon assembleRelease
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ZINGO-Fast-APK
+          path: zingo-fast/android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error

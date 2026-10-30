@@ -405,6 +405,33 @@ body.rszing #cv{pointer-events:none}
 .ai-hint{margin:0;color:var(--mut);font-size:11.5px;line-height:1.6}.ai-hint.ok{color:var(--ok)}.ai-hint.err{color:var(--warn)}
 .ai-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.ai-stats div{border:1px solid var(--line);border-radius:10px;padding:6px;text-align:center;background:var(--bg2)}.ai-stats b{display:block;font-size:16px}.ai-stats span{font-size:10.5px;color:var(--mut)}
 .ai-row{display:flex;gap:6px;flex-wrap:wrap}.ai-row .btn{gap:6px;height:32px;padding:0 10px;font-size:12px}
+/* ---- phone layout ---- */
+#mnav,#mobBg{display:none}
+body.mob{--top:52px;--stat:24px}
+body.mob #app{min-width:0;min-height:0;height:100vh;height:100dvh}
+body.mob .brand b,body.mob #bReset,body.mob #sSpd,body.mob #segView,body.mob #gView,body.mob #bScope,body.mob #bCode,body.mob #bAi,body.mob #bTheme,body.mob #bLang,body.mob #bSnd,body.mob #top .sp{display:none!important}
+body.mob #top{gap:6px;padding:0 8px}body.mob .brand{padding:0 2px}body.mob #top .grp{padding:2px}
+body.mob .pj{min-width:0;flex:1 1 auto;max-width:none;height:36px;padding:0 10px}
+body.mob #trialChip{max-width:28vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;padding:0 8px}
+body.mob .ib{min-width:40px;height:40px}
+body.mob #parts,body.mob #dock{position:fixed;top:var(--top);bottom:calc(var(--stat) + 60px);width:min(100vw,440px)!important;z-index:70;border-radius:0}
+body.mob #parts{inset-inline-start:0}body.mob #dock{inset-inline-end:0}
+body.mob .rsz{display:none!important}
+body.mob #mobBg:not([hidden]){display:block;position:fixed;top:var(--top);bottom:calc(var(--stat) + 60px);left:0;right:0;background:rgba(0,0,0,.4);z-index:65}
+body.mob #mnav{display:flex;flex:none;height:60px;border-top:1px solid var(--line);background:var(--panel2);z-index:40;padding:0 4px}
+#mnav button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;background:none;color:var(--mut);font:600 11px var(--ui);cursor:pointer;border-radius:12px;margin:4px 2px}
+#mnav button span:last-child{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#mnav button .i{width:22px;height:22px}#mnav button.on{color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,transparent)}
+#mnav #mAi .i{color:var(--acc)}
+body.mob #stTime,body.mob #stInfo,body.mob #stSel,body.mob #stHint{display:none}
+body.mob #empty{padding-inline:16px}body.mob #empty b{font-size:17px}body.mob #empty p{font-size:12.5px}
+body.mob #empty .ws{gap:8px;margin-top:12px}body.mob .wsc{width:min(30vw,150px);padding:12px 6px}body.mob .wsc small{display:none}body.mob #empty .wsc b{font-size:12.5px;white-space:normal}
+body.mob .wsr{min-width:0;width:100%}body.mob .wsr button small{display:none}
+@media (max-width:480px){body.mob #trialChip{display:none!important}}
+@media (max-height:540px){body.mob #mnav{height:46px}body.mob #mnav button{flex-direction:row;gap:6px;margin:3px 2px}body.mob #parts,body.mob #dock{bottom:calc(var(--stat) + 46px)}body.mob #mobBg:not([hidden]){bottom:calc(var(--stat) + 46px)}body.mob #tools .grp:nth-child(2){display:none}}
+body.mob .mk{display:none}
+body.mob #scopeP{inset-inline-start:8px;inset-inline-end:8px;width:auto;bottom:8px}
+body.mob .ai-hl small{max-width:110px}
 #empty .ws{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;justify-content:center;pointer-events:auto}
 .wsc{display:flex;flex-direction:column;align-items:center;gap:6px;width:168px;padding:18px 14px 16px;border:1px solid var(--line);border-radius:16px;background:var(--bg2);color:var(--ink);cursor:pointer;font:inherit;box-shadow:0 6px 24px rgba(0,0,0,.12);transition:transform .15s,border-color .15s,box-shadow .15s}
 .wsc:hover{transform:translateY(-2px);border-color:var(--acc);box-shadow:0 10px 30px color-mix(in srgb,var(--acc) 22%,transparent)}
@@ -858,6 +885,14 @@ body.focus #work{grid-template-columns:minmax(0,1fr)!important}
    </div>
   </aside>
  </main>
+ <nav id="mnav" aria-label="Navigation">
+  <button type="button" id="mParts"><span data-i="plus"></span><span data-t="add_parts"></span></button>
+  <button type="button" id="mProps"><span data-i="sliders"></span><span data-t="props"></span></button>
+  <button type="button" id="mAi"><span data-i="spark"></span><span data-t="ai_tab"></span></button>
+  <button type="button" id="mScope"><span data-i="scope"></span><span data-t="scope"></span></button>
+  <button type="button" id="mMode"><span data-i="eye"></span><span id="mModeL"></span></button>
+ </nav>
+ <div id="mobBg" hidden></div>
  <footer id="status"><span id="stState" role="status" aria-live="polite"></span><span id="stTime"></span><span id="stInfo"></span><span id="stSel"></span><span class="sp"></span><span id="stHint"></span><span id="stSave"></span><button id="stZoom" data-tt="fit">100%</button></footer>
 </div>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -869,6 +904,26 @@ body.focus #work{grid-template-columns:minmax(0,1fr)!important}
 <input type="file" id="fileIn" accept=".zingo,.json,application/json" hidden>
 <script>
 (function(){"use strict";
+/* ===== Android app: the native ZingoAndroid interface is wrapped into the same API the desktop app exposes (window.ZingoDesktop) ===== */
+(function(){const A=window.ZingoAndroid;if(!A||window.ZingoDesktop)return;
+ let seq=0;const pend=new Map(),ai=new Map(),hOpen=[],hClose=[];
+ window.__zfCb=(id,ok,data)=>{const p=pend.get(id);if(!p)return;pend.delete(id);let v=null;try{v=data==null?null:JSON.parse(data)}catch(e){v=data}if(ok)p.res(v);else p.rej(new Error(String(v||'error')))};
+ window.__zfAi=(id,ev)=>{const h=ai.get(id);if(!h)return;try{h(typeof ev==='string'?JSON.parse(ev):ev)}catch(e){}};
+ window.__zfOpen=uri=>hOpen.forEach(f=>{try{f(uri)}catch(e){}});
+ const call=(m,...a)=>new Promise((res,rej)=>{const id=++seq;pend.set(id,{res,rej});try{A.call(id,m,JSON.stringify(a))}catch(e){pend.delete(id);rej(e)}});
+ /* system Back: dialogs, menus, drawers first; on the main screen the unsaved-changes check decides */
+ window.__zfBack=()=>{try{if(window.ZingoNative&&window.ZingoNative.back())return'1';if(Pop.cur){Pop.hide();return'1'}if(MOB.cur()){MOB.close();return'1'}if(App.pend){App.pend=null;clearPendUI();return'1'}}catch(e){}
+  if(!hClose.length)return'0';hClose.forEach(f=>{try{f()}catch(e){}});return'1'};
+ window.ZingoDesktop=Object.freeze({isDesktop:true,platform:'android',claude:false,
+  ready:()=>call('ready'),setTitle:()=>Promise.resolve(true),
+  openProject:()=>call('openProject'),readProject:p=>call('readProject',String(p)),pickSavePath:n=>call('pickSavePath',String(n||'')),
+  writeProject:(p,t)=>call('writeProject',String(p),String(t)),createProject:n=>call('createProject',String(n||'')),renameProject:(p,n)=>call('renameProject',String(p),String(n||'')),
+  recent:()=>call('recent'),exportFile:(n,b)=>call('exportFile',String(n||''),String(b||'')),showInFolder:()=>Promise.resolve(false),openExternal:u=>call('openExternal',String(u)),
+  closeNow:()=>call('closeNow'),onOpenFile:f=>{hOpen.push(f)},onCloseRequest:f=>{hClose.push(f)},
+  dataRead:n=>call('dataRead',String(n)),dataWrite:(n,t)=>call('dataWrite',String(n),String(t)),secretGet:n=>call('secretGet',String(n)),secretSet:(n,v)=>call('secretSet',String(n),String(v||'')),
+  net:r=>call('net',{method:r&&r.method,url:r&&r.url,body:r&&r.body,timeout:r&&r.timeout}),
+  aiStream:(req,cb)=>{ai.set(req.id,cb);call('aiStream',{id:req.id,provider:req.provider,base:req.base,model:req.model,key:req.key,system:req.system,messages:req.messages,temperature:req.temperature}).catch(e=>cb({id:req.id,type:'error',message:String(e&&e.message||e)}));return()=>ai.delete(req.id)},
+  aiAbort:id=>{ai.delete(id);return call('aiAbort',id)}})})();
 /* ===== CONTENT LOCK (JS): block selection, copy, cut, drag and drop outside input fields ===== */
 (function(){
  const inField=n=>{const e=n&&(n.nodeType===1?n:n.parentElement);return!!(e&&e.closest&&e.closest('input,textarea,[contenteditable="true"]'))};
@@ -893,6 +948,18 @@ const Store=(()=>{const mem={};let ok=true;
 const KEY_DOC='circ3',KEY_SET='circ3_set',KEY_OLD='circ2';
 const Settings=Object.assign({theme:'auto',lang:'',vol:.6,mute:false,wstyle:'orth',vcol:true,snap:true,vals:true,names:true,mode:'bb',speed:1,perf:'auto',hp:false,hd:false},Store.json(KEY_SET)||{});
 const saveSettings=()=>Store.set(KEY_SET,JSON.stringify(Settings));
+/* ===== phones & small tablets (also the Android app): full-screen canvas, panels as drawers, bottom navigation ===== */
+const MOB={on:false,q:window.matchMedia?window.matchMedia('(max-width:760px), (max-height:540px) and (pointer:coarse)'):{matches:false},
+ init(){const f=()=>this.apply();try{this.q.addEventListener('change',f)}catch(e){try{this.q.addListener(f)}catch(_){}}window.addEventListener('resize',f);this.apply();
+  $('#mParts').onclick=()=>this.toggle('parts');$('#mProps').onclick=()=>this.toggle('props');$('#mAi').onclick=()=>this.toggle('ai');
+  $('#mScope').onclick=()=>{this.close();Scope.toggle()};$('#mMode').onclick=()=>{this.close();setMode(App.mode==='sch'?'bb':'sch');this.paint()};$('#mobBg').onclick=()=>this.close();this.paint()},
+ apply(){const on=!!this.q.matches;if(on===this.on)return;this.on=on;document.body.classList.toggle('mob',on);if(on){Settings.hp=true;Settings.hd=true;applyPanels()}this.paint();if(typeof APP_UP!=='undefined'&&APP_UP)setTimeout(()=>{try{fitView()}catch(e){}},60)},
+ cur(){return!this.on?null:!Settings.hp?'parts':!Settings.hd?App.tab:null},
+ open(w){if(w==='parts'){Settings.hp=false;Settings.hd=true;applyPanels()}else{Settings.hp=true;Settings.hd=false;applyPanels();setTab(w)}this.paint()},
+ close(){if(Settings.hp&&Settings.hd)return;Settings.hp=true;Settings.hd=true;applyPanels();this.paint()},
+ toggle(w){if(this.cur()===w)this.close();else this.open(w)},
+ paint(){if(typeof document==='undefined')return;const c=this.cur();[['mParts','parts'],['mProps','props'],['mAi','ai']].forEach(([id,k])=>{const b=document.getElementById(id);if(b)b.classList.toggle('on',c===k)});
+  const bg=document.getElementById('mobBg');if(bg)bg.hidden=!c;const ml=document.getElementById('mModeL');if(ml&&typeof t==='function')ml.textContent=t(App&&App.mode==='sch'?'v_bb':'v_sch')}};
 
 const DEV_BUILD=false;
 const BILLING={currency:'USD',trialMs:2592e5,order:['daily','weekly','monthly'],links:{terms:'',privacy:''},
@@ -2715,6 +2782,8 @@ const Pop={cur:null,
    if(it.node){p.appendChild(it.node);return}
    const b=document.createElement('button');b.className='mi'+(it.dng?' dng':'');b.innerHTML=(it.i?ic(it.i):'')+'<span>'+esc(it.l)+'</span>'+(it.k?'<span class="mk">'+esc(it.k)+'</span>':'')+(it.pro&&!Entitlement.can(it.pro)?'<span class="lk2">'+ic('lock')+'</span>':'');
    if(it.off)b.disabled=true;b.onclick=()=>{Pop.hide();it.run()};p.appendChild(b)});
+  /* never taller than the window: long menus scroll (phones) */
+  p.style.maxHeight=(window.innerHeight-12)+'px';p.style.overflowY='auto';
   p.classList.add('show');const w=p.offsetWidth,h=p.offsetHeight,vw=window.innerWidth,vh=window.innerHeight;
   if(anchor){const r=anchor.getBoundingClientRect();x=document.documentElement.dir==='rtl'?r.right-w:r.left;y=r.bottom+6}
   p.style.left=clampN(x,6,vw-w-6)+'px';p.style.top=clampN(y,6,vh-h-6)+'px';this.cur=p},
@@ -2751,7 +2820,7 @@ function fitView(){
  if(!App.comps.length){App.tv={x:40,y:40,z:1};Object.assign(App.view,App.tv);applyView();return}
  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;App.comps.forEach(c=>{const b=bboxOf(c);x0=Math.min(x0,b.x0);y0=Math.min(y0,b.y0);x1=Math.max(x1,b.x1);y1=Math.max(y1,b.y1)});
  const r=cv.getBoundingClientRect(),m=44;let L=0,R=0,bot=0;
- ['#parts','#dock','#tools'].forEach(q=>{const e=$(q),b=e&&e.getBoundingClientRect();if(!b||b.width<2)return;const pad=q==='#tools'?12:0;if(b.left+b.width/2<r.left+r.width/2)L=Math.max(L,b.right-r.left+pad);else R=Math.max(R,r.right-b.left+pad)});
+ ['#parts','#dock','#tools'].forEach(q=>{const e=$(q),b=e&&e.getBoundingClientRect();if(!b||b.width<2||(q==='#parts'&&Settings.hp)||(q==='#dock'&&Settings.hd))return;const pad=q==='#tools'?12:0;if(b.left+b.width/2<r.left+r.width/2)L=Math.max(L,b.right-r.left+pad);else R=Math.max(R,r.right-b.left+pad)});
  let H=r.height,W=r.width-L-R;const bw=Math.max(1,x1-x0),bh=Math.max(1,y1-y0);
  if(Scope.open){const sp=$('#scopeP').getBoundingClientRect(),sh=sp.height+24,left=sp.left+sp.width/2<r.left+r.width/2,sw=sp.width+24;
   const zB=Math.min((W-2*m)/bw,(r.height-sh-2*m)/bh),zS=Math.min((W-sw-2*m)/bw,(r.height-2*m)/bh);
@@ -3461,7 +3530,7 @@ function buildPalette(){
 
 /* click adds at the view centre; mouse drag-out drops where released */
 let palDrag=null,palNoClick=0;
-$('#plist').addEventListener('click',e=>{const b=e.target.closest('.it');if(!b||Date.now()<palNoClick)return;Aud.ensure();addPart(b.dataset.ty)});
+$('#plist').addEventListener('click',e=>{const b=e.target.closest('.it');if(!b||Date.now()<palNoClick)return;Aud.ensure();if(addPart(b.dataset.ty)&&MOB.on)MOB.close()});
 $('#plist').addEventListener('pointerdown',e=>{const b=e.target.closest('.it');if(!b||e.pointerType!=='mouse'||e.button!==0||isLockedTy(b.dataset.ty))return;palDrag={ty:b.dataset.ty,x:e.clientX,y:e.clientY,on:false,id:e.pointerId,b}});
 document.addEventListener('pointermove',e=>{const d=palDrag;if(!d||e.pointerId!==d.id)return;
  if(!d.on&&Math.hypot(e.clientX-d.x,e.clientY-d.y)>6){d.on=true;const g=$('#ghost');g.innerHTML=thumbOf(d.ty);g.style.display='block'}
@@ -3495,9 +3564,9 @@ function initResizers(){
   h.addEventListener('dblclick',()=>{delete Settings[key];saveSettings();applyPanelSizes()})});
  applyPanelSizes()}
 function applyPanels(){document.body.classList.toggle('hp',!!Settings.hp);document.body.classList.toggle('hd',!!Settings.hd);
- $('#bPartsT').setAttribute('aria-pressed',String(!Settings.hp));$('#bDockT').setAttribute('aria-pressed',String(!Settings.hd))}
+ $('#bPartsT').setAttribute('aria-pressed',String(!Settings.hp));$('#bDockT').setAttribute('aria-pressed',String(!Settings.hd));MOB.paint()}
 function setFocus(on){on=!!on;document.body.classList.toggle('focus',on);App.focus=on;setTimeout(()=>{try{window.dispatchEvent(new Event('resize'))}catch(e){}},280)}
-function openDock(tab){if(Settings.hd){Settings.hd=false;saveSettings();applyPanels()}setTab(tab||App.tab);syncDockButtons()}
+function openDock(tab){if(MOB.on){MOB.open(tab||App.tab);syncDockButtons();return}if(Settings.hd){Settings.hd=false;saveSettings();applyPanels()}setTab(tab||App.tab);syncDockButtons()}
 function syncDockButtons(){const on=App.tab==='code',b=$('#bCode');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);const a=$('#bAi');if(a){const o=App.tab==='ai'&&!Settings.hd;a.classList.toggle('on',o);a.setAttribute('aria-pressed',o)}}
 function toggleCode(){openDock(App.tab==='code'?'props':'code')}
 
@@ -4714,11 +4783,11 @@ const NARROW=window.matchMedia?window.matchMedia('(max-width:760px)'):{matches:f
 function cycleSpeed(){const sel=$('#sSpd');let i=(sel.selectedIndex+1)%sel.options.length;if(+sel.options[i].value>2&&!Entitlement.can('speed')){i=0;ProNote.show(t('speed_locked'),'speed')}sel.selectedIndex=i;sel.dispatchEvent(new Event('change'))}
 function openMenu(){
  const has=App.comps.length>0;
- const extra=NARROW.matches?[{i:'reset',l:t('reset'),run:()=>$('#bReset').click()},{i:'play',l:t('speed')+': '+$('#sSpd').selectedOptions[0].text,run:cycleSpeed},{i:'sun',l:t('theme'),run:toggleTheme},{i:'globe',l:t('lang'),run:switchLang},{i:Settings.mute?'mute':'vol',l:t('sound'),run:openSound},'-']:[];
+ const extra=(NARROW.matches||MOB.on)?[{i:'code',l:t('code'),run:()=>openDock('code')},{i:'reset',l:t('reset'),run:()=>$('#bReset').click()},{i:'play',l:t('speed')+': '+$('#sSpd').selectedOptions[0].text,run:cycleSpeed},{i:'sun',l:t('theme'),run:toggleTheme},{i:'globe',l:t('lang'),run:switchLang},{i:Settings.mute?'mute':'vol',l:t('sound'),run:openSound},'-']:[];
  Pop.show('menu',[...extra,
   {i:'plus',l:t('pj_new'),k:'Ctrl+N',run:()=>Proj.newProject()},{i:'open',l:t('pj_open'),k:'Ctrl+O',run:()=>Proj.open()},{i:'save',l:t('pj_save'),k:'Ctrl+S',run:()=>Proj.save()},{i:'save',l:t('pj_saveas'),k:'Ctrl+Shift+S',run:()=>Proj.saveAs()},
   ...(DESK&&Proj.list.length?['-',...Proj.list.slice(0,5).map(r=>({i:'file',l:r.name,run:()=>Proj.openPath(r.path)}))]:[]),
-  ...(DESK&&Proj.path?[{i:'folder',l:t('pj_show'),run:()=>DESK.showInFolder(Proj.path)}]:[]),'-',
+  ...(DESK&&Proj.path&&DESK.platform!=='android'?[{i:'folder',l:t('pj_show'),run:()=>DESK.showInFolder(Proj.path)}]:[]),'-',
   {i:'search',l:t('l_check'),run:()=>Lint.check()},{i:'trash',l:t('new_circuit'),run:newCircuit,off:!has},{i:'flask',l:t('examples'),run:examplesDialog},{i:'wrench',l:t('pb_title'),pro:'partbuilder',run:()=>PB.open()},'-',
   {i:'paste',l:t('paste_json'),run:pasteImport},{i:'save',l:t('export_json'),run:exportJSON},
   {i:'img',l:t('export_png'),run:exportPNG,off:!has},{i:'img',l:t('export_svg'),run:exportSVG,off:!has},{i:'save',l:t('export_bom'),run:exportBOM,off:!has},'-',
@@ -4908,7 +4977,7 @@ function aiIntent(q){const n=AIT.norm(q);return{part:/(قطعه جديده|قط�
 const AIRun={id:0,
  async stream(cfg,system,msgs,onText,signal){
   const pv=AI_PRESETS[cfg.p]||AI_PRESETS.free,base=(cfg.p==='custom'||cfg.p==='openrouter'?cfg.u:'')||pv.u,model=cfg.m||pv.m;
-  if(cfg.p==='claude'&&!DESK)throw new Error(t('ai_e_claude_web'));
+  if(cfg.p==='claude'&&(!DESK||DESK.claude===false))throw new Error(t('ai_e_claude_web'));
   if(pv.key===true&&!cfg.k)throw new Error(t('ai_e_key'));
   if(cfg.p!=='claude'&&!/^(https:\/\/|http:\/\/(127\.0\.0\.1|localhost)(:\d+)?\/)/.test(base||''))throw new Error(t('ai_e_url'));
   if(!model)throw new Error(t('ai_e_model'));
@@ -4992,7 +5061,7 @@ const AI={cfg:{p:'free',k:'',m:'',u:'',share:false,net:true,server:'',asked:fals
   if(ok)Store.set('zf_ai_key_'+this.cfg.p,'');else Store.set('zf_ai_key_'+this.cfg.p,k)},
  async loadKey(){let k='';if(DESK&&DESK.secretGet){try{k=(await DESK.secretGet('ai_key_'+this.cfg.p))||''}catch(e){}}this.cfg.k=k||Store.get('zf_ai_key_'+this.cfg.p)||''},
  saveChat(){Store.set(AI_KEY_CHAT,JSON.stringify(this.chat.slice(-60).map(m=>({r:m.r,c:m.c,q:m.q,fid:m.fid,v:m.v,err:m.err,applied:m.applied}))))},
- ready(){const pv=AI_PRESETS[this.cfg.p];return!!pv&&(pv.key!==true||!!this.cfg.k)&&(this.cfg.p!=='claude'||!!DESK)},
+ ready(){const pv=AI_PRESETS[this.cfg.p];return!!pv&&(pv.key!==true||!!this.cfg.k)&&(this.cfg.p!=='claude'||!!(DESK&&DESK.claude!==false))},
  /* ---- conversation ---- */
  async ask(q,o){o=o||{};q=String(q||'').trim();if(!q||this.busy)return;
   if(!this.ready()){this.view='set';this.render();this.note(t('ai_need_setup'));return}
@@ -5062,7 +5131,7 @@ const AI={cfg:{p:'free',k:'',m:'',u:'',share:false,net:true,server:'',asked:fals
  syncCls(){const s=AISync.st.state;return s==='ok'?'ok':s==='busy'?'busy':s==='err'?'err':''},
  syncTip(){const s=AISync.st;return s.state==='ok'?t('ai_sync_ok',{host:s.host||'',rev:s.rev}):s.state==='err'?t('ai_sync_err')+(s.msg?': '+s.msg:''):s.state==='busy'?t('ai_sync_busy'):t('ai_sync_off')},
  setHtml(){const c=this.cfg,pv=AI_PRESETS[c.p]||AI_PRESETS.free,cn=Brain.counts(),s=AISync.st;
-  const opts=Object.keys(AI_PRESETS).filter(k=>!AI_PRESETS[k].desk||DESK).map(k=>'<option value="'+k+'"'+(k===c.p?' selected':'')+'>'+esc(t(AI_PRESETS[k].n))+'</option>').join('');
+  const opts=Object.keys(AI_PRESETS).filter(k=>!AI_PRESETS[k].desk||(DESK&&DESK.claude!==false)).map(k=>'<option value="'+k+'"'+(k===c.p?' selected':'')+'>'+esc(t(AI_PRESETS[k].n))+'</option>').join('');
   return'<div class="ai-set">'
    +'<h4>'+esc(t('ai_s_model'))+'</h4>'
    +'<label>'+esc(t('ai_s_provider'))+'<select id="aiP">'+opts+'</select></label>'
@@ -5288,6 +5357,7 @@ setInterval(()=>{try{Lab.tick()}catch(e){}},300);
  const mid=()=>{const r=cv.getBoundingClientRect();return[r.left+r.width/2,r.top+r.height/2]};
  $('#zIn').onclick=()=>zoomAt(...mid(),1.25);$('#zOut').onclick=()=>zoomAt(...mid(),.8);$('#zFit').onclick=fitView;
  $('#tabBtnP').onclick=()=>openDock('props');$('#tabBtnC').onclick=()=>openDock('code');$('#tabBtnL').onclick=()=>openDock('lab');$('#tabBtnA').onclick=()=>openDock('ai');
+ MOB.init();
  $('#bAi').onclick=()=>{if(App.tab==='ai'&&!Settings.hd){openDock('props')}else openDock('ai')};AI.mount();AI.init().then(()=>AI.render());
   $('#bPartsT').onclick=()=>{Settings.hp=!Settings.hp;saveSettings();applyPanels()};
   $('#bDockT').onclick=()=>{Settings.hd=!Settings.hd;saveSettings();applyPanels()};
