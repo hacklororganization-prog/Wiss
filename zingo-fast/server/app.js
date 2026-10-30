@@ -117,6 +117,8 @@ const server=http.createServer(async(req,res)=>{
     send(req,res,404,{ok:false,error:'not found'})}
   catch(e){send(req,res,e.message==='too large'?413:400,{ok:false,error:e.message})}});
 server.headersTimeout=15000;server.requestTimeout=30000;
+server.on('error',e=>{if(e.code==='EADDRINUSE'){log('Port '+CFG.port+' is already in use: the ZINGO server is probably already running.');log('Stop the old one with:  pkill -f "node app.js"   then start again.');process.exit(3)}
+  log('server error:',e.message);process.exit(1)});
 
 /* ---------------- Firebase: owner sign-in + Firestore document zingo/server ---------------- */
 const FB=CFG.firebase;let tok={id:'',refresh:'',exp:0};
