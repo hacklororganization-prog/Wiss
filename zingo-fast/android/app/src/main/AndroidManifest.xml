@@ -23,7 +23,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- open .zingo project files from file managers, Telegram, WhatsApp, Drive ... -->
+            <!-- open .voltra / .zingo project files from file managers, Telegram, WhatsApp, Drive ... -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />

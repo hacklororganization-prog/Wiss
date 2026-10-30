@@ -95,7 +95,7 @@ public class Bridge {
             case "closeNow": act.runOnUiThread(act::finish); return true;
             case "openProject": return picker(id, MainActivity.REQ_OPEN, openIntent(), "", null);
             case "pickSavePath": {
-                String name = cleanName(a.optString(0, "ZINGO")).replaceAll("(?i)\\.zingo$", "") + ".zingo";
+                String name = cleanName(a.optString(0, "Voltra")).replaceAll("(?i)\\.(voltra|zingo)$", "") + ".voltra";
                 return picker(id, MainActivity.REQ_SAVE_AS, createIntent(name, "application/octet-stream"), name, null);
             }
             case "exportFile": {
@@ -106,7 +106,7 @@ public class Bridge {
             }
             case "readProject": return readProject(a.optString(0, ""));
             case "writeProject": return writeProject(a.optString(0, ""), a.optString(1, ""));
-            case "createProject": return createProject(a.optString(0, "ZINGO"));
+            case "createProject": return createProject(a.optString(0, "Voltra"));
             case "renameProject": return renameProject(a.optString(0, ""), a.optString(1, ""));
             case "recent": return recent();
             case "openExternal": act.runOnUiThread(() -> act.openExternal(a.optString(0, ""))); return true;
@@ -178,7 +178,7 @@ public class Bridge {
                     ok(id, o);
                 } else if (req == MainActivity.REQ_SAVE_AS) {
                     String n = displayName(uri, name);
-                    ok(id, new JSONObject().put("path", uri.toString()).put("name", n.replaceAll("(?i)\\.(zingo|json)$", "")));
+                    ok(id, new JSONObject().put("path", uri.toString()).put("name", n.replaceAll("(?i)\\.(voltra|zingo|json)$", "")));
                 } else {
                     try (OutputStream os = act.getContentResolver().openOutputStream(uri, "wt")) {
                         if (os == null) throw new Exception("cannot write");
@@ -192,7 +192,7 @@ public class Bridge {
 
     void openFromIntent(Uri uri) {
         String n = displayName(uri, "");
-        if (!n.isEmpty() && !n.toLowerCase().matches(".*\\.(zingo|json)$")) return;
+        if (!n.isEmpty() && !n.toLowerCase().matches(".*\\.(voltra|zingo|json)$")) return;
         allowed.add(uri.toString());
         if (ready) act.runJs("window.__zfOpen&&window.__zfOpen(" + JSONObject.quote(uri.toString()) + ")");
         else openLater = uri.toString();
@@ -238,14 +238,14 @@ public class Bridge {
         ContentResolver cr = act.getContentResolver();
         try (InputStream in = cr.openInputStream(u)) {
             if (in == null) throw new Exception("cannot read");
-            String name = displayName(u, "ZINGO").replaceAll("(?i)\\.(zingo|json)$", "");
+            String name = displayName(u, "Voltra").replaceAll("(?i)\\.(voltra|zingo|json)$", "");
             return new JSONObject().put("path", u.toString()).put("name", name).put("text", new String(readAll(in), StandardCharsets.UTF_8));
         }
     }
 
     private JSONObject readFile(File f) throws Exception {
         try (InputStream in = new FileInputStream(f)) {
-            return new JSONObject().put("path", f.getAbsolutePath()).put("name", f.getName().replaceAll("(?i)\\.(zingo|json)$", "")).put("text", new String(readAll(in), StandardCharsets.UTF_8));
+            return new JSONObject().put("path", f.getAbsolutePath()).put("name", f.getName().replaceAll("(?i)\\.(voltra|zingo|json)$", "")).put("text", new String(readAll(in), StandardCharsets.UTF_8));
         }
     }
 
@@ -258,10 +258,10 @@ public class Bridge {
                     if (os == null) throw new Exception("cannot write");
                     os.write(b);
                 }
-                addRecent(p, displayName(Uri.parse(p), "ZINGO").replaceAll("(?i)\\.(zingo|json)$", ""));
+                addRecent(p, displayName(Uri.parse(p), "Voltra").replaceAll("(?i)\\.(voltra|zingo|json)$", ""));
             } else {
                 writeAtomic(new File(p), b);
-                addRecent(p, new File(p).getName().replaceAll("(?i)\\.(zingo|json)$", ""));
+                addRecent(p, new File(p).getName().replaceAll("(?i)\\.(voltra|zingo|json)$", ""));
             }
             return new JSONObject().put("ok", true);
         } catch (Exception e) { return new JSONObject().put("ok", false).put("error", String.valueOf(e.getMessage())); }
@@ -270,9 +270,9 @@ public class Bridge {
     private Object createProject(String name) throws Exception {
         File d = projectsDir();
         String base = cleanName(name);
-        File f = new File(d, base + ".zingo");
-        for (int i = 2; f.exists(); i++) f = new File(d, base + " (" + i + ").zingo");
-        return new JSONObject().put("path", f.getAbsolutePath()).put("name", f.getName().replaceAll("(?i)\\.zingo$", ""));
+        File f = new File(d, base + ".voltra");
+        for (int i = 2; f.exists(); i++) f = new File(d, base + " (" + i + ").voltra");
+        return new JSONObject().put("path", f.getAbsolutePath()).put("name", f.getName().replaceAll("(?i)\\.(voltra|zingo)$", ""));
     }
 
     private Object renameProject(String p, String name) throws Exception {
@@ -280,17 +280,17 @@ public class Bridge {
         String base = cleanName(name);
         if (p.startsWith("content://")) {
             try {
-                Uri n = DocumentsContract.renameDocument(act.getContentResolver(), Uri.parse(p), base + ".zingo");
+                Uri n = DocumentsContract.renameDocument(act.getContentResolver(), Uri.parse(p), base + ".voltra");
                 if (n == null) return null;
                 allowed.add(n.toString()); dropRecent(p); addRecent(n.toString(), base);
                 return new JSONObject().put("path", n.toString()).put("name", base);
             } catch (Exception e) { return null; }
         }
-        File src = new File(p), dst = new File(src.getParentFile(), base + ".zingo");
-        for (int i = 2; dst.exists() && !dst.equals(src); i++) dst = new File(src.getParentFile(), base + " (" + i + ").zingo");
+        File src = new File(p), dst = new File(src.getParentFile(), base + ".voltra");
+        for (int i = 2; dst.exists() && !dst.equals(src); i++) dst = new File(src.getParentFile(), base + " (" + i + ").voltra");
         if (src.exists() && !src.renameTo(dst)) return null;
-        dropRecent(p); addRecent(dst.getAbsolutePath(), dst.getName().replaceAll("(?i)\\.zingo$", ""));
-        return new JSONObject().put("path", dst.getAbsolutePath()).put("name", dst.getName().replaceAll("(?i)\\.zingo$", ""));
+        dropRecent(p); addRecent(dst.getAbsolutePath(), dst.getName().replaceAll("(?i)\\.(voltra|zingo)$", ""));
+        return new JSONObject().put("path", dst.getAbsolutePath()).put("name", dst.getName().replaceAll("(?i)\\.(voltra|zingo)$", ""));
     }
 
     // ------------------------------------------------------------------ recent list
@@ -494,7 +494,7 @@ public class Bridge {
         String n = String.valueOf(s).replaceAll("[\\\\/:*?\"<>|\\x00-\\x1f]+", " ").replaceAll("\\s+", " ").trim();
         if (n.length() > 80) n = n.substring(0, 80);
         n = n.replaceAll("[. ]+$", "");
-        return n.isEmpty() ? "ZINGO" : n;
+        return n.isEmpty() ? "Voltra" : n;
     }
 
     private static String mimeOf(String name) {

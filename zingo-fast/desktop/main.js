@@ -1,17 +1,19 @@
 'use strict';
-/* ZINGO Fast desktop shell.
+/* Voltra desktop shell.
    The whole simulator is app/index.html; this process only adds what a browser cannot do well:
-   native open / save dialogs, a projects folder in Documents, recent projects, .zingo file association
+   native open / save dialogs, a projects folder in Documents, recent projects, .voltra file association
    and an "unsaved changes" check when the window is closed. */
 const {app,BrowserWindow,ipcMain,dialog,shell,Menu,session,safeStorage}=require('electron');
 const path=require('path');
 const fs=require('fs');
 
-const EXT='.zingo';
+const EXT='.voltra';
 const MAX_FILE=50*1024*1024;
-const projectsDir=()=>path.join(app.getPath('documents'),'ZINGO Fast');
+/* new projects go to Documents/Voltra; files from the earlier "ZINGO Fast" folder stay where they are and open from the recent list */
+const projectsDir=()=>path.join(app.getPath('documents'),'Voltra');
 const recentFile=()=>path.join(app.getPath('userData'),'recent.json');
 
+try{app.setPath('userData',path.join(app.getPath('appData'),'ZINGO Fast'))}catch(e){}
 let win=null,rendererReady=false,closing=false,pendingOpen=null;
 /* the renderer may only touch files the user picked in a dialog, created here, or opened from Explorer / the recent list */
 const allowed=new Set();
@@ -19,8 +21,8 @@ const allow=p=>{const r=path.resolve(p);allowed.add(r.toLowerCase());return r};
 const isAllowed=p=>typeof p==='string'&&allowed.has(path.resolve(p).toLowerCase());
 
 /* ---------- helpers ---------- */
-const nameOf=p=>path.basename(p).replace(/\.(zingo|json)$/i,'');
-const cleanName=s=>String(s||'').replace(/[\\/:*?"<>|\u0000-\u001f]+/g,' ').replace(/\s+/g,' ').trim().slice(0,80).replace(/[. ]+$/,'')||'ZINGO';
+const nameOf=p=>path.basename(p).replace(/\.(voltra|zingo|json)$/i,'');
+const cleanName=s=>String(s||'').replace(/[\\/:*?"<>|\u0000-\u001f]+/g,' ').replace(/\s+/g,' ').trim().slice(0,80).replace(/[. ]+$/,'')||'Voltra';
 function uniquePath(dir,base,ext){let p=path.join(dir,base+ext),i=2;while(fs.existsSync(p))p=path.join(dir,base+' ('+(i++)+')'+ext);return p}
 /* atomic write: a crash or full disk never leaves a half-written project behind */
 function writeAtomic(p,data){const tmp=p+'.tmp-'+process.pid;fs.writeFileSync(tmp,data);fs.renameSync(tmp,p)}
@@ -28,19 +30,19 @@ function readRecent(){try{const a=JSON.parse(fs.readFileSync(recentFile(),'utf8'
 function addRecent(p){try{const r=path.resolve(p);const l=readRecent().filter(x=>path.resolve(x.path).toLowerCase()!==r.toLowerCase());l.unshift({path:r,name:nameOf(r)});
   fs.mkdirSync(path.dirname(recentFile()),{recursive:true});writeAtomic(recentFile(),JSON.stringify(l.slice(0,12),null,1));app.addRecentDocument(r)}catch(e){}}
 function dropRecent(p){try{const r=path.resolve(p).toLowerCase();writeAtomic(recentFile(),JSON.stringify(readRecent().filter(x=>path.resolve(x.path).toLowerCase()!==r),null,1))}catch(e){}}
-function readProjectFile(p){const r=path.resolve(p);if(!/\.(zingo|json)$/i.test(r))return null;const st=fs.statSync(r);if(!st.isFile()||st.size>MAX_FILE)return null;
+function readProjectFile(p){const r=path.resolve(p);if(!/\.(voltra|zingo|json)$/i.test(r))return null;const st=fs.statSync(r);if(!st.isFile()||st.size>MAX_FILE)return null;
   return{path:r,name:nameOf(r),text:fs.readFileSync(r,'utf8')}}
-const fileArg=argv=>{for(const a of argv.slice(1)){if(typeof a==='string'&&/\.zingo$/i.test(a)&&fs.existsSync(a))return path.resolve(a)}return null};
+const fileArg=argv=>{for(const a of argv.slice(1)){if(typeof a==='string'&&/\.(voltra|zingo)$/i.test(a)&&fs.existsSync(a))return path.resolve(a)}return null};
 function sendOpen(p){if(!p)return;allow(p);if(win&&rendererReady)win.webContents.send('zf:open-file',p);else pendingOpen=p}
 const ensureDir=()=>{const d=projectsDir();fs.mkdirSync(d,{recursive:true});return d};
 
-/* ---------- single instance: a second launch (double-clicked .zingo) goes to the open window ---------- */
+/* ---------- single instance: a second launch (double-clicked project file) goes to the open window ---------- */
 if(!app.requestSingleInstanceLock()){app.quit()}
 else{
 app.on('second-instance',(_e,argv)=>{if(win){if(win.isMinimized())win.restore();win.focus()}sendOpen(fileArg(argv))});
 
 function createWindow(){
-  win=new BrowserWindow({width:1440,height:900,minWidth:1024,minHeight:640,show:false,backgroundColor:'#0b1219',title:'ZINGO Fast',
+  win=new BrowserWindow({width:1440,height:900,minWidth:1024,minHeight:640,show:false,backgroundColor:'#0b1219',title:'Voltra',
     icon:path.join(__dirname,'build','icon.png'),autoHideMenuBar:true,
     webPreferences:{preload:path.join(__dirname,'preload.js'),contextIsolation:true,sandbox:true,nodeIntegration:false,webSecurity:true,spellcheck:false,devTools:!app.isPackaged}});
   win.once('ready-to-show',()=>{win.maximize();win.show()});
@@ -61,17 +63,17 @@ const H=(ch,fn)=>ipcMain.handle(ch,async(e,...a)=>{if(!own(e))throw new Error('d
 
 H('zf:ready',()=>{rendererReady=true;const p=pendingOpen;pendingOpen=null;if(p)setTimeout(()=>win&&win.webContents.send('zf:open-file',p),50);return true});
 H('zf:close-now',()=>{closing=true;if(win)win.close();return true});
-H('zf:set-title',(_e,title,dirty,p)=>{if(!win)return;win.setTitle((dirty?'• ':'')+String(title||'').slice(0,120)+' — ZINGO Fast');
+H('zf:set-title',(_e,title,dirty,p)=>{if(!win)return;win.setTitle((dirty?'• ':'')+String(title||'').slice(0,120)+' — Voltra');
   if(process.platform==='darwin'){win.setDocumentEdited(!!dirty);if(isAllowed(p))win.setRepresentedFilename(p)}});
 H('zf:open-project',async()=>{
-  const r=await dialog.showOpenDialog(win,{title:'ZINGO Fast',defaultPath:ensureDir(),properties:['openFile'],filters:[{name:'ZINGO Fast',extensions:['zingo','json']}]});
+  const r=await dialog.showOpenDialog(win,{title:'Voltra',defaultPath:ensureDir(),properties:['openFile'],filters:[{name:'Voltra',extensions:['voltra','zingo','json']}]});
   if(r.canceled||!r.filePaths[0])return null;const f=readProjectFile(r.filePaths[0]);if(!f)return null;allow(f.path);addRecent(f.path);return f});
 H('zf:read-project',(_e,p)=>{if(!isAllowed(p)&&!readRecent().some(x=>path.resolve(x.path).toLowerCase()===path.resolve(String(p)).toLowerCase()))return null;
   try{const f=readProjectFile(p);if(!f)return null;allow(f.path);addRecent(f.path);return f}catch(e){dropRecent(p);return null}});
 H('zf:pick-save-path',async(_e,suggested)=>{
-  const r=await dialog.showSaveDialog(win,{title:'ZINGO Fast',defaultPath:path.join(ensureDir(),cleanName(String(suggested||'').replace(/\.zingo$/i,''))+EXT),filters:[{name:'ZINGO Fast',extensions:['zingo']}]});
-  if(r.canceled||!r.filePath)return null;let p=r.filePath;if(!/\.zingo$/i.test(p))p+=EXT;return{path:allow(p),name:nameOf(p)}});
-H('zf:write-project',(_e,p,text)=>{if(!isAllowed(p)||!/\.(zingo|json)$/i.test(p)||typeof text!=='string'||text.length>MAX_FILE)return{ok:false};
+  const r=await dialog.showSaveDialog(win,{title:'Voltra',defaultPath:path.join(ensureDir(),cleanName(String(suggested||'').replace(/\.(voltra|zingo)$/i,''))+EXT),filters:[{name:'Voltra',extensions:['voltra']}]});
+  if(r.canceled||!r.filePath)return null;let p=r.filePath;if(!/\.voltra$/i.test(p))p+=EXT;return{path:allow(p),name:nameOf(p)}});
+H('zf:write-project',(_e,p,text)=>{if(!isAllowed(p)||!/\.(voltra|zingo|json)$/i.test(p)||typeof text!=='string'||text.length>MAX_FILE)return{ok:false};
   try{writeAtomic(path.resolve(p),text);addRecent(p);return{ok:true}}catch(e){return{ok:false,error:String(e.code||e.message)}}});
 H('zf:create-project',(_e,name)=>{try{const p=uniquePath(ensureDir(),cleanName(name),EXT);return{path:allow(p),name:nameOf(p)}}catch(e){return null}});
 H('zf:rename-project',(_e,p,name)=>{if(!isAllowed(p))return null;try{const src=path.resolve(p),dst=uniquePath(path.dirname(src),cleanName(name),EXT);
@@ -80,10 +82,10 @@ H('zf:recent',()=>readRecent().filter(x=>{try{return fs.statSync(x.path).isFile(
 H('zf:export-file',async(_e,name,b64)=>{
   const base=cleanName(String(name||'export').replace(/\.[a-z0-9]+$/i,'')),ext=(/\.([a-z0-9]{1,5})$/i.exec(String(name))||[0,'bin'])[1].toLowerCase();
   const kinds={png:'PNG',svg:'SVG',csv:'CSV',json:'JSON'};
-  const r=await dialog.showSaveDialog(win,{title:'ZINGO Fast',defaultPath:path.join(ensureDir(),base+'.'+ext),filters:[{name:kinds[ext]||ext.toUpperCase(),extensions:[ext]}]});
+  const r=await dialog.showSaveDialog(win,{title:'Voltra',defaultPath:path.join(ensureDir(),base+'.'+ext),filters:[{name:kinds[ext]||ext.toUpperCase(),extensions:[ext]}]});
   if(r.canceled||!r.filePath)return null;try{const buf=Buffer.from(String(b64||''),'base64');if(buf.length>MAX_FILE)return null;writeAtomic(r.filePath,buf);return{path:r.filePath,name:path.basename(r.filePath)}}catch(e){return null}});
 H('zf:show-in-folder',(_e,p)=>{if(isAllowed(p))shell.showItemInFolder(path.resolve(p));return true});
-/* ---------- ZINGO AI: data files (brain, community brain, outbox) ---------- */
+/* ---------- Voltra AI: data files (brain, community brain, outbox) ---------- */
 const dataDir=()=>path.join(app.getPath('userData'),'ai');
 const DATA_NAME=/^[a-z]{2,16}$/;
 H('zf:data-read',(_e,name)=>{if(!DATA_NAME.test(String(name)))return null;try{return fs.readFileSync(path.join(dataDir(),name+'.json'),'utf8')}catch(e){return null}});
@@ -106,7 +108,7 @@ H('zf:net',async(_e,req)=>{req=req||{};const url=String(req.url||''),method=req.
     const text=await r.text();if(text.length>40*1024*1024)return{ok:false,error:'too large'};return{ok:r.ok,status:r.status,text:r.ok?text:'',error:r.ok?'':'HTTP '+r.status}}
   catch(e){return{ok:false,error:e.name==='AbortError'?'timeout':String(e.message||e)}}finally{clearTimeout(to)}});
 
-/* ---------- ZINGO AI: model calls run here (no browser CORS limits); events stream back to the page ---------- */
+/* ---------- Voltra AI: model calls run here (no browser CORS limits); events stream back to the page ---------- */
 const aiJobs=new Map();
 function aiSend(wc,ev){try{if(!wc.isDestroyed())wc.send('zf:ai-ev',ev)}catch(e){}}
 /* the Messages API wants user/assistant turns alternating and starting with the user */

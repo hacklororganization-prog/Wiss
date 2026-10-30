@@ -1,9 +1,9 @@
 {
   "name": "zingo-fast",
-  "productName": "ZINGO Fast",
+  "productName": "Voltra",
   "version": "1.2.0",
-  "description": "ZINGO Fast - electronic circuit design and simulation",
-  "author": "ZINGO Fast <ahmedhamdi0s10@gmail.com>",
+  "description": "Voltra - electronic circuit design and simulation",
+  "author": "Voltra <ahmedhamdi0s10@gmail.com>",
   "license": "UNLICENSED",
   "private": true,
   "main": "main.js",
@@ -19,8 +19,8 @@
   },
   "build": {
     "appId": "com.zingofast.app",
-    "productName": "ZINGO Fast",
-    "copyright": "Copyright © 2026 ZINGO Fast",
+    "productName": "Voltra",
+    "copyright": "Copyright © 2026 Voltra",
     "directories": {
       "output": "dist",
       "buildResources": "build"
@@ -34,9 +34,16 @@
     "asar": true,
     "fileAssociations": [
       {
+        "ext": "voltra",
+        "name": "Voltra Project",
+        "description": "Voltra circuit project",
+        "role": "Editor",
+        "icon": "build/file.ico"
+      },
+      {
         "ext": "zingo",
-        "name": "ZINGO Fast Project",
-        "description": "ZINGO Fast circuit project",
+        "name": "Voltra Project",
+        "description": "Voltra circuit project",
         "role": "Editor",
         "icon": "build/file.ico"
       }
@@ -51,7 +58,7 @@
         }
       ],
       "icon": "build/icon.ico",
-      "artifactName": "ZINGO-Fast-Setup-${version}.${ext}",
+      "artifactName": "Voltra-Setup-${version}.${ext}",
       "requestedExecutionLevel": "asInvoker"
     },
     "nsis": {
@@ -60,8 +67,8 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "ZINGO Fast",
-      "uninstallDisplayName": "ZINGO Fast",
+      "shortcutName": "Voltra",
+      "uninstallDisplayName": "Voltra",
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico",
       "multiLanguageInstaller": true,
