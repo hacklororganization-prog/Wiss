@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict';
-/* ZINGO AI brain server
+/* Voltra server (app.js): community brain for Voltra AI, accounts, extensions store, owner dashboard, e-mail
    - Collects what the ZINGO Fast assistants learn (answers users rated up, designs they kept, fixes that worked),
      curates it (validation, personal-data scrubbing, de-duplication, votes from different users, owner review)
      and serves the shared brain back to every app.
@@ -12,13 +12,14 @@
 const http=require('http'),fs=require('fs'),path=require('path'),crypto=require('crypto'),zlib=require('zlib'),{spawn}=require('child_process');
 
 const ROOT=__dirname,DATA=path.join(ROOT,'data'),CFG_FILE=path.join(ROOT,'config.json');
-const VERSION='1.0.0';
+const VERSION='2.0.0';
 const log=(...a)=>console.log(new Date().toISOString().slice(11,19),...a);
 
 /* ---------------- config ---------------- */
 const DEFAULT_CFG={port:5000,host:'127.0.0.1',tunnel:true,publicUrl:'',
   firebase:{apiKey:'AIzaSyDujpLY1NOWUPrbAYZHG-VPCrVydDQfF1A',projectId:'z-ai-404d2',doc:'zingo/server',email:'',password:''},
-  minVotes:2,autoApprove:false,adminToken:'',maxFacts:20000,maxDesigns:3000,maxPending:50000};
+  minVotes:2,autoApprove:false,adminToken:'',maxFacts:20000,maxDesigns:3000,maxPending:50000,
+  owners:[],trialMs:2592e5,openDashboard:true,google:{webClientId:'',desktopClientId:'',desktopSecret:''},smtp:{user:'',pass:'',from:'Voltra'},verify:{minDownloads:20,share:.05,minRating:4,minRatings:3}};
 function loadCfg(){let c={};try{c=JSON.parse(fs.readFileSync(CFG_FILE,'utf8'))}catch(e){}
   const cfg=Object.assign({},DEFAULT_CFG,c,{firebase:Object.assign({},DEFAULT_CFG.firebase,c.firebase||{})});
   let wrote=false;if(!cfg.adminToken){cfg.adminToken=crypto.randomBytes(18).toString('base64url');wrote=true}
@@ -26,6 +27,7 @@ function loadCfg(){let c={};try{c=JSON.parse(fs.readFileSync(CFG_FILE,'utf8'))}c
   if(process.env.PORT)cfg.port=+process.env.PORT;if(process.argv.includes('--no-tunnel'))cfg.tunnel=false;
   return cfg}
 const CFG=loadCfg();
+const saveCfg=()=>fs.writeFileSync(CFG_FILE,JSON.stringify(CFG,null,2));
 
 /* ---------------- storage (atomic writes, daily backups) ---------------- */
 fs.mkdirSync(DATA,{recursive:true});fs.mkdirSync(path.join(DATA,'backup'),{recursive:true});
@@ -36,6 +38,7 @@ let brain=readJson(F.brain,null)||{format:'zingo-brain',rev:1,updatedAt:Date.now
 let pending=readJson(F.pending,null)||{items:[]};
 let nid=1+Math.max(0,...brain.facts.map(x=>x.id||0),...brain.designs.map(x=>x.id||0),...pending.items.map(x=>x.id||0));
 let saveT=null,brainCache=null;
+const V2=require('./lib_v2.js')({CFG,DATA,log,readJson,writeAtomic,saveCfg});
 function persist(changed){if(changed){brain.rev++;brain.updatedAt=Date.now();brainCache=null}clearTimeout(saveT);saveT=setTimeout(()=>{
   try{writeAtomic(F.brain,JSON.stringify(brain));writeAtomic(F.pending,JSON.stringify(pending))}catch(e){log('save failed',e.message)}},1500)}
 function backup(){const d=new Date().toISOString().slice(0,10),f=path.join(DATA,'backup','brain-'+d+'.json');
@@ -96,14 +99,16 @@ function publicBrain(){if(!brainCache)brainCache={format:'zingo-brain',rev:brain
 
 const server=http.createServer(async(req,res)=>{
   const u=new URL(req.url,'http://x'),ip=ipOf(req);
-  if(req.method==='OPTIONS'){res.writeHead(204,{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET,POST','Access-Control-Allow-Headers':'Content-Type,X-Admin-Token','Access-Control-Max-Age':'86400'});res.end();return}
+  if(req.method==='OPTIONS'){res.writeHead(204,{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET,POST,PUT,DELETE','Access-Control-Allow-Headers':'Content-Type,X-Admin-Token,Authorization','Access-Control-Max-Age':'86400'});res.end();return}
   if(limited('ip:'+ip,120,60e3))return send(req,res,429,{ok:false,error:'too many requests'});
   try{
-    if(req.method==='GET'&&u.pathname==='/api/health')return send(req,res,200,{ok:true,app:'zingo-brain',version:VERSION,rev:brain.rev,facts:brain.facts.length,designs:brain.designs.length,pending:pending.items.filter(x=>!x.approved).length});
+    if(req.method==='GET'&&u.pathname==='/api/health')return send(req,res,200,Object.assign({ok:true,app:'zingo-brain',name:'voltra',version:VERSION,rev:brain.rev,facts:brain.facts.length,designs:brain.designs.length,pending:pending.items.filter(x=>!x.approved).length},V2.counts()));
     if(req.method==='GET'&&u.pathname==='/api/brain'){const r=+u.searchParams.get('rev')||0;if(r===brain.rev)return send(req,res,200,{rev:brain.rev,unchanged:true});return send(req,res,200,publicBrain())}
     if(req.method==='POST'&&u.pathname==='/api/contribute'){const b=await readBody(req,1024*1024);if(!Array.isArray(b.items))return send(req,res,400,{ok:false,error:'items required'});
       const cid=clientId(b.client,ip);if(limited('c:'+cid,30,3600e3)||limited('cip:'+ip,60,3600e3))return send(req,res,429,{ok:false,error:'slow down'});
       const r=contribute(b.items,cid);log('contribute',cid.slice(0,6),JSON.stringify(r));return send(req,res,200,Object.assign({ok:true,rev:brain.rev},r))}
+    if(await V2.route(req,res,u,ip,{send,readBody,isAdmin,limited}))return;
+    if(req.method==='GET'&&(u.pathname==='/admin'||u.pathname==='/admin/')){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Frame-Options':'DENY','Referrer-Policy':'no-referrer'});res.end(fs.readFileSync(path.join(ROOT,'admin.html')));return}
     /* owner tools (header X-Admin-Token) */
     if(u.pathname.startsWith('/api/admin/')){if(!isAdmin(req))return send(req,res,401,{ok:false,error:'admin token required'});
       if(req.method==='GET'&&u.pathname==='/api/admin/pending'){const lim=Math.min(500,+u.searchParams.get('limit')||100);
@@ -114,14 +119,14 @@ const server=http.createServer(async(req,res)=>{
         pending.items=pending.items.filter(x=>x.id!==id);const n0=brain.facts.length+brain.designs.length;brain.facts=brain.facts.filter(x=>x.id!==id);brain.designs=brain.designs.filter(x=>x.id!==id);
         persist(n0!==brain.facts.length+brain.designs.length);return send(req,res,200,{ok:true,rev:brain.rev})}
       if(req.method==='POST'&&u.pathname==='/api/admin/config'){if(b.minVotes!=null)CFG.minVotes=Math.max(1,Math.min(50,+b.minVotes||2));if(b.autoApprove!=null)CFG.autoApprove=!!b.autoApprove;
-        fs.writeFileSync(CFG_FILE,JSON.stringify(CFG,null,2));return send(req,res,200,{ok:true,minVotes:CFG.minVotes,autoApprove:CFG.autoApprove})}
+        saveCfg();return send(req,res,200,{ok:true,minVotes:CFG.minVotes,autoApprove:CFG.autoApprove})}
       return send(req,res,404,{ok:false})}
     if(req.method==='GET'&&u.pathname==='/'){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});
       res.end('<!doctype html><meta charset="utf-8"><title>ZINGO AI brain</title><body style="font:15px system-ui;padding:24px;background:#0b1219;color:#e7eef6"><h2>ZINGO AI brain server</h2><p>brain v'+brain.rev+' · '+brain.facts.length+' facts · '+brain.designs.length+' designs · '+pending.items.filter(x=>!x.approved).length+' waiting for votes</p></body>');return}
     send(req,res,404,{ok:false,error:'not found'})}
   catch(e){send(req,res,e.message==='too large'?413:400,{ok:false,error:e.message})}});
 server.headersTimeout=15000;server.requestTimeout=30000;
-server.on('error',e=>{if(e.code==='EADDRINUSE'){log('Port '+CFG.port+' is already in use: the ZINGO server is probably already running.');log('Stop the old one with:  pkill -f "node app.js"   then start again.');process.exit(3)}
+server.on('error',e=>{if(e.code==='EADDRINUSE'){log('Port '+CFG.port+' is already in use: the Voltra server is probably already running.');log('Stop the old one with:  pkill -f "node app.js"   then start again.');process.exit(3)}
   log('server error:',e.message);process.exit(1)});
 
 /* ---------------- Firebase: owner sign-in + Firestore document zingo/server ---------------- */
@@ -134,7 +139,8 @@ async function fbToken(){if(!FB.email||!FB.password)return'';if(tok.id&&Date.now
 async function publish(url,online){
   const base=process.env.FIRESTORE_BASE||'https://firestore.googleapis.com/v1';
   const target=base+'/projects/'+FB.projectId+'/databases/(default)/documents/'+FB.doc+'?key='+FB.apiKey;
-  const body={fields:{url:{stringValue:url||''},online:{booleanValue:!!online},rev:{integerValue:String(brain.rev)},version:{stringValue:VERSION},updatedAt:{timestampValue:new Date().toISOString()}}};
+  const G=CFG.google||{};
+  const body={fields:{url:{stringValue:url||''},online:{booleanValue:!!online},rev:{integerValue:String(brain.rev)},version:{stringValue:VERSION},gWeb:{stringValue:G.webClientId||''},gDesk:{stringValue:G.desktopClientId||''},gDeskS:{stringValue:G.desktopSecret||''},updatedAt:{timestampValue:new Date().toISOString()}}};
   for(let i=0;i<4;i++){try{const id=await fbToken();const h={'Content-Type':'application/json'};if(id)h.Authorization='Bearer '+id;
       const r=await fetch(target,{method:'PATCH',headers:h,body:JSON.stringify(body)});if(r.ok){log('published to Firebase:',online?url:'(offline)');return true}
       const tx=await r.text();log('Firebase write refused ('+r.status+'):',tx.slice(0,200));if(r.status===403&&!FB.email)log('-> set firebase.email / firebase.password in config.json (see README).');if(r.status<500)return false}
@@ -154,9 +160,16 @@ function startTunnel(){if(stopping)return;log('starting cloudflared…');
   cf.on('exit',code=>{cf=null;if(stopping)return;log('cloudflared exited ('+code+'), restarting in',backoff/1000,'s');tunnelUrl='';publish('',false);setTimeout(startTunnel,backoff);backoff=Math.min(backoff*2,60000)})}
 
 /* ---------------- start / stop ---------------- */
-server.listen(CFG.port,CFG.host,()=>{log('ZINGO brain server on http://'+CFG.host+':'+CFG.port,'· brain v'+brain.rev,'·',brain.facts.length,'facts');
+server.listen(CFG.port,CFG.host,()=>{log('Voltra server on http://'+CFG.host+':'+CFG.port,'· brain v'+brain.rev,'·',brain.facts.length,'facts');
+  openDashboard();
   if(CFG.tunnel)startTunnel();else if(CFG.publicUrl)publish(CFG.publicUrl.replace(/\/+$/,''),true);
   setInterval(()=>{const u=CFG.tunnel?tunnelUrl:CFG.publicUrl;if(u)publish(u.replace(/\/+$/,''),true)},10*60e3)});   /* heartbeat: apps can see the server is alive */
-async function shutdown(){if(stopping)return;stopping=true;log('stopping…');clearTimeout(saveT);try{writeAtomic(F.brain,JSON.stringify(brain));writeAtomic(F.pending,JSON.stringify(pending))}catch(e){}
+/* the owner dashboard opens in the browser (Chrome) on start: Termux, Linux, macOS or Windows */
+function openDashboard(){const url='http://127.0.0.1:'+CFG.port+'/admin#'+CFG.adminToken;log('Dashboard: http://127.0.0.1:'+CFG.port+'/admin');
+  if(!CFG.openDashboard||process.argv.includes('--no-browser'))return;
+  const tries=process.env.PREFIX&&/com\.termux/.test(process.env.PREFIX)?[['am',['start','-a','android.intent.action.VIEW','-d',url,'-p','com.android.chrome']],['termux-open-url',[url]]]
+    :process.platform==='win32'?[['cmd',['/c','start','chrome',url]],['cmd',['/c','start','',url]]]:process.platform==='darwin'?[['open',['-a','Google Chrome',url]],['open',[url]]]:[['google-chrome',[url]],['xdg-open',[url]]];
+  const run=i=>{if(i>=tries.length)return;try{const c=spawn(tries[i][0],tries[i][1],{stdio:'ignore',detached:true});c.on('error',()=>run(i+1));c.on('exit',code=>{if(code)run(i+1)});c.unref()}catch(e){run(i+1)}};run(0)}
+async function shutdown(){if(stopping)return;stopping=true;log('stopping…');V2.flush();clearTimeout(saveT);try{writeAtomic(F.brain,JSON.stringify(brain));writeAtomic(F.pending,JSON.stringify(pending))}catch(e){}
   try{await Promise.race([publish('',false),new Promise(r=>setTimeout(r,4000))])}catch(e){}if(cf)cf.kill();server.close();process.exit(0)}
 process.on('SIGINT',shutdown);process.on('SIGTERM',shutdown);

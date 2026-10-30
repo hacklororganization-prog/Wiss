@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Voltra · لوحة المالك</title>
+<style>
+:root{--bg:#070b14;--bg2:#0d1422;--card:#111a2b;--line:#1f2b40;--ink:#e8eef8;--mut:#8b9ab3;--acc:#38bdf8;--acc2:#6366f1;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 system-ui,"Segoe UI",Tahoma,sans-serif}
+a{color:var(--acc)}button,input,select,textarea{font:inherit}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:12px 20px;background:rgba(7,11,20,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,#22d3ee,#2563eb 55%,#4c1d95)}
+.logo svg{width:20px;height:20px}
+header b{font-size:16px}header small{color:var(--mut);display:block;font-size:12px}
+.sp{flex:1}.dot{width:9px;height:9px;border-radius:50%;background:var(--bad);display:inline-block}.dot.on{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+nav{display:flex;gap:4px;padding:10px 20px;overflow-x:auto;border-bottom:1px solid var(--line)}
+nav button{border:1px solid transparent;background:transparent;color:var(--mut);padding:7px 14px;border-radius:10px;cursor:pointer;white-space:nowrap}
+nav button.on{background:var(--card);color:var(--ink);border-color:var(--line)}
+main{max-width:1200px;margin:0 auto;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.kpi b{display:block;font-size:26px}.kpi span{color:var(--mut);font-size:12.5px}
+h3{margin:20px 0 10px;font-size:15px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:start;vertical-align:middle}th{color:var(--mut);font-weight:600}
+.tw{overflow:auto;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.av{width:28px;height:28px;border-radius:50%;background:var(--bg2);object-fit:cover;vertical-align:middle;margin-inline-end:6px}
+.tag{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11.5px;border:1px solid var(--line);color:var(--mut);margin:1px}
+.tag.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}.tag.acc{color:var(--acc);border-color:color-mix(in srgb,var(--acc) 40%,transparent)}.tag.bad{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,transparent)}
+.btn{border:1px solid var(--line);background:var(--bg2);color:var(--ink);padding:6px 12px;border-radius:9px;cursor:pointer}.btn:hover{border-color:var(--acc)}
+.btn.pri{background:linear-gradient(135deg,var(--acc),var(--acc2));border:0;color:#fff;font-weight:600}.btn.dng{color:var(--bad)}
+input,select,textarea{width:100%;background:var(--bg2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:9px 11px;outline:none}input:focus,textarea:focus,select:focus{border-color:var(--acc)}
+textarea{min-height:180px;resize:vertical}
+label{display:block;color:var(--mut);font-size:12.5px;margin:10px 0 4px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.row>*{flex:1;min-width:160px}
+.hint{color:var(--mut);font-size:12.5px}
+.bar{height:8px;background:var(--bg2);border-radius:8px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));width:0}
+#login{max-width:420px;margin:12vh auto;text-align:center}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:12px;opacity:0;transition:.2s;pointer-events:none}#toast.show{opacity:1}
+.hide{display:none!important}
+.q{max-width:420px;white-space:pre-wrap;overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<header><div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5 12 20l8-13.5"/><path d="M13.6 2.5 10.4 9.6h3.4l-2 5" stroke="#ffd54a" stroke-width="1.8"/></svg></div>
+<div><b>Voltra · لوحة المالك</b><small id="hsub">…</small></div><span class="sp"></span><span class="dot" id="hdot"></span></header>
+<div id="login" class="hide"><div class="card"><h3>رمز المدير</h3><p class="hint">تجده في config.json (adminToken) أو في أول سطر طبعه app.js.</p><input id="tok" type="password" autocomplete="off"><p><button class="btn pri" id="tokGo">دخول</button></p></div></div>
+<div id="app" class="hide">
+<nav id="nav"><button data-v="home" class="on">نظرة عامة</button><button data-v="users">المستخدمون</button><button data-v="ext">الإضافات</button><button data-v="brain">العقل</button><button data-v="mail">الرسائل (Gmail)</button><button data-v="set">الإعدادات</button></nav>
+<main>
+<section data-p="home"><div class="grid" id="kpis"></div><h3>آخر الرسائل المرسلة</h3><div class="tw"><table id="mlog"></table></div></section>
+<section data-p="users" class="hide"><div class="row"><input id="uq" placeholder="بحث بالاسم أو البريد…"></div><h3></h3><div class="tw"><table id="ut"></table></div></section>
+<section data-p="ext" class="hide"><div class="tw"><table id="et"></table></div></section>
+<section data-p="brain" class="hide"><p class="hint">عناصر تعلّمها التطبيق وتنتظر أصوات مستخدمين آخرين أو موافقتك.</p><div class="tw"><table id="bt"></table></div></section>
+<section data-p="mail" class="hide">
+ <div class="card"><div class="row"><div><label>إلى</label><select id="mto"><option value="all">كل المستخدمين</option><option value="verified">المطوّرون الموثّقون</option><option value="pro">المشتركون Pro</option><option value="free">غير المشتركين</option><option value="testers">المختبرون</option><option value="one">مستخدم محدد…</option></select></div><div id="mOneW" class="hide"><label>البريد</label><input id="mone" placeholder="user@gmail.com"></div></div>
+ <label>الموضوع</label><input id="msub" maxlength="200"><label>الرسالة (يمكنك كتابة {name} لاسم المستخدم)</label><textarea id="mtxt"></textarea>
+ <p class="row" style="align-items:center"><span class="hint" id="mcount"></span><button class="btn pri" id="msend" style="flex:none">إرسال</button></p>
+ <div class="bar"><i id="mbar"></i></div><p class="hint" id="mstat"></p></div>
+ <h3>حساب Gmail المُرسِل</h3>
+ <div class="card"><p class="hint">استخدم "كلمة مرور التطبيقات" من حساب Google (الأمان ← التحقق بخطوتين ← كلمات مرور التطبيقات)، وليس كلمة مرور حسابك. يسمح Gmail بنحو 500 رسالة يومياً.</p>
+ <div class="row"><div><label>بريد Gmail</label><input id="su" autocomplete="off"></div><div><label>كلمة مرور التطبيقات (16 حرفاً)</label><input id="sp" type="password" autocomplete="new-password" placeholder="(محفوظة)"></div><div><label>اسم المرسل</label><input id="sf" value="Voltra"></div></div>
+ <p><button class="btn" id="ssave">حفظ</button> <button class="btn" id="stest">إرسال رسالة تجربة لنفسي</button></p></div>
+</section>
+<section data-p="set" class="hide"><div class="card"><div class="row"><div><label>الأصوات اللازمة لنشر ما تعلّمه الذكاء</label><input id="cmv" type="number" min="1" max="50"></div><div><label>النشر التلقائي</label><select id="cap"><option value="0">لا (موصى به)</option><option value="1">نعم</option></select></div></div><p><button class="btn pri" id="csave">حفظ</button></p>
+<p class="hint">لتسجيل الدخول بـ Google وأدوار المالك: عدّل google و owners في config.json ثم أعد تشغيل app.js.</p></div></section>
+</main></div>
+<div id="toast"></div>
+<script>
+'use strict';
+const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let TOK='';try{if(location.hash.length>10){TOK=decodeURIComponent(location.hash.slice(1));sessionStorage.setItem('vt',TOK);history.replaceState(null,'','/admin')}else TOK=sessionStorage.getItem('vt')||''}catch(e){}
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600)};
+async function api(path,body){const r=await fetch(path,{method:body?'POST':'GET',headers:Object.assign({'X-Admin-Token':TOK},body?{'Content-Type':'application/json'}:{}),body:body?JSON.stringify(body):undefined});
+ if(r.status===401){show(false);throw new Error('token')}return r.json()}
+const dt=t=>t?new Date(t).toLocaleString('ar-u-nu-latn',{dateStyle:'medium',timeStyle:'short'}):'—';
+function show(ok){$('#login').classList.toggle('hide',ok);$('#app').classList.toggle('hide',!ok)}
+$('#tokGo').onclick=()=>{TOK=$('#tok').value.trim();try{sessionStorage.setItem('vt',TOK)}catch(e){}boot()};
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('section').forEach(s=>s.classList.toggle('hide',s.dataset.p!==b.dataset.v));load(b.dataset.v)});
+async function home(){const [o,h]=await Promise.all([api('/api/admin/v2/overview'),fetch('/api/health').then(r=>r.json())]);
+ $('#hsub').textContent='الإصدار '+h.version+' · العقل v'+h.rev;$('#hdot').classList.add('on');
+ const K=[['المستخدمون',o.users],['نشطون (24 س)',o.active24],['جدد (24 س)',o.new24],['مشتركون Pro',o.pro],['الإضافات المنشورة',o.extLive+' / '+o.ext],['التنزيلات',o.downloads],['مطوّرون موثّقون',o.verified],['معارف العقل',h.facts+h.designs],['تنتظر المراجعة',h.pending]];
+ $('#kpis').innerHTML=K.map(k=>'<div class="card kpi"><b>'+esc(k[1])+'</b><span>'+esc(k[0])+'</span></div>').join('');
+ $('#mlog').innerHTML='<tr><th>التاريخ</th><th>الموضوع</th><th>أُرسلت</th><th>فشلت</th></tr>'+(o.mailLog.map(m=>'<tr><td>'+dt(m.t)+'</td><td>'+esc(m.subject)+'</td><td>'+m.count+'</td><td>'+m.failed+'</td></tr>').join('')||'<tr><td colspan=4 class="hint">لا شيء بعد</td></tr>');
+ $('#su').value=o.smtpUser;mailProgress(o.mailJob)}
+let UQ='';
+async function users(){const r=await api('/api/admin/v2/users?q='+encodeURIComponent(UQ));
+ $('#ut').innerHTML='<tr><th>المستخدم</th><th>الحالة</th><th>آخر ظهور</th><th>الإضافات</th><th>إجراءات</th></tr>'+r.users.map(u=>{
+  const tags=[u.pro?'<span class="tag ok">Pro حتى '+dt(u.pro.until)+'</span>':'<span class="tag">مجاني</span>',u.verified?'<span class="tag acc">✓ موثّق</span>':'',u.tester?'<span class="tag acc">مختبِر</span>':'',u.banned?'<span class="tag bad">محظور</span>':''].join('');
+  return'<tr data-u="'+esc(u.uid)+'"><td>'+(u.photo?'<img class="av" src="'+esc(u.photo)+'" referrerpolicy="no-referrer">':'')+'<b>'+esc(u.name)+'</b><br><span class="hint">'+esc(u.email)+'</span></td><td>'+tags+'</td><td>'+dt(u.lastSeen)+'</td><td>'+u.stats.items+' · ⬇ '+u.stats.downloads+' · ★ '+u.stats.avg.toFixed(1)+'</td><td>'
+   +'<button class="btn" data-a="pro">'+(u.pro?'إلغاء Pro':'منح Pro 30 يوماً')+'</button> <button class="btn" data-a="ver">'+(u.verifiedSet==='yes'?'إلغاء التوثيق':'توثيق')+'</button> <button class="btn" data-a="tes">'+(u.tester?'إزالة مختبِر':'مختبِر')+'</button> <button class="btn" data-a="mail">رسالة</button> <button class="btn dng" data-a="ban">'+(u.banned?'رفع الحظر':'حظر')+'</button></td></tr>'}).join('');
+ $('#ut').onclick=async e=>{const b=e.target.closest('[data-a]');if(!b)return;const tr=b.closest('tr'),uid=tr.dataset.u,u=r.users.find(x=>x.uid===uid),a=b.dataset.a;
+  if(a==='mail'){document.querySelector('[data-v=mail]').click();$('#mto').value='one';$('#mto').onchange();$('#mone').value=u.email;return}
+  const body={uid};if(a==='pro')body.proDays=u.pro?0:30;if(a==='ver')body.verified=u.verifiedSet==='yes'?'auto':'yes';if(a==='tes')body.tester=!u.tester;if(a==='ban'){if(!u.banned&&!confirm('حظر '+u.email+'؟'))return;body.banned=!u.banned}
+  await api('/api/admin/v2/user',body);toast('تم');users()}}
+$('#uq').oninput=()=>{clearTimeout(window._uq);window._uq=setTimeout(()=>{UQ=$('#uq').value;users()},300)};
+async function exts(){const r=await api('/api/admin/v2/ext');
+ $('#et').innerHTML='<tr><th>الإضافة</th><th>الفئة</th><th>المطوّر</th><th>⬇</th><th>★</th><th>الحالة</th><th></th></tr>'+(r.items.map(x=>'<tr data-id="'+esc(x.id)+'"><td><b>'+esc(x.name)+'</b> <span class="hint">v'+esc(x.ver)+' · '+(x.size/1024).toFixed(0)+' KB</span><br><span class="hint">'+esc(x.desc.slice(0,120))+'</span></td><td>'+esc(x.cat)+'</td><td>'+esc(x.creator.name)+'<br><span class="hint">'+esc(x.email)+'</span></td><td>'+x.downloads+'</td><td>'+x.rating.toFixed(1)+' ('+x.ratings+')</td><td>'+(x.status==='live'?'<span class="tag ok">منشورة</span>':'<span class="tag bad">مخفية</span>')+'</td><td><button class="btn" data-a="'+(x.status==='live'?'hide':'show')+'">'+(x.status==='live'?'إخفاء':'إظهار')+'</button> <button class="btn dng" data-a="delete">حذف</button></td></tr>').join('')||'<tr><td class="hint">لا توجد إضافات بعد</td></tr>');
+ $('#et').onclick=async e=>{const b=e.target.closest('[data-a]');if(!b)return;if(b.dataset.a==='delete'&&!confirm('حذف نهائي؟'))return;await api('/api/admin/v2/ext',{id:b.closest('tr').dataset.id,action:b.dataset.a});toast('تم');exts()}}
+async function brain(){const r=await api('/api/admin/pending?limit=200');
+ $('#bt').innerHTML='<tr><th>السؤال / الإجابة</th><th>النوع</th><th>الأصوات</th><th></th></tr>'+(r.items.map(x=>'<tr data-id="'+x.id+'"><td class="q"><b>'+esc(x.name||x.q)+'</b><br><span class="hint">'+esc(String(x.a||'').slice(0,400))+'</span></td><td>'+esc(x.kind)+'</td><td>'+x.votes+'</td><td><button class="btn pri" data-a="approve">نشر</button> <button class="btn dng" data-a="reject">حذف</button></td></tr>').join('')||'<tr><td class="hint">لا شيء ينتظر</td></tr>');
+ $('#bt').onclick=async e=>{const b=e.target.closest('[data-a]');if(!b)return;await api('/api/admin/'+b.dataset.a,{id:+b.closest('tr').dataset.id});toast('تم');brain()}}
+$('#mto').onchange=()=>$('#mOneW').classList.toggle('hide',$('#mto').value!=='one');
+$('#msend').onclick=async()=>{const to=$('#mto').value==='one'?$('#mone').value.trim():$('#mto').value;const subject=$('#msub').value.trim(),text=$('#mtxt').value.trim();
+ if(!subject||!text)return toast('اكتب الموضوع والرسالة');if(!confirm('إرسال الرسالة الآن؟'))return;const r=await api('/api/admin/v2/mail',{to,subject,text});if(!r.ok)return toast(r.error||'خطأ');toast('بدأ الإرسال إلى '+r.count);poll()};
+function mailProgress(j){if(!j)return;$('#mbar').style.width=(j.total?100*(j.sent+j.failed)/j.total:0)+'%';$('#mstat').textContent=j.total?(j.running?'جارٍ الإرسال: ':'آخر إرسال: ')+j.sent+' / '+j.total+(j.failed?' · فشل '+j.failed+(j.last?' ('+j.last+')':''):''):''}
+async function poll(){const o=await api('/api/admin/v2/overview');mailProgress(o.mailJob);if(o.mailJob.running)setTimeout(poll,1500)}
+$('#ssave').onclick=async()=>{await api('/api/admin/v2/smtp',{user:$('#su').value.trim(),pass:$('#sp').value,from:$('#sf').value});$('#sp').value='';toast('تم الحفظ')};
+$('#stest').onclick=async()=>{toast('جارٍ الإرسال…');const r=await api('/api/admin/v2/mailtest',{});toast(r.ok?'وصلت الرسالة إلى بريدك':'فشل: '+r.error)};
+$('#csave').onclick=async()=>{await api('/api/admin/config',{minVotes:+$('#cmv').value,autoApprove:$('#cap').value==='1'});toast('تم الحفظ')};
+function load(v){({home,users,ext:exts,brain,mail:home,set:()=>{}}[v]||home)().catch(e=>{if(e.message!=='token')toast('خطأ: '+e.message)})}
+async function boot(){if(!TOK){show(false);return}try{await home();show(true)}catch(e){if(e.message!=='token')toast('الخادم لا يستجيب')}}
+boot();setInterval(()=>{if(!$('#app').classList.contains('hide')&&!document.querySelector('[data-p=home]').classList.contains('hide'))home().catch(()=>{})},30000);
+</script>
+</body>
+</html>
