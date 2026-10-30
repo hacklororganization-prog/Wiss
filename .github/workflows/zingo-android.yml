@@ -1,4 +1,4 @@
-name: ZINGO Fast - Android APK
+name: Voltra - Android APK
 
 on:
   workflow_dispatch:
@@ -45,6 +45,6 @@ jobs:
         run: gradle --no-daemon assembleRelease
       - uses: actions/upload-artifact@v4
         with:
-          name: ZINGO-Fast-APK
+          name: Voltra-APK
           path: zingo-fast/android/app/build/outputs/apk/release/*.apk
           if-no-files-found: error

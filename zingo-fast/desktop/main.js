@@ -102,11 +102,33 @@ H('zf:secret-set',(_e,name,value)=>{name=String(name);if(!/^[a-z_]{2,40}$/.test(
 
 /* ---------- network for the brain sync (Firestore lookup + the owner's server); https, or http on this computer only ---------- */
 const netOk=u=>/^https:\/\/[^\s]+$/i.test(u)||/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?(\/[^\s]*)?$/i.test(u);
-H('zf:net',async(_e,req)=>{req=req||{};const url=String(req.url||''),method=req.method==='POST'?'POST':'GET';if(!netOk(url))return{ok:false,error:'blocked url'};
-  const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),Math.min(60000,Math.max(2000,+req.timeout||20000)));
-  try{const r=await fetch(url,{method,headers:method==='POST'?{'Content-Type':'application/json'}:{},body:method==='POST'?String(req.body||''):undefined,signal:ctl.signal,redirect:'follow'});
-    const text=await r.text();if(text.length>40*1024*1024)return{ok:false,error:'too large'};return{ok:r.ok,status:r.status,text:r.ok?text:'',error:r.ok?'':'HTTP '+r.status}}
+H('zf:net',async(_e,req)=>{req=req||{};const url=String(req.url||''),method=['POST','PUT','DELETE'].includes(req.method)?req.method:'GET';if(!netOk(url))return{ok:false,error:'blocked url'};
+  const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),Math.min(120000,Math.max(2000,+req.timeout||20000)));
+  const h={};if(method!=='GET')h['Content-Type']=req.form?'application/x-www-form-urlencoded':'application/json';if(typeof req.auth==='string'&&/^[\w.-]{20,4096}$/.test(req.auth))h.Authorization='Bearer '+req.auth;
+  try{const r=await fetch(url,{method,headers:h,body:method!=='GET'?String(req.body||''):undefined,signal:ctl.signal,redirect:'follow'});
+    const text=await r.text();if(text.length>40*1024*1024)return{ok:false,error:'too large'};return{ok:r.ok,status:r.status,text,error:r.ok?'':'HTTP '+r.status}}
   catch(e){return{ok:false,error:e.name==='AbortError'?'timeout':String(e.message||e)}}finally{clearTimeout(to)}});
+
+/* ---------- Google sign-in: the system browser + a one-time loopback address (Google does not allow sign-in inside embedded windows) ---------- */
+let gBusy=null;
+H('zf:google',async(_e,o)=>{o=o||{};const cid=String(o.clientId||''),sec=String(o.secret||'');
+  if(!/^[\w.-]+\.apps\.googleusercontent\.com$/.test(cid))return{ok:false,error:'not_configured'};
+  if(gBusy){try{gBusy.close()}catch(e){}gBusy=null}
+  const http=require('http'),crypto=require('crypto'),b64=b=>b.toString('base64url');
+  const verifier=b64(crypto.randomBytes(32)),challenge=b64(crypto.createHash('sha256').update(verifier).digest()),state=b64(crypto.randomBytes(16));
+  return await new Promise(res=>{let done=false,redirect='';
+    const finish=v=>{if(done)return;done=true;clearTimeout(timer);setTimeout(()=>{try{srv.close()}catch(e){}},1500);gBusy=null;if(win){if(win.isMinimized())win.restore();win.focus()}res(v)};
+    const page=ok=>'<!doctype html><meta charset="utf-8"><title>Voltra</title><body style="font:16px system-ui;background:#0b1219;color:#e7eef6;display:grid;place-items:center;height:100vh;margin:0"><div style="text-align:center"><h2>'+(ok?'✓ Signed in to Voltra':'Sign-in cancelled')+'</h2><p>'+(ok?'You can close this tab and return to Voltra.':'Return to Voltra and try again.')+'</p></div>';
+    const srv=gBusy=http.createServer(async(q,r)=>{const u=new URL(q.url,'http://127.0.0.1');if(u.pathname!=='/cb'){r.writeHead(404);r.end();return}
+      const code=u.searchParams.get('code');const good=!!code&&u.searchParams.get('state')===state;r.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});r.end(page(good));
+      if(!good)return finish({ok:false,error:u.searchParams.get('error')||'cancelled'});
+      try{const body=new URLSearchParams({code,client_id:cid,client_secret:sec,redirect_uri:redirect,grant_type:'authorization_code',code_verifier:verifier});
+        const t=await fetch('https://oauth2.googleapis.com/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()});const j=await t.json();
+        if(!t.ok||!j.id_token)return finish({ok:false,error:j.error_description||j.error||'token'});finish({ok:true,idToken:j.id_token})}catch(e){finish({ok:false,error:String(e.message||e)})}});
+    const timer=setTimeout(()=>finish({ok:false,error:'timeout'}),5*60e3);
+    srv.listen(0,'127.0.0.1',()=>{redirect='http://127.0.0.1:'+srv.address().port+'/cb';
+      const q=new URLSearchParams({client_id:cid,redirect_uri:redirect,response_type:'code',scope:'openid email profile',code_challenge:challenge,code_challenge_method:'S256',state,prompt:'select_account'});
+      shell.openExternal('https://accounts.google.com/o/oauth2/v2/auth?'+q.toString())})})});
 
 /* ---------- Voltra AI: model calls run here (no browser CORS limits); events stream back to the page ---------- */
 const aiJobs=new Map();

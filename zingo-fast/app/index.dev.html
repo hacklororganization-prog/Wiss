@@ -987,7 +987,8 @@ body.focus #work{grid-template-columns:minmax(0,1fr)!important}
   recent:()=>call('recent'),exportFile:(n,b)=>call('exportFile',String(n||''),String(b||'')),showInFolder:()=>Promise.resolve(false),openExternal:u=>call('openExternal',String(u)),
   closeNow:()=>call('closeNow'),onOpenFile:f=>{hOpen.push(f)},onCloseRequest:f=>{hClose.push(f)},
   dataRead:n=>call('dataRead',String(n)),dataWrite:(n,t)=>call('dataWrite',String(n),String(t)),secretGet:n=>call('secretGet',String(n)),secretSet:(n,v)=>call('secretSet',String(n),String(v||'')),
-  net:r=>call('net',{method:r&&r.method,url:r&&r.url,body:r&&r.body,timeout:r&&r.timeout}),
+  net:r=>call('net',{method:r&&r.method,url:r&&r.url,body:r&&r.body,timeout:r&&r.timeout,auth:r&&r.auth,form:!!(r&&r.form)}),
+  googleSignIn:o=>call('googleSignIn',{clientId:o&&o.clientId}),
   aiStream:(req,cb)=>{ai.set(req.id,cb);call('aiStream',{id:req.id,provider:req.provider,base:req.base,model:req.model,key:req.key,system:req.system,messages:req.messages,temperature:req.temperature}).catch(e=>cb({id:req.id,type:'error',message:String(e&&e.message||e)}));return()=>ai.delete(req.id)},
   aiAbort:id=>{ai.delete(id);return call('aiAbort',id)}})})();
 /* ===== CONTENT LOCK (JS): block selection, copy, cut, drag and drop outside input fields ===== */

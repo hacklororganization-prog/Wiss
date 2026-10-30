@@ -24,7 +24,8 @@ contextBridge.exposeInMainWorld('ZingoDesktop',Object.freeze({
   dataWrite:(name,text)=>call('zf:data-write',String(name),String(text)),
   secretGet:name=>call('zf:secret-get',String(name)),
   secretSet:(name,value)=>call('zf:secret-set',String(name),String(value||'')),
-  net:req=>call('zf:net',{method:req&&req.method,url:req&&req.url,body:req&&req.body,timeout:req&&req.timeout}),
+  net:req=>call('zf:net',{method:req&&req.method,url:req&&req.url,body:req&&req.body,timeout:req&&req.timeout,auth:req&&req.auth,form:!!(req&&req.form)}),
+  googleSignIn:o=>call('zf:google',{clientId:o&&o.clientId,secret:o&&o.secret}),
   aiStream:(req,onEvent)=>{const id=req.id,h=(_e,ev)=>{if(ev&&ev.id===id){try{onEvent(ev)}catch(e){}}};ipcRenderer.on('zf:ai-ev',h);
     call('zf:ai-stream',{id,provider:req.provider,base:req.base,model:req.model,key:req.key,system:req.system,messages:req.messages,temperature:req.temperature}).catch(e=>onEvent({id,type:'error',message:String(e&&e.message||e)}));
     return()=>ipcRenderer.removeListener('zf:ai-ev',h)},

@@ -115,6 +115,17 @@ public class Bridge {
             case "secretGet": return SecretBox.get(act, a.optString(0, ""));
             case "secretSet": return SecretBox.set(act, a.optString(0, ""), a.optString(1, ""));
             case "net": return net(a.optJSONObject(0));
+            case "googleSignIn": {
+                JSONObject o = a.optJSONObject(0);
+                GoogleAuth.signIn(act, o == null ? "" : o.optString("clientId", ""), (tok, err) -> {
+                    try {
+                        JSONObject r = new JSONObject();
+                        if (tok != null) r.put("ok", true).put("idToken", tok); else r.put("ok", false).put("error", err == null ? "error" : err);
+                        ok(id, r);
+                    } catch (Exception e) { fail(id, "error"); }
+                });
+                return PENDING;
+            }
             case "aiStream": aiStream(a.optJSONObject(0)); return true;
             case "aiAbort": {
                 int k = a.optInt(0);
@@ -360,23 +371,26 @@ public class Bridge {
     private Object net(JSONObject req) throws Exception {
         JSONObject out = new JSONObject();
         if (req == null) return out.put("ok", false).put("error", "bad request");
-        String url = req.optString("url", ""), method = "POST".equals(req.optString("method")) ? "POST" : "GET";
+        String url = req.optString("url", ""), m0 = req.optString("method", "GET");
+        String method = "POST".equals(m0) || "PUT".equals(m0) || "DELETE".equals(m0) ? m0 : "GET";
         if (!NET_OK.matcher(url).matches()) return out.put("ok", false).put("error", "blocked url");
         HttpURLConnection c = null;
         try {
             c = (HttpURLConnection) new URL(url).openConnection();
-            int to = Math.max(2000, Math.min(60000, req.optInt("timeout", 20000)));
+            int to = Math.max(2000, Math.min(120000, req.optInt("timeout", 20000)));
             c.setConnectTimeout(to); c.setReadTimeout(to); c.setRequestMethod(method);
-            if ("POST".equals(method)) {
+            String auth = req.optString("auth", "");
+            if (auth.matches("^[\\w.-]{20,4096}$")) c.setRequestProperty("Authorization", "Bearer " + auth);
+            if (!"GET".equals(method)) {
                 c.setDoOutput(true);
-                c.setRequestProperty("Content-Type", "application/json");
+                c.setRequestProperty("Content-Type", req.optBoolean("form", false) ? "application/x-www-form-urlencoded" : "application/json");
                 try (OutputStream os = c.getOutputStream()) { os.write(req.optString("body", "").getBytes(StandardCharsets.UTF_8)); }
             }
             int code = c.getResponseCode();
             InputStream in = code >= 400 ? c.getErrorStream() : c.getInputStream();
             String text = in == null ? "" : new String(readAll(in), StandardCharsets.UTF_8);
             boolean good = code < 400;
-            return out.put("ok", good).put("status", code).put("text", good ? text : "").put("error", good ? "" : "HTTP " + code);
+            return out.put("ok", good).put("status", code).put("text", text).put("error", good ? "" : "HTTP " + code);
         } catch (Exception e) {
             return out.put("ok", false).put("error", String.valueOf(e.getMessage()));
         } finally { if (c != null) c.disconnect(); }

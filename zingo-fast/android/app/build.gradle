@@ -12,8 +12,8 @@ android {
         applicationId 'com.zingofast.app'
         minSdk 24
         targetSdk 35
-        versionCode 3
-        versionName '1.3.0'
+        versionCode 4
+        versionName '2.0.0'
     }
     signingConfigs {
         if (hasKey) {
@@ -37,8 +37,15 @@ android {
     }
     buildFeatures { buildConfig true }
     applicationVariants.all { v ->
-        v.outputs.all { o -> outputFileName = "ZINGO-Fast-${v.versionName}.apk" }
+        v.outputs.all { o -> outputFileName = "Voltra-${v.versionName}.apk" }
     }
+}
+
+dependencies {
+    /* Google sign-in through the Android account picker */
+    implementation 'androidx.credentials:credentials:1.3.0'
+    implementation 'androidx.credentials:credentials-play-services-auth:1.3.0'
+    implementation 'com.google.android.libraries.identity.googleid:googleid:1.1.1'
 }
 
 /* the web app (release build of index.dev.html) is packaged as assets/index.html */
