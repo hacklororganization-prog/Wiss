@@ -404,6 +404,28 @@ body.rszing #cv{pointer-events:none}
 .ai-set .row2{display:flex;align-items:center;gap:10px;justify-content:space-between;font-size:12.5px}.ai-set .row2 small{display:block;color:var(--mut);font-size:11px;line-height:1.5;margin-top:2px}
 .ai-hint{margin:0;color:var(--mut);font-size:11.5px;line-height:1.6}.ai-hint.ok{color:var(--ok)}.ai-hint.err{color:var(--warn)}
 .ai-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.ai-stats div{border:1px solid var(--line);border-radius:10px;padding:6px;text-align:center;background:var(--bg2)}.ai-stats b{display:block;font-size:16px}.ai-stats span{font-size:10.5px;color:var(--mut)}
+.ai-inw{border-top:1px solid var(--line);flex:none}.ai-inw .ai-in{border-top:0;padding-top:4px}
+.ai-modes{display:flex;gap:4px;padding:8px 10px 0}.ai-modes button{display:flex;align-items:center;gap:5px;border:1px solid var(--line);background:var(--bg2);color:var(--mut);border-radius:20px;padding:4px 11px;font:inherit;font-size:12px;cursor:pointer;position:relative}
+.ai-modes button .i{width:13px;height:13px}.ai-modes button[aria-checked=true]{color:var(--accink);background:var(--acc);border-color:var(--acc)}.ai-modes .lk .i{width:11px;height:11px;opacity:.8}
+.ai-steps{list-style:none;margin:0 0 8px;padding:6px 8px;border:1px solid var(--line);border-radius:10px;background:var(--bg2);display:flex;flex-direction:column;gap:3px;font-size:12px}
+.ai-steps li{display:flex;align-items:center;gap:7px;color:var(--mut)}.ai-steps li>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ai-steps .i{width:13px;height:13px;flex:none}
+.ai-steps li.run{color:var(--ink)}.ai-steps li.ok>.i:last-child{color:var(--ok)}.ai-steps li.warn>.i:last-child{color:var(--warn)}.ai-steps li.stop{opacity:.6}
+.ai-spin{width:12px;height:12px;border:2px solid color-mix(in srgb,var(--acc) 30%,transparent);border-top-color:var(--acc);border-radius:50%;animation:aiSpin .8s linear infinite;flex:none}
+@keyframes aiSpin{to{transform:rotate(360deg)}}
+.ai-think{margin:0 0 8px;border-inline-start:3px solid color-mix(in srgb,var(--acc) 50%,transparent);padding:2px 10px;font-size:12px;color:var(--mut)}.ai-think summary{cursor:pointer;display:flex;align-items:center;gap:6px;list-style:none}.ai-think summary .i{width:13px;height:13px;color:var(--acc)}
+.ai-b h5{margin:10px 0 4px;font-size:13.5px;color:var(--ink)}.ai-b blockquote{margin:4px 0;padding:2px 10px;border-inline-start:3px solid var(--line);color:var(--mut)}.ai-b hr{border:0;border-top:1px solid var(--line);margin:8px 0}
+.ai-tw{overflow:auto;margin:6px 0}.ai-tw table{border-collapse:collapse;font-size:12px;min-width:100%}.ai-tw th,.ai-tw td{border:1px solid var(--line);padding:4px 8px;text-align:start;white-space:nowrap}.ai-tw th{background:var(--bg2)}
+.ai-codew{position:relative}.ai-codew>span{position:absolute;top:4px;inset-inline-end:8px;font-size:10px;color:#8aa0b5;text-transform:uppercase}
+.ai-ok{margin-inline-start:auto;display:flex;align-items:center;gap:3px;font-size:11px;color:var(--ok)}.ai-ok .i{width:12px!important;height:12px!important;color:var(--ok)!important}
+.ai-learn{margin-inline-start:auto;display:flex;align-items:center;gap:3px;font-size:11px;color:var(--acc)}.ai-learn .i{width:12px;height:12px}
+.ai-feat{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px;text-align:start}.ai-feat span{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;padding:6px 8px;font-size:11.5px;background:var(--bg2)}.ai-feat .i{width:14px;height:14px;color:var(--acc);flex:none}
+#aiBanner{position:absolute;top:10px;left:50%;transform:translate(-50%,-140%);z-index:30;display:flex;align-items:center;gap:10px;padding:8px 10px 8px 14px;border-radius:14px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border:1px solid color-mix(in srgb,var(--acc) 50%,var(--line));box-shadow:0 10px 30px rgba(0,0,0,.25);transition:transform .3s ease;pointer-events:auto;max-width:calc(100% - 24px)}
+#aiBanner.show{transform:translate(-50%,0)}#aiBanner b{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#aiBanner small{color:var(--mut);font-size:11px;white-space:nowrap}
+#aiBanner .ab-sp{width:14px;height:14px;border:2px solid color-mix(in srgb,var(--acc) 30%,transparent);border-top-color:var(--acc);border-radius:50%;animation:aiSpin .8s linear infinite;flex:none}
+#aiBanner .ab-x{border:0;background:transparent;color:var(--mut);width:26px;height:26px;border-radius:8px;display:grid;place-items:center;cursor:pointer}#aiBanner .ab-x .i{width:14px;height:14px}
+#stage::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;box-shadow:inset 0 0 0 0 transparent;transition:box-shadow .3s}
+body.ai-busy #stage::after{box-shadow:inset 0 0 0 2px var(--acc),inset 0 0 40px color-mix(in srgb,var(--acc) 25%,transparent)}
+.ai-new{animation:aiNew 2.4s ease}@keyframes aiNew{0%,60%{filter:drop-shadow(0 0 6px var(--acc)) drop-shadow(0 0 2px var(--acc))}100%{filter:none}}
 .ai-row{display:flex;gap:6px;flex-wrap:wrap}.ai-row .btn{gap:6px;height:32px;padding:0 10px;font-size:12px}
 /* ---- phone layout ---- */
 #mnav,#mobBg{display:none}
@@ -972,7 +994,7 @@ const FEATURES={
  ics:{n:'ft_ics',ic:'chip',b:'fb_ics'},advparts:{n:'ft_advparts',ic:'plug',b:'fb_advparts'},
  scope:{n:'ft_scope',ic:'scope',b:'fb_scope'},fixall:{n:'ft_fixall',ic:'wrench',b:'fb_fixall'},
  examples:{n:'ft_examples',ic:'flask',b:'fb_examples'},export:{n:'ft_export',ic:'img',b:'fb_export'},
- partbuilder:{n:'ft_partbuilder',ic:'sliders',b:'fb_partbuilder'},speed:{n:'ft_speed',ic:'play',b:'fb_speed'},
+ partbuilder:{n:'ft_partbuilder',ic:'sliders',b:'fb_partbuilder'},ailoop:{n:'ft_ailoop',ic:'reset',b:'fb_ailoop'},speed:{n:'ft_speed',ic:'play',b:'fb_speed'},
  unlimited:{n:'ft_unlimited',ic:'plus',b:'fb_unlimited'}};
 const OfflineStubAdapter={verify:()=>Promise.resolve({ok:false,reason:'offline_stub'}),refresh:()=>Promise.resolve({ok:false,reason:'offline_stub'})};
 function createEntitlement(env){
@@ -1264,6 +1286,24 @@ Object.assign(I18N.ar,{
  pw_active:'اشتراكك ({plan}) مفعّل حتى {date}.',pw_active_btn:'أنت مشترك',
  pay_off:'الدفع غير مفعّل بعد. عاود المحاولة قريبًا.',pay_ok:'تم تفعيل الاشتراك. استمتع بـ ZINGO Pro!',pay_fail:'لم تكتمل عملية الشراء.',pay_busy:'لحظة من فضلك…',
  restore_ok:'تمت استعادة اشتراكك.',restore_none:'لم يُعثر على اشتراك نشط.',});
+Object.assign(I18N.en,{ft_ailoop:'Voltra AI Loop mode',fb_ailoop:'The assistant builds on your workspace, simulates and keeps fixing until the circuit works.',
+ai_m_fast:'Fast',ai_m_think:'Think',ai_m_loop:'Loop',ai_thinking:'Reasoning',ai_st_think:'Analysing the request',ai_st_web:'Searching the web: {q}',ai_st_write:'Writing the answer',
+ai_st_lab:'Testing the circuit in the virtual lab',ai_st_relab:'Re-testing the corrected circuit',ai_st_lab_ok:'Lab test passed',ai_st_lab_bad:'Lab found {n} problem(s)',ai_sp_fix:'Repairing the design',
+ai_st_loop:'Step {n}: planning changes',ai_st_apply:'Applying changes to the workspace',ai_st_skipped:'{n} skipped',ai_st_sim:'Simulating and checking',ai_st_loop_ok:'Done — the circuit works',ai_st_loop_stop:'Stopped — some problems remain',
+ai_st_auto:'learned automatically',ai_bn_work:'Voltra AI is working on your circuit',ai_bn_sim:'Voltra AI is testing the circuit',ai_bn_apply:'Voltra AI is applying changes',ai_bn_step:'step {n} / {max}',
+ai_lab_badge:'lab-tested',ai_learned:'learned',ai_learned_t:'Saved to the brain and shared with the community',ai_clear_chat_q:'Clear this conversation? What the assistant has learned is kept.',
+ai_f1:'Builds and wires circuits',ai_f2:'Tests designs in a virtual lab',ai_f3:'Searches the web',ai_f4:'Writes Arduino code',
+ai_c_code:'Arduino code',ai_c_code_q:'Write an Arduino sketch that ',ai_d_open:'The circuit is open: no current flows.',ai_x_noboard:'No Arduino board to program — add one first.',ai_pv_code:'{n} sketch(es)',
+ai_r_fr:'Answer in French.',ai_sync_ok2:'Connected to the community brain · v{rev}',ai_sync_err2:'Community brain offline — learning is kept and sent later'});
+Object.assign(I18N.ar,{ft_ailoop:'وضع الحلقة في Voltra AI',fb_ailoop:'يبني المساعد على مساحة عملك ويحاكي ويواصل الإصلاح حتى تعمل الدائرة.',
+ai_m_fast:'سريع',ai_m_think:'تفكير',ai_m_loop:'حلقة',ai_thinking:'التفكير',ai_st_think:'تحليل الطلب',ai_st_web:'بحث في الإنترنت: {q}',ai_st_write:'كتابة الإجابة',
+ai_st_lab:'اختبار الدائرة في المختبر الافتراضي',ai_st_relab:'إعادة اختبار الدائرة بعد التصحيح',ai_st_lab_ok:'نجح اختبار المختبر',ai_st_lab_bad:'وجد المختبر {n} مشكلة',ai_sp_fix:'إصلاح التصميم',
+ai_st_loop:'الخطوة {n}: تخطيط التغييرات',ai_st_apply:'تطبيق التغييرات على مساحة العمل',ai_st_skipped:'تم تخطي {n}',ai_st_sim:'المحاكاة والفحص',ai_st_loop_ok:'تم — الدائرة تعمل',ai_st_loop_stop:'توقف — بقيت بعض المشاكل',
+ai_st_auto:'تعلّمها تلقائياً',ai_bn_work:'Voltra AI يعمل على دائرتك',ai_bn_sim:'Voltra AI يختبر الدائرة',ai_bn_apply:'Voltra AI يطبّق التغييرات',ai_bn_step:'الخطوة {n} / {max}',
+ai_lab_badge:'مُختبرة',ai_learned:'تعلّمها',ai_learned_t:'حُفظت في العقل وشوركت مع المجتمع',ai_clear_chat_q:'مسح هذه المحادثة؟ ما تعلّمه المساعد يبقى محفوظاً.',
+ai_f1:'يبني الدوائر ويوصّلها',ai_f2:'يختبر التصاميم في مختبر افتراضي',ai_f3:'يبحث في الإنترنت',ai_f4:'يكتب كود Arduino',
+ai_c_code:'كود Arduino',ai_c_code_q:'اكتب كود Arduino يقوم بـ ',ai_d_open:'الدائرة مفتوحة: لا يمر تيار.',ai_x_noboard:'لا توجد لوحة Arduino لبرمجتها — أضف واحدة أولاً.',ai_pv_code:'{n} كود',
+ai_r_fr:'أجب بالفرنسية.',ai_sync_ok2:'متصل بعقل المجتمع · إصدار {rev}',ai_sync_err2:'عقل المجتمع غير متاح — التعلّم محفوظ وسيُرسل لاحقاً'});
 Object.assign(I18N.en,{pw_upgrade:'Upgrade',pro_locked_note:'This circuit has Pro parts. They are kept safely but locked on the Free plan.',speed_locked:'5× and 10× speeds are part of Pro.'});
 Object.assign(I18N.ar,{pw_upgrade:'ترقية',pro_locked_note:'تحتوي هذه الدائرة على قطع Pro. هي محفوظة بأمان لكنها مقفلة في النسخة المجانية.',speed_locked:'سرعتا 5× و10× من مزايا Pro.'});
 Object.assign(I18N.en,{up_text:'Free plan · Unlock all Pro features',nag_title:'Enjoying ZINGO Fast?',nag_text:'You are on the Free plan. Pro adds Arduino, sensors, displays, ICs and more.',nag_see:'See plans',nag_later:'Not now',pw_cap:'The Free plan allows up to {n} parts per circuit.'});
@@ -2410,6 +2450,7 @@ const clampN=(x,a,b)=>x<a?a:x>b?b:x;
 
 /* ---- inline SVG icon set (stroke icons, no emoji) ---- */
 const ICON={
+ send:'<path d="M4 12 20 4l-6 16-3-7z"/><path d="m11 13 9-9"/>',
  spark:'<path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/><path d="M19 15l.8 1.9 1.9.8-1.9.8L19 20.4l-.8-1.9-1.9-.8 1.9-.8z"/>',
  file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
  zingo:'<path d="M5 4h14L6 20h13"/>',lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>',bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',bell:'<path d="M6 9a6 6 0 0 1 12 0c0 6 3 7 3 7H3s3-1 3-7M10 20a2 2 0 0 0 4 0"/>',play:'<path d="M7 4v16l13-8z"/>',pause:'<path d="M8 5v14M16 5v14"/>',reset:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
@@ -3368,7 +3409,10 @@ cv.addEventListener('pointerdown',e=>{
  if(pk){
   if(App.pend&&App.pend!==pk){addWire(App.pend,pk);App.pend=null;clearPendUI();return}
   if(App.pend===pk){App.pend=null;clearPendUI();return}
-  App.pend=pk;G={type:'wire',from:pk,moved:false,sx:e.clientX,sy:e.clientY};drawPend();updateHint();return}
+  App.pend=pk;G={type:'wire',from:pk,moved:false,sx:e.clientX,sy:e.clientY};drawPend();updateHint();
+  /* a junction is all pin: long-press (touch) selects it and opens its menu (delete, ...) */
+  const jc=compOf(pk);if(jc&&jc.ty==='jn')armLong(e,(x,y)=>{App.pend=null;clearPendUI();updateHint();setSelection([jc.id],[]);if(G)G.lp=true;openContext(x,y)});
+  return}
  if(App.pend){App.pend=null;clearPendUI()}
  const wiTop=hitWire(w.x,w.y,(touch?9:6)/App.view.z+3);   /* wires are drawn above parts, so a touch on a wire must pick the wire, not the part underneath */
  const c=wiTop>=0?null:hitComp(w.x,w.y);
@@ -3421,7 +3465,7 @@ function endPointer(e){
    if(g.moved&&g.hist.length>1&&e.type==='pointerup'){const a=g.hist[0],b=g.hist[g.hist.length-1],dt=(b.t-a.t)/1000;if(dt>0){const vx=(b.x-a.x)/dt,vy=(b.y-a.y)/dt;if(Math.hypot(vx,vy)>250&&!reduceMotion())App.inertia={vx:clampN(vx,-2500,2500),vy:clampN(vy,-2500,2500)}}}break}
   case'marquee':{if(mqRect){const x0=+mqRect.getAttribute('x'),y0=+mqRect.getAttribute('y'),x1=x0+ +mqRect.getAttribute('width'),y1=y0+ +mqRect.getAttribute('height');mqRect.remove();mqRect=null;
     if(x1-x0>3||y1-y0>3){const ids=new Set(g.add?App.sel:[]);App.comps.forEach(c=>{const b=bboxOf(c);if(!TY[c.ty].bb&&b.x1>=x0&&b.x0<=x1&&b.y1>=y0&&b.y0<=y1)ids.add(c.id)});setSelection([...ids],[])}}break}
-  case'wire':{if(g.moved){if(g.snap)addWire(g.from,g.snap);App.pend=null;clearPendUI()}break}
+  case'wire':{if(g.lp)break;if(g.moved){if(g.snap)addWire(g.from,g.snap);App.pend=null;clearPendUI()}break}
   case'part':{const it=INTER[g.c.ty];
    if(g.moved){refreshInserted();relayoutAll();Run.dirty=true;Hist.commit()}
    else{if(it&&it.up){it.up(g.c);touchComp(g.c);Hist.commit()}
@@ -3432,7 +3476,7 @@ function endPointer(e){
 cv.addEventListener('pointerup',endPointer);cv.addEventListener('pointercancel',endPointer);
 cv.addEventListener('pointerleave',()=>{if(!G)setHover(null)});
 cv.addEventListener('wheel',e=>{e.preventDefault();const k=e.deltaMode===1?33:1;zoomAt(e.clientX,e.clientY,Math.exp(-e.deltaY*k*(e.ctrlKey?.012:.0016)))},{passive:false});
-cv.addEventListener('contextmenu',e=>{e.preventDefault();cancelLong();if(App.mode==='sch')return;const w=toWorld(e.clientX,e.clientY),c=hitWire(w.x,w.y,9/App.view.z+3)>=0?null:hitComp(w.x,w.y);
+cv.addEventListener('contextmenu',e=>{e.preventDefault();cancelLong();if(App.mode==='sch')return;const w=toWorld(e.clientX,e.clientY),pj=hitPin(w.x,w.y,pinRadius(false)),jn=pj&&compOf(pj)&&compOf(pj).ty==='jn'?compOf(pj):null,c=jn||(hitWire(w.x,w.y,9/App.view.z+3)>=0?null:hitComp(w.x,w.y));if(jn){App.pend=null;clearPendUI()}
  if(c&&!App.sel.has(c.id))setSelection([c.id],[]);
  else if(!c){const wi=hitWire(w.x,w.y,10/App.view.z+3);if(wi>=0&&!App.wsel.has(wi))setSelection([],[wi]);else if(wi<0&&hitProbe(w.x,w.y)<0)setSelection([],[])}
  openContext(e.clientX,e.clientY,w)});
@@ -4661,15 +4705,20 @@ const hashStr=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i
 const safeName=s=>String(s||'').replace(/[\\/:*?"<>|\u0000-\u001f]+/g,' ').replace(/\s+/g,' ').trim().slice(0,80)||'ZINGO';
 /* success messages go to the status bar (the toast bar is reserved for problems) */
 function flashOk(m){const e=$('#stSave');if(!e)return;e.textContent='✓ '+m;e.classList.add('on');clearTimeout(_svT);_svT=setTimeout(()=>e.classList.remove('on'),2600)}
-const Proj={name:'',path:null,handle:null,saved:'',
- init(){const p=Store.json(KEY_PROJ)||{};this.name=typeof p.name==='string'?p.name:'';this.path=DESK&&typeof p.path==='string'?p.path:null;this.saved=typeof p.saved==='string'?p.saved:'';this.paint()},
+const Proj={name:'',path:null,handle:null,saved:'',cid:'',
+ init(){const p=Store.json(KEY_PROJ)||{};this.name=typeof p.name==='string'?p.name:'';this.path=DESK&&typeof p.path==='string'?p.path:null;this.saved=typeof p.saved==='string'?p.saved:'';
+  this.cid=typeof p.cid==='string'&&p.cid?p.cid:this.newCid();this.paint()},
+ /* conversation id: a saved file keeps its chat (derived from the path); a new or imported project starts a new chat */
+ newCid(){return'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)},
+ pathCid(move){if(!this.path)return;const c='f'+hashStr(this.path);if(c===this.cid)return;if(move)try{AIChats.move(this.cid,c)}catch(e){}this.cid=c},
  title(){return this.name||t('pj_untitled')},
  cur(){return Hist.cur||JSON.stringify(serialize(App))},
  dirty(){return hashStr(this.cur())!==this.saved&&(App.comps.length>0||!!this.path||!!this.handle)},
- remember(){Store.set(KEY_PROJ,JSON.stringify({name:this.name,path:this.path,saved:this.saved}))},
+ remember(){Store.set(KEY_PROJ,JSON.stringify({name:this.name,path:this.path,saved:this.saved,cid:this.cid}))},
  paint(){const d=this.dirty(),n=$('#pjName'),dot=$('#pjDot'),b=$('#pj');if(n)n.textContent=this.title();if(dot)dot.hidden=!d;
   if(b)b.title=(this.path?this.path:this.title())+(d?' •':'');
-  document.title=(d?'• ':'')+this.title()+' — ZINGO Fast';if(DESK)try{DESK.setTitle(this.title(),d,this.path||'')}catch(e){}},
+  document.title=(d?'• ':'')+this.title()+' — ZINGO Fast';if(DESK)try{DESK.setTitle(this.title(),d,this.path||'')}catch(e){}
+  try{AI.setProject(this.cid)}catch(e){}},
  text(){return JSON.stringify({format:'zingo-project',version:1,app:'ZINGO Fast',name:this.title(),savedAt:new Date().toISOString(),doc:serialize(App)},null,1)},
  /* accepts a .zingo project or a bare circuit JSON from older versions */
  parse(text){const j=JSON.parse(text);if(j&&j.format==='zingo-project'&&j.doc)return{name:typeof j.name==='string'?j.name:'',doc:cleanDoc(j.doc)};return{name:'',doc:cleanDoc(j)}},
@@ -4683,7 +4732,7 @@ const Proj={name:'',path:null,handle:null,saved:'',
   Toast.show(t('pj_save_fail'),true,{key:'pjsave'});return false},
  async saveAs(){const sug=safeName(this.title())+'.zingo';
   if(DESK){const r=await DESK.pickSavePath(sug).catch(()=>null);if(!r||!r.path)return false;const old=[this.path,this.name];this.path=r.path;this.name=r.name||this.name;
-   if(await this.write()){this.markSaved();this.recent();return true}[this.path,this.name]=old;Toast.show(t('pj_save_fail'),true,{key:'pjsave'});return false}
+   if(await this.write()){this.pathCid(true);this.markSaved();this.recent();return true}[this.path,this.name]=old;Toast.show(t('pj_save_fail'),true,{key:'pjsave'});return false}
   if(window.showSaveFilePicker){let h;try{h=await window.showSaveFilePicker({suggestedName:sug,types:[{description:'ZINGO Fast',accept:{'application/json':['.zingo']}}]})}catch(e){if(e&&e.name==='AbortError')return false;h=null}
    if(h){const old=[this.handle,this.name];this.handle=h;this.name=String(h.name||sug).replace(/\.(zingo|json)$/i,'');if(await this.write()){this.markSaved();return true}[this.handle,this.name]=old;Toast.show(t('pj_save_fail'),true,{key:'pjsave'});return false}}
   if(downloadBlob(sug,new Blob([this.text()],{type:'application/json'}))){this.markSaved();return true}return false},
@@ -4692,7 +4741,7 @@ const Proj={name:'',path:null,handle:null,saved:'',
   const v=await Modal.open({title:t('pj_unsaved_t'),body:'<p>'+esc(t('pj_unsaved_q',{name:this.title()}))+'</p>',buttons:[{l:t('cancel'),v:null},{l:t('pj_dont'),v:'no',dng:1},{l:t('pj_save'),v:'save',pri:1}]});
   if(v==='no')return true;if(v==='save')return await this.save();return false},
  load(text,o){o=o||{};let p;try{p=this.parse(text)}catch(e){Toast.show(t('pj_open_fail'),true,{key:'pjopen'});return false}
-  loadDoc(p.doc);this.name=String(p.name||o.name||'').slice(0,80);this.path=o.path||null;this.handle=o.handle||null;this.markSaved(true);this.recent();return true},
+  loadDoc(p.doc);this.name=String(p.name||o.name||'').slice(0,80);this.path=o.path||null;this.handle=o.handle||null;this.cid=this.newCid();this.pathCid();this.markSaved(true);this.recent();return true},
  async open(){if(!await this.guard())return;
   if(DESK){const r=await DESK.openProject().catch(()=>null);if(r&&r.text!=null)this.load(r.text,{path:r.path,name:r.name});return}
   if(window.showOpenFilePicker){try{const[h]=await window.showOpenFilePicker({types:[{description:'ZINGO Fast',accept:{'application/json':['.zingo','.json']}}]});const f=await h.getFile();this.load(await f.text(),{handle:h,name:f.name.replace(/\.(zingo|json)$/i,'')});return}catch(e){if(e&&e.name==='AbortError')return}}
@@ -4701,12 +4750,12 @@ const Proj={name:'',path:null,handle:null,saved:'',
   if(!r||r.text==null){Toast.show(t('pj_missing'),true,{key:'pjopen'});this.recent();return}this.load(r.text,{path:r.path,name:r.name})},
  async newProject(){if(!await this.guard())return;
   const nm=await Modal.prompt(t('pj_new_t'),t('pj_name'),'');if(nm===null||nm===undefined)return;const name=String(nm).trim().slice(0,80);
-  loadDoc(EMPTY_DOC());this.name=name;this.path=null;this.handle=null;this.markSaved(true);
+  loadDoc(EMPTY_DOC());this.name=name;this.path=null;this.handle=null;this.cid=this.newCid();this.markSaved(true);
   /* desktop: the project file is created right away under Documents/ZINGO Fast/<name>.zingo */
-  if(DESK){const r=await DESK.createProject(safeName(name||t('pj_untitled'))).catch(()=>null);if(r&&r.path){this.path=r.path;if(await this.write()){this.markSaved(true);this.recent();flashOk(t('pj_created',{name:this.title()}))}}}
+  if(DESK){const r=await DESK.createProject(safeName(name||t('pj_untitled'))).catch(()=>null);if(r&&r.path){this.path=r.path;this.pathCid(true);if(await this.write()){this.markSaved(true);this.recent();flashOk(t('pj_created',{name:this.title()}))}}}
   this.paint()},
  async rename(){const nm=await Modal.prompt(t('pj_rename'),t('pj_name'),this.name);if(nm===null||nm===undefined)return;const name=String(nm).trim().slice(0,80);if(name===this.name)return;
-  if(DESK&&this.path){const r=await DESK.renameProject(this.path,safeName(name||t('pj_untitled'))).catch(()=>null);if(r&&r.path)this.path=r.path}
+  if(DESK&&this.path){const r=await DESK.renameProject(this.path,safeName(name||t('pj_untitled'))).catch(()=>null);if(r&&r.path){this.path=r.path;this.pathCid(true)}}
   this.name=name;if(this.path||this.handle){if(await this.write())this.markSaved(true)}this.remember();this.paint();this.recent()},
  list:[],
  recent(){if(!DESK)return;DESK.recent().then(l=>{this.list=Array.isArray(l)?l.slice(0,8):[];if(!App.comps.length)paintRecent()}).catch(()=>{})}};
@@ -4810,18 +4859,19 @@ function refreshI18n(){
 function toggleTheme(){const dark=document.documentElement.dataset.theme==='dark';Settings.theme=dark?'light':'dark';saveSettings();applyTheme()}
 function switchLang(){setLang(LANG==='ar'?'en':'ar');refreshI18n()}
 
-/* ===== SECTION: ZINGO AI (assistant, circuit actions, learning brain, community sync) ===== */
+/* ===== SECTION: Voltra AI (assistant, virtual lab, circuit actions, learning brain, community sync) ===== */
 /* How it works
-   - The assistant talks to any OpenAI-compatible chat API (free built-in provider by default) or, in the desktop
-     app, to Claude through the official SDK in the main process.
+   - Talks to any OpenAI-compatible chat API (free built-in provider by default) or, in the Windows app, to Claude
+     through the official SDK in the main process.
    - Every request carries a compact snapshot of the open circuit (parts, nets, live readings, detected problems),
-     the user's learned preferences and the most relevant things the brain has learned.
-   - The assistant answers in text and may attach ```zingo``` action blocks; the user reviews and applies them
-     (add / wire / set / delete parts, build a whole circuit, create a new custom part).
-   - Learning: 👍 / 👎 on answers, designs that were applied and passed the check, fixes that removed a problem,
-     and style preferences all go into a local brain that is searched (TF-IDF) for every new question.
-   - Community brain (opt-in): learned items are sent to the owner's server (app.js), which curates them and
-     serves a shared brain back; the server address is published in Firebase (Firestore) by app.js. */
+     learned preferences and the most relevant things the brain knows.
+   - Modes: Fast (one answer), Think (plan -> optional web search -> answer -> the proposed circuit is tested in a
+     hidden virtual lab and repaired before it is shown), Loop (builds on the workspace in front of the user,
+     simulates, reads the diagnosis and keeps fixing until the circuit works or the step limit is reached).
+   - Changes come as ```zingo``` action blocks (add / wire / set / delete parts, Arduino code, new custom parts);
+     a layout engine places the parts so they never pile up.
+   - Learning: answers the user rates up, solutions that passed the virtual lab, fixes that removed a problem and
+     confident answers are stored locally and, unless the user turns it off, sent to the community brain server. */
 const AI_FB={apiKey:'AIzaSyDujpLY1NOWUPrbAYZHG-VPCrVydDQfF1A',projectId:'z-ai-404d2',doc:'zingo/server'};
 const AI_PRESETS={
  free:{n:'ai_pv_free',u:'https://text.pollinations.ai/v1',m:'openai',key:false},
@@ -4831,11 +4881,11 @@ const AI_PRESETS={
  openrouter:{n:'ai_pv_openrouter',u:'https://openrouter.ai/api/v1',m:'',key:true},
  openai:{n:'ai_pv_openai',u:'https://api.openai.com/v1',m:'gpt-4o-mini',key:true},
  custom:{n:'ai_pv_custom',u:'',m:'',key:'opt'}};   /* key optional: local servers (Ollama, LM Studio) need none */
-const AI_KEY_CFG='zf_ai_cfg',AI_KEY_CHAT='zf_ai_chat';
+const AI_KEY_CFG='zf_ai_cfg',AI_KEY_CHATS='zf_ai_chats',AI_LOOP_MAX=6;
 
 /* ---------- text tools (Arabic-aware normalisation, light stemming, TF-IDF cosine, character bigrams) ---------- */
 const AIT=(()=>{
- const STOP=new Set(['ما','ماذا','من','هو','هي','في','علي','عن','الي','هل','كيف','لماذا','متي','اين','هذا','هذه','ذلك','كان','يكون','تكون','لي','انا','او','و','ان','مع','لا','ثم','اريد','ممكن','what','is','the','a','an','of','who','how','to','in','are','do','does','me','please','i','my','it','and','or','can','you','for','with','on','this','that','لو','سمحت','ارجو']);
+ const STOP=new Set(['ما','ماذا','من','هو','هي','في','علي','عن','الي','هل','كيف','لماذا','متي','اين','هذا','هذه','ذلك','كان','يكون','تكون','لي','انا','او','و','ان','مع','لا','ثم','اريد','ممكن','what','is','the','a','an','of','who','how','to','in','are','do','does','me','please','i','my','it','and','or','can','you','for','with','on','this','that','le','la','les','de','des','un','une','et','est','pour','que','qui','لو','سمحت','ارجو']);
  const norm=s=>String(s||'').toLowerCase().replace(/[\u064b-\u0652\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه');
  const stem=w=>{if(w.length>4&&/^[وفبك]ال/.test(w))w=w.slice(3);else if(w.length>3&&w.startsWith('ال'))w=w.slice(2);
   if(w.length>4&&/(ات|ون|ين|ان)$/.test(w))w=w.slice(0,-2);else if(w.length>4&&/s$/.test(w))w=w.slice(0,-1);return w};
@@ -4848,21 +4898,18 @@ const AIT=(()=>{
  const tokEst=s=>{s=String(s||'');let ar=0;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);if(c>=1536&&c<=1791)ar++}return Math.ceil(ar/2.2+(s.length-ar)/3.4)};
  const cap=(s,n)=>{s=String(s||'');if(tokEst(s)<=n)return s;let lo=0,hi=s.length;while(lo<hi){const m=(lo+hi+1)>>1;if(tokEst(s.slice(0,m))<=n)lo=m;else hi=m-1}return s.slice(0,lo)+' …'};
  const h32=s=>{s=norm(s).replace(/\s+/g,' ').trim();let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return(h>>>0).toString(36)};
- /* personal data never leaves the computer: e-mails, phone numbers, URLs with tokens, Windows user paths, long digit runs */
+ /* personal data never leaves the computer: e-mails, phone numbers, URLs with tokens, Windows user paths, keys */
  const scrub=s=>String(s||'').replace(/[\w.+-]+@[\w-]+\.[\w.]+/g,'[email]').replace(/(?:\+|00)?\d[\d\s-]{8,}\d/g,'[number]').replace(/https?:\/\/\S+/g,u=>/[?&](key|token|sig|auth)=/i.test(u)?'[link]':u).replace(/[A-Z]:\\Users\\[^\\\s]+/gi,'C:\\Users\\[user]').replace(/sk-[A-Za-z0-9_-]{12,}/g,'[key]');
- return{norm,toks,idfMap,cos,dice,tokEst,cap,h32,scrub}})();
+ const noIds=s=>String(s).replace(/`?#\d+(?:\.[^\s`,)]+)?`?/g,'').replace(/\(\s*\)/g,'').replace(/[ \t]{2,}/g,' ');
+ return{norm,toks,idfMap,cos,dice,tokEst,cap,h32,scrub,noIds}})();
 
-/* ---------- storage: desktop data files (userData) or localStorage in the browser ---------- */
+/* ---------- storage: desktop / Android data files, or localStorage in the browser ---------- */
 const AIStore={
  async get(name){try{if(DESK&&DESK.dataRead){const t=await DESK.dataRead(name);return t?JSON.parse(t):null}}catch(e){}return Store.json('zf_ai_'+name)},
  async set(name,obj){const s=JSON.stringify(obj);try{if(DESK&&DESK.dataWrite){const r=await DESK.dataWrite(name,s);if(r&&r.ok)return true}}catch(e){}Store.set('zf_ai_'+name,s);return true}};
 
-/* ---------- the brain ----------
-   facts:   question -> answer that the user rated up (kind chat), or a fix that removed a detected problem (kind fix)
-   designs: circuits / custom parts the assistant built and the user kept (they pass the circuit check)
-   rules:   style preferences learned from what the user says ("short answers", "answer in Arabic", ...)
-   net:     the community brain served by the owner's server (read-only here) */
-const Brain={me:{v:1,facts:[],designs:[],rules:[],stats:{asked:0,learned:0,up:0,down:0,applied:0,fixed:0},nid:1},net:{rev:0,facts:[],designs:[],rules:[]},outbox:[],ready:false,_t:0,
+/* ---------- the brain ---------- */
+const Brain={me:{v:1,facts:[],designs:[],rules:[],stats:{asked:0,learned:0,up:0,down:0,applied:0,fixed:0,auto:0},nid:1},net:{rev:0,facts:[],designs:[],rules:[]},outbox:[],ready:false,_t:0,
  async load(){const m=await AIStore.get('brain'),n=await AIStore.get('net'),o=await AIStore.get('outbox');
   if(m&&Array.isArray(m.facts))this.me=Object.assign(this.me,m,{stats:Object.assign({},this.me.stats,m.stats||{})});
   if(n&&Array.isArray(n.facts))this.net=Object.assign({rev:0,facts:[],designs:[],rules:[]},n);
@@ -4870,48 +4917,50 @@ const Brain={me:{v:1,facts:[],designs:[],rules:[],stats:{asked:0,learned:0,up:0,
  save(){clearTimeout(this._t);this._t=setTimeout(()=>{AIStore.set('brain',this.me);AIStore.set('outbox',this.outbox)},400)},
  find(list,q,th){const qt=AIT.toks(q);if(!qt.length)return null;const docs=list.map(f=>AIT.toks(f.q||f.name||'')),idf=AIT.idfMap(docs.concat([qt]));
   for(let i=0;i<docs.length;i++)if(AIT.cos(qt,docs[i],idf)>(th||.86))return list[i];return null},
- learnFact(q,a,kind,o){q=String(q||'').trim();const gen=this.generic(q);if(gen){const ty=[...new Set(App.comps.filter(c=>c.ty!=='jn'&&!TY[c.ty].bb).map(c=>t('p_'+c.ty)))].slice(0,12).join(', ');if(ty)q+=' ['+ty+']'}a=String(a||'').trim();if(q.length<4||a.length<8)return null;o=o||{};
+ /* questions that only make sense for one particular circuit (quick buttons, automatic follow-ups) */
+ generic(q){const n=AIT.norm(q).trim();return['ai_c_check_q','ai_c_explain_q','ai_q_fixafter'].some(k=>[I18N.en[k],I18N.ar[k],I18N.fr&&I18N.fr[k]].some(s=>s&&AIT.norm(s).trim()===n))},
+ learnFact(q,a,kind,o){q=String(q||'').trim();a=String(a||'').trim();o=o||{};const gen=this.generic(q);
+  if(gen){const ty=[...new Set(App.comps.filter(c=>c.ty!=='jn'&&!TY[c.ty].bb).map(c=>t('p_'+c.ty)))].slice(0,12).join(', ');if(ty)q+=' ['+ty+']'}
+  if(q.length<4||a.length<8)return null;
   let f=this.find(this.me.facts,q);
   if(f){f.a=a;f.kind=kind||f.kind;f.up=(f.up||0)+(o.up||0);f.t=Date.now()}
-  else{f={id:this.me.nid++,q:q.slice(0,600),a:a.slice(0,6000),kind:kind||'chat',up:o.up||0,down:0,uses:0,t:Date.now(),lang:LANG};this.me.facts.push(f);this.me.stats.learned++}
+  else{f={id:this.me.nid++,q:q.slice(0,600),a:a.slice(0,6000),kind:kind||'chat',up:o.up||0,down:0,uses:0,t:Date.now(),lang:LANG,src:o.src||'user'};this.me.facts.push(f);this.me.stats.learned++}
   if(this.me.facts.length>2500){this.me.facts.sort((x,y)=>((y.up||0)-(y.down||0)+(y.uses||0)*.2)-((x.up||0)-(x.down||0)+(x.uses||0)*.2));this.me.facts.length=2000}
   this.save();if(o.share!==false&&!gen)this.share({kind:f.kind,q:f.q,a:f.a,lang:LANG});return f},
  learnDesign(name,desc,kind,data,q){const d={id:this.me.nid++,name:String(name||'').slice(0,80),q:String(q||desc||name||'').slice(0,400),desc:String(desc||'').slice(0,600),kind,data,up:1,t:Date.now()};
   const old=this.find(this.me.designs,d.q,.9);if(old)Object.assign(old,d,{id:old.id,up:(old.up||0)+1});else this.me.designs.push(d);
   if(this.me.designs.length>300)this.me.designs.splice(0,this.me.designs.length-300);
-  this.me.stats.applied++;this.save();this.share({kind:'design',q:d.q,a:d.desc,name:d.name,dkind:kind,data,lang:LANG});return d},
+  this.me.stats.applied++;this.save();if(!this.generic(q||''))this.share({kind:'design',q:d.q,a:d.desc,name:d.name,dkind:kind,data,lang:LANG});return d},
  vote(fid,v){const f=this.me.facts.find(x=>x.id===fid);if(!f)return;if(v>0)f.up=(f.up||0)+1;else f.down=(f.down||0)+1;
   if((f.down||0)>=2&&(f.down||0)>(f.up||0))this.me.facts=this.me.facts.filter(x=>x!==f);this.save()},
- /* style rules: phrases in the user's own words */
- PREFS:[[/(باختصار|اختصر|مختصر|briefly|short answer|be brief)/i,'ai_r_short'],[/(بالتفصيل|اشرح اكثر|شرح مفصل|in detail|explain more)/i,'ai_r_long'],
-  [/(بالعربي|بالعربيه|in arabic)/i,'ai_r_ar'],[/(in english|بالانجليزي)/i,'ai_r_en'],[/(بدون مقدمات|مباشره|get to the point|no intro)/i,'ai_r_direct'],
-  [/(خطوه بخطوه|step by step)/i,'ai_r_steps'],[/(للمبتدئين|انا مبتدئ|beginner)/i,'ai_r_beginner'],[/(احترافي|مهندس|engineer|professional level)/i,'ai_r_pro']],
+ PREFS:[[/(باختصار|اختصر|مختصر|briefly|short answer|be brief|en bref)/i,'ai_r_short'],[/(بالتفصيل|اشرح اكثر|شرح مفصل|in detail|explain more|en détail)/i,'ai_r_long'],
+  [/(بالعربي|بالعربيه|in arabic)/i,'ai_r_ar'],[/(in english|بالانجليزي)/i,'ai_r_en'],[/(en français|بالفرنسي)/i,'ai_r_fr'],[/(بدون مقدمات|مباشره|get to the point|no intro)/i,'ai_r_direct'],
+  [/(خطوه بخطوه|step by step|étape par étape)/i,'ai_r_steps'],[/(للمبتدئين|انا مبتدئ|beginner|débutant)/i,'ai_r_beginner'],[/(احترافي|مهندس|engineer|professional level|ingénieur)/i,'ai_r_pro']],
  learnPrefs(q){const n=AIT.norm(q);this.PREFS.forEach(([re,k])=>{if(re.test(n)||re.test(q)){const r=this.me.rules.find(x=>x.k===k);if(r){r.w++;r.t=Date.now()}else this.me.rules.push({k,w:1,t:Date.now()})}});
   if(this.me.rules.length>20){this.me.rules.sort((a,b)=>b.w-a.w);this.me.rules.length=20}this.save()},
  rulesText(){return this.me.rules.slice().sort((a,b)=>b.w-a.w).slice(0,6).map(r=>'- '+t(r.k)).join('\n')},
- /* retrieval over my facts + designs + the community brain */
  recall(q,k){const qt=AIT.toks(q);if(!qt.length)return[];const pool=[];
   this.me.facts.forEach(f=>pool.push({f,src:'me',d:AIT.toks(f.q)}));this.net.facts.forEach(f=>pool.push({f,src:'net',d:AIT.toks(f.q)}));
   this.me.designs.forEach(f=>pool.push({f,src:'me',d:AIT.toks(f.q+' '+f.name),design:1}));this.net.designs.forEach(f=>pool.push({f,src:'net',d:AIT.toks((f.q||'')+' '+(f.name||'')),design:1}));
   if(!pool.length)return[];const idf=AIT.idfMap(pool.map(p=>p.d).concat([qt])),qj=qt.join(' ');
   pool.forEach(p=>{let s=.75*AIT.cos(qt,p.d,idf)+.25*AIT.dice(qj,p.d.join(' '));const f=p.f;s*=1+Math.min(f.up||f.votes||0,5)*.06;s-=(f.down||0)*.12;if(p.src==='net')s*=.92;if(f.kind==='fix')s*=1.05;p.s=s});
   return pool.filter(p=>p.s>.28).sort((a,b)=>b.s-a.s).slice(0,k||4)},
- /* community sharing: only items the user approved of, scrubbed of personal data, only when sharing is on */
- /* questions that only make sense for one particular circuit (quick buttons, "fix what you just applied") */
- generic(q){const n=AIT.norm(q).trim();return['ai_c_check_q','ai_c_explain_q','ai_q_fixafter'].some(k=>[I18N.en[k],I18N.ar[k]].some(s=>s&&AIT.norm(s).trim()===n))},
- share(it){if(!AI.cfg.share)return;if(this.generic(it.q))return;const x=Object.assign({},it);const noIds=s=>String(s).replace(/`?#\d+(?:\.[^\s`,)]+)?`?/g,'').replace(/\(\s*\)/g,'').replace(/[ \t]{2,}/g,' ');
-  x.q=noIds(AIT.scrub(x.q)).slice(0,600);if(x.a)x.a=noIds(AIT.scrub(x.a)).slice(0,6000);if(x.name)x.name=AIT.scrub(x.name).slice(0,80);
-  x.h=AIT.h32(x.kind+'|'+x.q);if(this.outbox.some(o=>o.h===x.h))return;this.outbox.push(x);if(this.outbox.length>400)this.outbox.splice(0,this.outbox.length-400);this.save()},
+ /* community sharing: on by default; scrubbed of personal data and part numbers; each item is sent once */
+ share(it){if(!AI.cfg.share)return;if(this.generic(it.q))return;const x=Object.assign({},it);
+  x.q=AIT.noIds(AIT.scrub(x.q)).slice(0,600);if(x.a)x.a=AIT.noIds(AIT.scrub(x.a)).slice(0,6000);if(x.name)x.name=AIT.scrub(x.name).slice(0,80);
+  x.h=AIT.h32(x.kind+'|'+x.q);if(this.outbox.some(o=>o.h===x.h)||(this.sent||(this.sent=new Set(Store.json('zf_ai_sent')||[]))).has(x.h))return;
+  this.outbox.push(x);if(this.outbox.length>400)this.outbox.splice(0,this.outbox.length-400);this.save();AISync.soon()},
+ markSent(items){const s=this.sent||(this.sent=new Set(Store.json('zf_ai_sent')||[]));items.forEach(x=>s.add(x.h));Store.set('zf_ai_sent',JSON.stringify([...s].slice(-3000)))},
  counts(){return{me:this.me.facts.length+this.me.designs.length,rules:this.me.rules.length,net:this.net.facts.length+this.net.designs.length,out:this.outbox.length}}};
 
-/* ---------- circuit snapshot for the model (compact, deterministic) ---------- */
+/* ---------- circuit snapshot for the model ---------- */
 function aiNodeName(n){return n===0?'0V':n>0?'N'+n:'open'}   /* 0V = ground, or the reference of a circuit without a ground symbol */
 function aiPropText(c){const T=TY[c.ty];return(T.props||[]).filter(p=>p.k!=='bs'&&p.k!=='lg').map(p=>{const v=P(c,p.k);if(v==null)return'';return p.k+'='+(p.t==='num'&&T.u&&p.k==='v'?fmtU(v,T.u):(typeof v==='number'?+(+v).toPrecision(4):v))}).filter(Boolean).join(' ')}
 function aiReading(c){const r=c._r||{};const num=x=>typeof x==='number'&&Number.isFinite(x);
  const sm=(x,m,q,u)=>{if(!num(m)||!num(q))return num(x)?si(x,u):'';const a=Math.sqrt(Math.max(0,q-m*m));return a>.05*Math.abs(m)&&a>1e-9?(a>Math.abs(m)?'~'+si(a,u):si(m,u)+' (ripple '+si(a,u)+')'):si(num(x)?x:m,u)};
  if(c.ty==='vm')return'shows '+meterTxt(r,'v','V',+P(c,'cpl'));if(c.ty==='am')return'shows '+meterTxt(r,'i','A',+P(c,'cpl'));if(c.ty==='mm')return'shows '+mmTxt(c,r);
  const a=[];if(num(r.v))a.push('V='+sm(r.v,r.sv,r.sv2,'V'));if(num(r.i))a.push('I='+sm(r.i,r.si,r.si2,'A'));if(num(r.p)&&r.p>1e-6)a.push('P='+si(num(r.sp)?r.sp:r.p,'W'));return a.join(' ')}
-function aiStress(c){const ws=Run.sim&&Run.sim.watch?Run.sim.watch.filter(w=>w.c===c):[];let s=0;ws.forEach(w=>{let q=0;try{q=w.f()}catch(e){}if(Number.isFinite(q)&&q>s)s=q});return ws.length?Math.round(s*100):null}
+function aiStress(c,sim){sim=sim||Run.sim;const ws=sim&&sim.watch?sim.watch.filter(w=>w.c===c):[];let s=0;ws.forEach(w=>{let q=w.q;if(q==null)try{q=w.f()}catch(e){q=0}if(Number.isFinite(q)&&q>s)s=q});return ws.length?Math.round(s*100):null}
 function aiSnapshot(maxParts){
  try{if(Run.dirty)Run.rebuild()}catch(e){}
  const sm=Run.sim,nd=(c,j)=>sm&&sm.nodeOf?sm.nodeOf(c.id+'.'+j):-1,L=[];
@@ -4922,11 +4971,11 @@ function aiSnapshot(maxParts){
  comps.slice(0,maxParts||120).forEach(c=>{const T=TY[c.ty];
   const pins=T.pins.map((p,j)=>(p.n||String(j+1))+'→'+aiNodeName(nd(c,j))).join(', ');
   const st=aiStress(c),rd=aiReading(c),pr=aiPropText(c);
-  L.push('#'+c.id+' '+c.ty+' "'+partName(c)+'"'+(pr?' ['+pr+']':'')+' pins: '+pins+(rd?' | '+rd:'')+(st!=null&&st>=50?' | load '+st+'%':'')+(c.burn?' | BURNT':'')+(sel.has(c.id)?' | SELECTED':''))});
+  L.push('#'+c.id+' '+c.ty+' "'+partName(c)+'"'+(pr?' ['+pr+']':'')+' pins: '+pins+(rd?' | '+rd:'')+(st!=null&&st>=50?' | load '+st+'%':'')+(c.burn?' | BURNT':'')+(TY[c.ty].ard?' | sketch: '+(c.code?AIT.cap(c.code,220).replace(/\s+/g,' '):'none'):'')+(sel.has(c.id)?' | SELECTED':''))});
  if(comps.length>(maxParts||120))L.push('… and '+(comps.length-(maxParts||120))+' more parts');
  return L.join('\n')}
 
-/* ---------- diagnosis: everything we can detect locally, as structured findings ---------- */
+/* ---------- diagnosis of the live workspace ---------- */
 function aiDiagnose(){
  try{if(Run.dirty)Run.rebuild()}catch(e){}
  const out=[],sm=Run.sim,st=Run.status(),nd=(c,j)=>sm&&sm.nodeOf?sm.nodeOf(c.id+'.'+j):-1,add=(sev,msg,comps)=>out.push({sev,msg,comps:comps||[]});
@@ -4944,52 +4993,107 @@ function aiDiagnose(){
  try{(Lint.scan()||[]).forEach(i=>add('warn',i.msg+(i.why?' — '+i.why:''),i.comps))}catch(e){}
  return out}
 
+/* ---------- virtual lab: simulate a proposed circuit off-screen, without touching the workspace ---------- */
+function aiLab(comps,wires,secs){
+ const C=JSON.parse(JSON.stringify(comps.map(c=>{const o=Object.assign({},c);delete o._r;delete o._noauto;return o})));
+ const W=wires.map(w=>({a:w.a,b:w.b}));const burnt=[];let need=0;
+ const sim=new Eng.Sim({insert:insertBB,fail:(c,why)=>{if(why&&String(why).indexOf('pin')===0)return;if(!c.burn){c.burn=1;burnt.push(c);need=1}},evt:()=>{},err:()=>{}});
+ const res={status:'nosrc',issues:[],readings:[]},live=Run.sim;
+ Run.sim=sim;   /* element models read the clock of Run.sim */
+ try{return aiLabRun(sim,C,W,secs,burnt,res,()=>{const k=need;need=0;return k})}catch(e){res.issues.push({sev:'err',msg:'lab: '+e.message});return res}finally{Run.sim=live}}
+function aiLabRun(sim,C,W,secs,burnt,res,needRebuild){
+ try{sim.build(C,W,TY)}catch(e){res.issues.push({sev:'err',msg:'netlist: '+e.message});return res}
+ if(!sim.S){res.issues.push({sev:'warn',msg:t('ai_d_nosrc')});return res}
+ let fm=0;C.forEach(c=>{if(c.ty==='ac'){const f=+P(c,'freq')||0;if(f>fm)fm=f}});
+ let dt=sim.dyn||C.some(c=>FINE_TYPES.has(c.ty))?5e-5:2e-3;if(fm>0)dt=Math.min(dt,1/(fm*32));
+ const T=Math.min(secs||.6,dt*12000);let guard=0;
+ while(sim.t<T&&guard++<15000){sim.step(dt);if(needRebuild()||sim.dirty){const t0=sim.t;try{sim.build(C,W,TY);sim.t=t0;sim.dirty=false}catch(e){break}}}
+ res.status=sim.status(burnt.length>0);
+ const nd=(c,j)=>sim.nodeOf(c.id+'.'+j),cnt=new Map();
+ C.forEach(c=>{const TT=TY[c.ty];if(!TT||TT.bb||c.ty==='jn')return;TT.pins.forEach((_,j)=>{const n=nd(c,j);if(n>=0)cnt.set(n,(cnt.get(n)||0)+1)})});
+ if(res.status==='short')res.issues.push({sev:'err',msg:t('n_short')});
+ if(res.status==='nosrc')res.issues.push({sev:'warn',msg:t('ai_d_nosrc')});
+ if(res.status==='open')res.issues.push({sev:'warn',msg:t('ai_d_open')});
+ burnt.forEach(c=>res.issues.push({sev:'err',msg:t('ai_d_burnt',{name:partName(c)}),comps:[c.id]}));
+ C.forEach(c=>{const TT=TY[c.ty];if(!TT||c.burn||TT.bb||c.ty==='jn'||c.ty==='gnd')return;
+  const s=aiStress(c,sim);if(s!=null&&s>=90)res.issues.push({sev:s>=100?'err':'warn',msg:t('ai_d_stress',{name:partName(c),pc:s}),comps:[c.id]});
+  if(['pas','semi','sw','load','src','inst'].indexOf(TT.cat)>=0)TT.pins.forEach((p,j)=>{const n=nd(c,j);if(n<0||(cnt.get(n)||0)<2)res.issues.push({sev:'warn',msg:t('l_float',{name:partName(c),pin:p.n||j+1}),comps:[c.id]})});
+  if(c.ty==='cap'&&(c._r.v||0)<-.5)res.issues.push({sev:'err',msg:t('ai_d_caprev',{name:partName(c)}),comps:[c.id]});
+  const rd=aiReading(c);if(rd&&TT.cat!=='board')res.readings.push(partName(c)+': '+rd)});
+ return res}
+
 /* ---------- part catalogue + part-builder reference for the system prompt ---------- */
 function aiCatalog(){return Object.keys(TY).filter(k=>k!=='jn'&&!TY[k].bb).map(k=>{const T=TY[k];
  const pr=(T.props||[]).filter(p=>p.k!=='bs'&&p.k!=='lg').map(p=>p.k+(p.t==='sel'?'∈{'+p.opts.map(o=>o[0]).join('|')+'}':p.t==='bool'?'∈{0|1}':(p.u?'('+p.u+')':''))).join(',');
- return k+': '+(I18N.en['p_'+k]||k)+' pins['+T.pins.map(p=>p.n||'').join('|')+']'+(pr?' props{'+pr+'}':'')}).join('\n')}
+ return k+': '+(I18N.en['p_'+k]||k)+' pins['+T.pins.map(p=>p.n||'').join('|')+']'+(pr?' props{'+pr+'}':'')+(featureOfPart(k)&&!Entitlement.can(featureOfPart(k))?' (PRO-locked: do not use)':'')}).join('\n')}
 function aiPartSpec(){return Object.keys(PB_BLOCKS).map(k=>k+'('+(k==='logic'?'in:[pin],out:[pin],vcc:pin,gnd:pin,tt:["01.."] one truth-table string per output':PB_BLOCKS[k].f.map(f=>f[0]+':'+(f[1]==='pin'?'pin':f[1]==='sel'?f[3].map(o=>o[0]).join('|'):'expr')).join(','))+')').join('; ')}
-const AI_PART_HINT=`CUSTOM PART JSON ("do":"part","def":{...}) — the same format as the Part Builder:
-{"name":"…","desc":"…","w":120,"h":80 (multiples of 10),"pins":[{"n":"A","x":10,"y":40,"s":"l|r|t|b"}…] (pins on the 10-grid, on the body edge),
+const AI_PART_HINT=`CUSTOM PART JSON ("do":"part","def":{...}) — the Part Builder format:
+{"name":"…","desc":"…","w":120,"h":80 (multiples of 10),"pins":[{"n":"A","x":10,"y":40,"s":"l|r|t|b"}…] (on the 10-grid, on the body edge),
  "shapes":[{"k":"rect|ell|line|tri|text","x":..,"y":..,"w":..,"h":..,"r":4,"fill":"#hex","stroke":"#hex","tx":"label or {param}","fs":9}…],
  "params":[{"k":"rv","l":"Resistance","t":"num|rng|bool|sel","def":1000,"min":1,"max":1e6,"u":"Ω"}…],
- "blocks":[ behaviour built from simulator elements; pin fields are pin indexes (0-based), expressions may use params, vin, t, pressed, I1/V1 (current/voltage of block 1)… ],
+ "blocks":[ behaviour from simulator elements; pin fields are 0-based pin indexes; expressions may use params, vin, t, pressed, I1/V1 (current/voltage of block 1) ],
  "fx":[{"s":shapeIndex,"prop":"fill|opacity|rotate|scale|text","expr":"…","i0":0,"i1":1,"c1":"#hex","c2":"#hex"}]}
 Blocks: `;
+const AI_EXAMPLE=`EXAMPLE of a correct, complete plan (LED on 9 V):
+\`\`\`zingo
+{"title":"LED with current-limiting resistor","replace":true,"actions":[
+ {"do":"add","ref":"b1","type":"bat","props":{"v":9}},
+ {"do":"add","ref":"r1","type":"res","props":{"v":390,"pw":0.25}},
+ {"do":"add","ref":"d1","type":"led","props":{"col":0}},
+ {"do":"wire","a":"b1.+","b":"r1.1"},{"do":"wire","a":"r1.2","b":"d1.A"},{"do":"wire","a":"d1.K","b":"b1.−"}]}
+\`\`\`
+(9 V − 2 V) / 390 Ω ≈ 18 mA. Every pin of every part is wired; the loop is closed.`;
 
 /* ---------- system prompt ---------- */
-function aiSystem(intent){
- const ar=LANG==='ar';
- return[`You are ZINGO AI, the built-in senior electronics engineer of ZINGO Fast — a circuit design and real-time simulation app (nodal analysis, AC/DC, meters, oscilloscope, Arduino). You help users design circuits, create new devices (custom parts), find and fix mistakes, and learn electronics.`,
+function aiSystem(intent,mode){
+ const L={ar:'Arabic',fr:'French',en:'English'}[LANG]||'English';
+ return[`You are Voltra AI, the senior electronics engineer built into Voltra — a circuit design and real-time simulation studio (nodal analysis, AC/DC, meters, oscilloscope, Arduino). You design circuits, create new devices, write Arduino code, find and fix mistakes, and teach electronics.`,
  `Rules:
-- Reply in the user's language (${ar?'Arabic by default':'English by default'}); keep part ids, units and code in Latin script.
-- Be accurate and practical: give values with units, explain the reason briefly (Ohm's law, power, ratings). Never invent readings: use the circuit snapshot.
-- When the user asks you to build, change, connect, fix or create something in the workspace, include ONE fenced block \`\`\`zingo … \`\`\` with JSON {"title":"short title","replace":false,"actions":[…]}. The user reviews it and presses Apply. Outside the block, explain what it does in a few lines.
-- Actions: {"do":"add","ref":"r1","type":"res","props":{"v":220},"at":[gx,gy],"rot":0..3,"name":"optional"} | {"do":"wire","a":"r1.2","b":"#5.A"} | {"do":"set","part":"#5","props":{…}} | {"do":"delete","part":"#5"} | {"do":"unwire","a":"…","b":"…"} | {"do":"part","ref":"x1","def":{…custom part…},"place":true,"at":[gx,gy]}.
-- Part references: "#id" for existing parts (from the snapshot), or the "ref" you gave a new part. Pin = part + "." + pin name or 1-based pin number (e.g. "#3.+", "led1.A", "r1.1"). Grid coordinates gx,gy are in 15-px cells; leave space (parts are 4–12 cells wide).
-- Use only part types from the catalogue, only listed props, values in base units (Ω, V, A, Hz; capacitance in µF, inductance in mH). Every circuit needs a source and a closed loop; add current-limiting resistors for LEDs; respect ratings.
+- Reply in the user's language (${L} by default); keep part ids, units and code in Latin script. Use short sections, lists and tables when useful.
+- Be exact: values with units, the reason in one line (Ohm's law, power, ratings). Never invent readings: use the snapshot / lab results.
+- To build, change, connect, fix, program or create something, include ONE fenced block \`\`\`zingo … \`\`\` with JSON {"title":"…","replace":false,"actions":[…]}. Outside the block, explain briefly.
+- Actions: {"do":"add","ref":"r1","type":"res","props":{"v":220},"rot":0..3,"name":"optional"} | {"do":"wire","a":"r1.2","b":"#5.A"} | {"do":"set","part":"#5","props":{…}} | {"do":"delete","part":"#5"} | {"do":"unwire","a":"…","b":"…"} | {"do":"code","part":"#5 or ref","code":"Arduino C++ sketch"} | {"do":"part","ref":"x1","def":{…custom part…},"place":true}.
+- References: "#id" for parts in the snapshot, or the plain "ref" you gave a new part (r1, not #r1). Pin = part + "." + pin name from the catalogue, or 1-based pin number (b1.+, d1.A, r1.1). Do not give coordinates: Voltra lays the parts out.
+- WIRE EVERY PIN that must conduct; close every loop back to the source; LEDs need a series resistor; check power ratings; Arduino parts need power (5V/GND) and a sketch.
+- Use only catalogue types and listed props; values in base units (Ω, V, A, Hz; capacitance µF, inductance mH). Parts marked PRO-locked are not available to this user: say so instead of using them.
 - "replace":true clears the workspace first (only when the user asks for a new circuit).
-- To answer "what is wrong", use the DIAGNOSIS list and readings, give the root cause first, then the fix (as actions when possible).
-- If something is impossible in the simulator, say so plainly.`,
+- To answer "what is wrong", start from DIAGNOSIS and readings: root cause first, then the fix as actions.
+- If something cannot be done in the simulator, say so plainly.`,
+ mode==='fast'?'Mode FAST: answer briefly and directly.':'',
+ AI_EXAMPLE,
  intent.part?AI_PART_HINT+aiPartSpec():'',
  'PART CATALOGUE (type: name pins props):\n'+aiCatalog()].filter(Boolean).join('\n\n')}
-function aiIntent(q){const n=AIT.norm(q);return{part:/(قطعه جديده|قطعه مخصصه|جهاز جديد|انشئ قطعه|اصنع قطعه|صمم قطعه|custom part|new part|new device|create (a )?part|make (a )?part|part builder)/i.test(n),
- build:/(ابن|صمم|انشئ|اصنع|ركب|اضف|وصل|build|design|create|make|add|connect|wire)/i.test(n),check:/(خطا|اخطاء|مشكله|لا يعمل|لماذا|افحص|احترق|error|wrong|problem|fix|check|why|burn)/i.test(n)}}
+function aiIntent(q){const n=AIT.norm(q);return{part:/(قطعه جديده|قطعه مخصصه|جهاز جديد|انشئ قطعه|اصنع قطعه|صمم قطعه|custom part|new part|new device|create (a )?part|make (a )?part|part builder|nouvelle pièce|nouveau composant)/i.test(n),
+ build:/(ابن|صمم|انشئ|اصنع|ركب|اضف|وصل|برمج|build|design|create|make|add|connect|wire|program|construis|ajoute|crée)/i.test(n),check:/(خطا|اخطاء|مشكله|لا يعمل|لماذا|افحص|احترق|error|wrong|problem|fix|check|why|burn|erreur|problème)/i.test(n),
+ code:/(اردوينو|كود|برمج|arduino|sketch|code|program)/i.test(n)}}
 
-/* ---------- the model call: desktop main process (no CORS, Claude via SDK) or fetch in the browser ---------- */
+/* ---------- web search (for datasheets, pinouts, formulas): Wikipedia + DuckDuckGo instant answers ---------- */
+const AIWeb={
+ async get(url){if(DESK&&DESK.net){const r=await DESK.net({method:'GET',url,timeout:12000});if(!r||!r.ok)throw new Error(r&&r.error||'net');return JSON.parse(r.text||'{}')}
+  const res=await fetch(url);if(!res.ok)throw new Error('HTTP '+res.status);return res.json()},
+ async search(q){const out=[],lang=LANG==='ar'?'ar':LANG==='fr'?'fr':'en',e=encodeURIComponent;
+  const wiki=async lg=>{try{const j=await this.get('https://'+lg+'.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch='+e(q)+'&gsrlimit=3&prop=extracts&exintro=1&explaintext=1&exchars=700&format=json&origin=*');
+    const pages=j&&j.query&&j.query.pages?Object.values(j.query.pages):[];pages.sort((a,b)=>(a.index||0)-(b.index||0)).forEach(p=>{if(p.extract)out.push({src:'Wikipedia ('+lg+')',title:p.title,text:p.extract})})}catch(err){}};
+  await wiki(lang);if(out.length<2&&lang!=='en')await wiki('en');
+  try{const d=await this.get('https://api.duckduckgo.com/?q='+e(q)+'&format=json&no_html=1&skip_disambig=1');if(d&&d.AbstractText)out.unshift({src:'DuckDuckGo',title:d.Heading||q,text:d.AbstractText});
+   (d&&d.RelatedTopics||[]).slice(0,2).forEach(x=>{if(x&&x.Text)out.push({src:'DuckDuckGo',title:q,text:x.Text})})}catch(err){}
+  return out.slice(0,4)}};
+
+/* ---------- the model call: desktop / Android native side (no CORS, Claude via SDK on Windows) or fetch ---------- */
 const AIRun={id:0,
- async stream(cfg,system,msgs,onText,signal){
+ async stream(cfg,system,msgs,onText,signal,opt){opt=opt||{};
   const pv=AI_PRESETS[cfg.p]||AI_PRESETS.free,base=(cfg.p==='custom'||cfg.p==='openrouter'?cfg.u:'')||pv.u,model=cfg.m||pv.m;
   if(cfg.p==='claude'&&(!DESK||DESK.claude===false))throw new Error(t('ai_e_claude_web'));
   if(pv.key===true&&!cfg.k)throw new Error(t('ai_e_key'));
   if(cfg.p!=='claude'&&!/^(https:\/\/|http:\/\/(127\.0\.0\.1|localhost)(:\d+)?\/)/.test(base||''))throw new Error(t('ai_e_url'));
   if(!model)throw new Error(t('ai_e_model'));
+  const temperature=opt.temp!=null?opt.temp:.3;
   if(DESK&&DESK.aiStream){const id=++this.id;let full='';
-   return await new Promise((res,rej)=>{const off=DESK.aiStream({id,provider:cfg.p==='claude'?'claude':'openai',base,model,key:cfg.k||'',system,messages:msgs,temperature:.3},ev=>{
+   return await new Promise((res,rej)=>{const off=DESK.aiStream({id,provider:cfg.p==='claude'?'claude':'openai',base,model,key:cfg.k||'',system,messages:msgs,temperature},ev=>{
      if(ev.type==='delta'){full+=ev.text;onText(full)}else if(ev.type==='done'){off&&off();res({text:full||ev.text||'',finish:ev.finish||''})}else if(ev.type==='error'){off&&off();rej(new Error(ev.message||'error'))}});
     if(signal)signal.addEventListener('abort',()=>{DESK.aiAbort(id);off&&off();rej(Object.assign(new Error('aborted'),{name:'AbortError'}))})})}
   const url=base.replace(/\/+$/,'')+'/chat/completions',hdr={'Content-Type':'application/json'};if(cfg.k)hdr.Authorization='Bearer '+cfg.k;
-  const res=await fetch(url,{method:'POST',headers:hdr,signal,body:JSON.stringify({model,messages:[{role:'system',content:system}].concat(msgs),stream:true,temperature:.3})});
+  const res=await fetch(url,{method:'POST',headers:hdr,signal,body:JSON.stringify({model,messages:[{role:'system',content:system}].concat(msgs),stream:true,temperature})});
   if(!res.ok){const tx=await res.text().catch(()=>'');throw new Error(aiHttpErr(res.status,tx))}
   let full='',finish='';
   if(res.body&&res.body.getReader){const rd=res.body.getReader(),dec=new TextDecoder();let buf='';
@@ -4997,15 +5101,20 @@ const AIRun={id:0,
     while((i=buf.indexOf('\n'))>=0){const line=buf.slice(0,i).trim();buf=buf.slice(i+1);if(line.indexOf('data:')!==0)continue;const d=line.slice(5).trim();if(d==='[DONE]')continue;
      try{const j=JSON.parse(d),ch=j.choices&&j.choices[0];if(ch){const c=ch.delta&&ch.delta.content;if(c){full+=c;onText(full)}if(ch.finish_reason)finish=ch.finish_reason}}catch(e){}}}}
   else{const j=await res.json(),ch=j.choices&&j.choices[0];full=(ch&&ch.message&&ch.message.content)||'';onText(full)}
-  return{text:full.replace(/\n*(?:---\s*)?\**\s*(?:Powered by Pollinations|Support Pollinations)[\s\S]*$/i,''),finish}}};
+  return{text:full,finish}}};
+function aiClean(s){return String(s||'').replace(/\n*(?:---\s*)?\**\s*(?:Powered by Pollinations|Support Pollinations)[\s\S]*$/i,'')}
 function aiHttpErr(s,tx){const m=(()=>{try{const j=JSON.parse(tx);return(j.error&&(j.error.message||j.error))||j.message||''}catch(e){return String(tx||'').slice(0,160)}})();
  if(s===401||s===403)return t('ai_e_auth');if(s===429)return t('ai_e_rate');if(s===404)return t('ai_e_model404');if(s>=500)return t('ai_e_server');return'HTTP '+s+(m?': '+m:'')}
 
-/* ---------- actions: parse ```zingo``` blocks, validate everything, apply as one undoable step ---------- */
-function aiBlocks(text){const out=[],re=/```zingo\s*\n?([\s\S]*?)```/g;let m;while((m=re.exec(text))){try{const j=JSON.parse(m[1]);if(j&&Array.isArray(j.actions))out.push(j)}catch(e){out.push({bad:1,raw:m[1]})}}return out}
-function aiStrip(text){return String(text||'').replace(/```zingo\s*\n?[\s\S]*?(```|$)/g,'').trim()}
-function aiPinIdx(T,p){if(p==null)return-1;const s=String(p).trim().replace(/^-$/,'−');const i=T.pins.findIndex(x=>x.n===s);if(i>=0)return i;
- const lo=T.pins.findIndex(x=>String(x.n).toLowerCase()===s.toLowerCase());if(lo>=0)return lo;if(/^\d+$/.test(s)){const k=+s-1;if(k>=0&&k<T.pins.length)return k}return-1}
+/* ---------- actions: parse, validate, lay out, apply (one undo step) ---------- */
+function aiBlocks(text){const out=[],re=/```zingo\s*\n?([\s\S]*?)```/g;let m;while((m=re.exec(text))){let raw=m[1].trim();try{const j=JSON.parse(raw);if(j&&Array.isArray(j.actions))out.push(j);else if(Array.isArray(j))out.push({actions:j})}
+  catch(e){/* tolerate trailing commas and comments from weaker models */try{const j=JSON.parse(raw.replace(/\/\/[^\n]*/g,'').replace(/,\s*([}\]])/g,'$1'));if(j&&Array.isArray(j.actions))out.push(j);else out.push({bad:1,raw})}catch(e2){out.push({bad:1,raw})}}}return out}
+function aiStrip(text){return String(text||'').replace(/```zingo\s*\n?[\s\S]*?(```|$)/g,'').replace(/^\s*(CONFIDENCE|SEARCH)\s*:.*$/gim,'').trim()}
+const AI_PIN_ALIAS={'+':['+','A','VCC','V+','IN','1'],'-':['−','K','GND','V-','COM','2'],'−':['−','K','GND','V-','COM','2'],pos:['+','A'],positive:['+','A'],plus:['+','A'],neg:['−','K'],negative:['−','K'],minus:['−','K'],anode:['A','+'],cathode:['K','−'],gnd:['GND','−','K'],vcc:['VCC','5V','+'],in:['IN','1'],out:['OUT','2']};
+function aiPinIdx(T,p){if(p==null)return-1;const s=String(p).trim();const ex=T.pins.findIndex(x=>x.n===s);if(ex>=0)return ex;
+ const lo=T.pins.findIndex(x=>String(x.n).toLowerCase()===s.toLowerCase());if(lo>=0)return lo;
+ const al=AI_PIN_ALIAS[s.toLowerCase()];if(al)for(const a of al){const i=T.pins.findIndex(x=>String(x.n).toLowerCase()===a.toLowerCase());if(i>=0)return i}
+ if(/^\d+$/.test(s)){const k=+s-1;if(k>=0&&k<T.pins.length)return k}return-1}
 function aiCleanProps(T,props,errs,label){const o={};if(!props||typeof props!=='object')return o;
  Object.keys(props).forEach(k=>{if(k==='name'){o.name=String(props[k]).slice(0,40);return}const p=(T.props||[]).find(x=>x.k===k);if(!p){errs.push(t('ai_x_prop',{k,part:label}));return}
   let v=props[k];
@@ -5015,125 +5124,234 @@ function aiCleanProps(T,props,errs,label){const o={};if(!props||typeof props!=='
   o[k]=v});return o}
 function aiPreview(plan){const a=plan.actions||[],n=k=>a.filter(x=>x&&x.do===k).length;const parts=[];
  if(plan.replace)parts.push(t('ai_pv_replace'));if(n('add'))parts.push(t('ai_pv_add',{n:n('add')}));if(n('wire'))parts.push(t('ai_pv_wire',{n:n('wire')}));if(n('set'))parts.push(t('ai_pv_set',{n:n('set')}));
- if(n('delete')+n('unwire'))parts.push(t('ai_pv_del',{n:n('delete')+n('unwire')}));if(n('part'))parts.push(t('ai_pv_part',{n:n('part')}));return parts.join(' · ')||t('ai_pv_none')}
+ if(n('delete')+n('unwire'))parts.push(t('ai_pv_del',{n:n('delete')+n('unwire')}));if(n('part'))parts.push(t('ai_pv_part',{n:n('part')}));if(n('code'))parts.push(t('ai_pv_code',{n:n('code')}));return parts.join(' · ')||t('ai_pv_none')}
+/* layout: new parts follow the circuit (breadth-first from the source along the wires), left to right in tidy rows, never overlapping */
+function aiLayout(added,all,wires){
+ if(!added.length)return;const addedSet=new Set(added.map(c=>c.id));
+ const fixed=all.filter(c=>!addedSet.has(c.id)&&!TY[c.ty].bb);
+ const adj=new Map();added.forEach(c=>adj.set(c.id,new Set()));
+ wires.forEach(w=>{const a=+w.a.split('.')[0],b=+w.b.split('.')[0];if(adj.has(a)&&adj.has(b)&&a!==b){adj.get(a).add(b);adj.get(b).add(a)}});
+ const rank=c=>TY[c.ty].cat==='src'&&c.ty!=='jn'&&c.ty!=='gnd'?0:TY[c.ty].cat==='board'?1:2;
+ const order=[],seen=new Set();
+ added.slice().sort((a,b)=>rank(a)-rank(b)).forEach(s=>{if(seen.has(s.id))return;const q=[s];seen.add(s.id);while(q.length){const c=q.shift();order.push(c);[...adj.get(c.id)].map(id=>added.find(x=>x.id===id)).filter(Boolean).sort((a,b)=>rank(a)-rank(b)).forEach(n=>{if(!seen.has(n.id)){seen.add(n.id);q.push(n)}})}});
+ let x0=0,y0=0;if(fixed.length){let x1=-1e9,yy=1e9;fixed.forEach(c=>{const b=bboxOf(c);x1=Math.max(x1,b.x1);yy=Math.min(yy,b.y0)});x0=x1+120;y0=yy}
+ const GAPX=75,GAPY=105,MAXW=Math.max(900,Math.min(1600,order.length*170));let x=x0,y=y0,rowH=0;
+ order.forEach(c=>{c.x=0;c.y=0;let b=bboxOf(c);const w=b.x1-b.x0,h=b.y1-b.y0;
+  if(x>x0&&x+w>x0+MAXW){x=x0;y+=rowH+GAPY;rowH=0}
+  c.x=snapG(x-b.x0);c.y=snapG(y-b.y0);x+=w+GAPX;rowH=Math.max(rowH,h)})}
+/* resolve "#r1" (a ref written with #), "#12" (an existing part) and plain refs */
+function aiResolver(refs){const part=r=>{if(r==null)return null;r=String(r).trim();if(r[0]==='#'){const k=r.slice(1);if(/^\d+$/.test(k))return cmap.get(+k)||refs.get(k)||null;return refs.get(k)||null}return refs.get(r)||App.comps.find(c=>c.name===r)||null};
+ const pin=s=>{s=String(s||'');const i=s.lastIndexOf('.');if(i<1)return null;const c=part(s.slice(0,i));if(!c)return null;const j=aiPinIdx(TY[c.ty],s.slice(i+1));return j<0?null:c.id+'.'+j};return{part,pin}}
+/* build the result of a plan without touching the workspace (for the virtual lab) or apply it for real */
+function aiPlanDoc(plan){const errs=[],refs=new Map(),added=[];let uid=App.uid;
+ const comps=plan.replace?[]:App.comps.map(c=>Object.assign({},c)),wires=plan.replace?[]:App.wires.map(w=>({a:w.a,b:w.b,col:w.col||''}));
+ const byId=new Map(comps.map(c=>[c.id,c]));
+ const R={part:r=>{if(r==null)return null;r=String(r).trim();if(r[0]==='#'){const k=r.slice(1);if(/^\d+$/.test(k))return byId.get(+k)||refs.get(k)||null;return refs.get(k)||null}return refs.get(r)||comps.find(c=>c.name===r)||null}};
+ R.pin=s=>{s=String(s||'');const i=s.lastIndexOf('.');if(i<1)return null;const c=R.part(s.slice(0,i));if(!c)return null;const j=aiPinIdx(TY[c.ty],s.slice(i+1));return j<0?null:c.id+'.'+j};
+ const newDefs=[];
+ for(const a of(plan.actions||[]).slice(0,240)){if(!a||typeof a!=='object')continue;const lab=a.ref||a.part||a.type||'';
+  if(a.do==='add'){const T=TY[a.type];if(!T||T.bb){errs.push(t('ai_x_type',{type:a.type}));continue}
+   const f=featureOfPart(a.type);if(f&&!Entitlement.can(f)){errs.push(t('ai_x_locked',{part:t('p_'+a.type)}));continue}
+   const c={id:uid++,ty:a.type,x:0,y:0,r:((a.rot|0)%4+4)%4};Object.assign(c,aiCleanProps(T,Object.assign({},a.props,a.name?{name:a.name}:{}),errs,lab));
+   if(T.ard)c.code=SKETCHES[0].code;comps.push(c);byId.set(c.id,c);if(a.ref)refs.set(String(a.ref).replace(/^#/,''),c);added.push(c)}
+  else if(a.do==='part'){if(!Entitlement.can('partbuilder')){errs.push(t('ai_x_locked',{part:t('pb_title')}));continue}
+   const d=cleanPart(Object.assign({},a.def||{},{id:'cu_'+Math.random().toString(36).slice(2,8)}));if(!d||!d.pins.length){errs.push(t('ai_x_partdef'));continue}
+   newDefs.push(d);if(!TY[d.id])registerCustom(d);
+   if(a.place!==false){const c={id:uid++,ty:d.id,x:0,y:0,r:0};comps.push(c);byId.set(c.id,c);if(a.ref)refs.set(String(a.ref).replace(/^#/,''),c);added.push(c)}}
+  else if(a.do==='wire'){const A=R.pin(a.a),B=R.pin(a.b);if(!A||!B){errs.push(t('ai_x_pin',{a:a.a,b:a.b}));continue}
+   if(A!==B&&!wires.some(w=>(w.a===A&&w.b===B)||(w.a===B&&w.b===A)))wires.push({a:A,b:B,col:''})}
+  else if(a.do==='unwire'){const A=R.pin(a.a),B=R.pin(a.b);for(let i=wires.length-1;i>=0;i--){const w=wires[i];if((w.a===A&&w.b===B)||(w.a===B&&w.b===A))wires.splice(i,1)}}
+  else if(a.do==='set'){const c=R.part(a.part);if(!c){errs.push(t('ai_x_part',{part:a.part}));continue}Object.assign(c,aiCleanProps(TY[c.ty],a.props,errs,a.part));delete c.burn}
+  else if(a.do==='delete'){const c=R.part(a.part);if(!c){errs.push(t('ai_x_part',{part:a.part}));continue}if(isLockedComp(c))continue;
+   comps.splice(comps.indexOf(c),1);byId.delete(c.id);for(let i=wires.length-1;i>=0;i--){const w=wires[i];if(w.a.startsWith(c.id+'.')||w.b.startsWith(c.id+'.'))wires.splice(i,1)}}
+  else if(a.do==='code'){const c=R.part(a.part)||comps.find(x=>TY[x.ty].ard);if(!c||!TY[c.ty].ard){errs.push(t('ai_x_noboard'));continue}
+   if(!Entitlement.can('arduino')){errs.push(t('ai_x_locked',{part:t('ft_arduino')}));continue}c.code=String(a.code||'').slice(0,60000);c._newCode=1}
+  else errs.push(t('ai_x_do',{d:String(a.do)}))}
+ aiLayout(added,comps,wires);
+ return{comps,wires,errs,added,uid,newDefs}}
 function aiApply(plan){
- const errs=[],refs=new Map(),added=[],acts=(plan.actions||[]).slice(0,200);
- const before=JSON.stringify(serialize(App));
- if(plan.replace){App.comps.length=0;App.wires.length=0;App.probes=[];reindex();syncComps();syncWires()}
- /* placement: requested grid cell, otherwise a tidy grid to the right of what is already there */
- let gx0=0,gy0=0;{let x1=-1e9,y0=1e9;App.comps.forEach(c=>{const b=bboxOf(c);x1=Math.max(x1,b.x1);y0=Math.min(y0,b.y0)});if(x1>-1e9){gx0=Math.round((x1+90)/GRID);gy0=Math.round(y0/GRID)}}
- let slot=0;const place=(c,at)=>{const T=TY[c.ty];if(Array.isArray(at)&&at.length===2&&at.every(Number.isFinite)){c.x=snapG(at[0]*GRID);c.y=snapG(at[1]*GRID);return}
-  c.x=snapG((gx0+(slot%4)*12)*GRID);c.y=snapG((gy0+Math.floor(slot/4)*10)*GRID);slot++;void T};
- const part=r=>{if(r==null)return null;r=String(r).trim();if(r[0]==='#')return cmap.get(+r.slice(1))||null;return refs.get(r)||App.comps.find(c=>c.name===r)||null};
- const pin=s=>{s=String(s||'');const i=s.lastIndexOf('.');if(i<1)return null;const c=part(s.slice(0,i));if(!c)return null;const j=aiPinIdx(TY[c.ty],s.slice(i+1));return j<0?null:c.id+'.'+j};
- let newParts=acts.filter(a=>a&&(a.do==='add'||(a.do==='part'&&a.place!==false))).length;
- if(newParts&&capBlocked(newParts)){errs.push(t('pw_cap',{n:FREE_TIER.maxParts}));return{errs,added,changed:false}}
- for(const a of acts){if(!a||typeof a!=='object')continue;const lab=a.ref||a.part||a.type||'';
-  try{
-   if(a.do==='add'){const T=TY[a.type];if(!T||T.bb){errs.push(t('ai_x_type',{type:a.type}));continue}
-    const f=featureOfPart(a.type);if(f&&!Entitlement.can(f)){errs.push(t('ai_x_locked',{part:t('p_'+a.type)}));continue}
-    const c={id:App.uid++,ty:a.type,x:0,y:0,r:((a.rot|0)%4+4)%4};Object.assign(c,aiCleanProps(T,Object.assign({},a.props,a.name?{name:a.name}:{}),errs,lab));
-    if(T.ard)c.code=SKETCHES[0].code;place(c,a.at);App.comps.push(c);cmap.set(c.id,c);if(a.ref)refs.set(String(a.ref),c);added.push(c.id)}
-   else if(a.do==='part'){if(!Entitlement.can('partbuilder')){errs.push(t('ai_x_locked',{part:t('pb_title')}));continue}
-    const d=cleanPart(Object.assign({},a.def||{},{id:'cu_'+Math.random().toString(36).slice(2,8)}));if(!d||!d.pins.length){errs.push(t('ai_x_partdef'));continue}
-    CULIB.push(d);pbSaveLib();registerCustom(d);buildPalette();
-    if(a.place!==false){const c={id:App.uid++,ty:d.id,x:0,y:0,r:0};place(c,a.at);App.comps.push(c);cmap.set(c.id,c);if(a.ref)refs.set(String(a.ref),c);added.push(c.id)}
-    Brain.learnDesign(d.name,d.desc||'', 'part',d,plan.q)}
-   else if(a.do==='wire'){const A=pin(a.a),B=pin(a.b);if(!A||!B){errs.push(t('ai_x_pin',{a:a.a,b:a.b}));continue}
-    if(A!==B&&!App.wires.some(w=>(w.a===A&&w.b===B)||(w.a===B&&w.b===A)))App.wires.push({a:A,b:B,col:''})}
-   else if(a.do==='unwire'){const A=pin(a.a),B=pin(a.b);App.wires=App.wires.filter(w=>!((w.a===A&&w.b===B)||(w.a===B&&w.b===A)))}
-   else if(a.do==='set'){const c=part(a.part);if(!c){errs.push(t('ai_x_part',{part:a.part}));continue}Object.assign(c,aiCleanProps(TY[c.ty],a.props,errs,a.part));delete c.burn}
-   else if(a.do==='delete'){const c=part(a.part);if(!c){errs.push(t('ai_x_part',{part:a.part}));continue}if(isLockedComp(c))continue;
-    App.comps=App.comps.filter(x=>x!==c);cmap.delete(c.id);App.wires=App.wires.filter(w=>!w.a.startsWith(c.id+'.')&&!w.b.startsWith(c.id+'.'))}
-   else errs.push(t('ai_x_do',{d:String(a.do)}))}
-  catch(e){errs.push(String(e&&e.message||e))}}
+ const before=JSON.stringify(serialize(App)),pd=aiPlanDoc(plan);
+ if(pd.added.length&&capBlocked(pd.added.filter(c=>!CAP_SKIP.has(c.ty)).length-(plan.replace?partCount():0))){return{errs:[t('pw_cap',{n:FREE_TIER.maxParts})],added:[],changed:false}}
+ pd.newDefs.forEach(d=>{if(!CULIB.some(x=>x.id===d.id)){CULIB.push(d);Brain.learnDesign(d.name,d.desc||'','part',d,plan.q)}});if(pd.newDefs.length){pbSaveLib();buildPalette()}
+ App.comps=pd.comps;App.wires=pd.wires;App.uid=Math.max(App.uid,pd.uid);if(plan.replace)App.probes=[];
  reindex();syncComps();syncWires();relayoutAll();refreshInserted();Run.dirty=true;
+ const coded=App.comps.filter(c=>c._newCode);coded.forEach(c=>{delete c._newCode;delete c._noauto;try{Run.rebuild();Run.upload(c)}catch(e){}});
  const changed=JSON.stringify(serialize(App))!==before;
- if(changed){Hist.commit();updateInfo();if(added.length){setSelection(added,[]);fitView()}}
- return{errs,added,changed}}
+ if(changed){Hist.commit();updateInfo();if(pd.added.length){setSelection(pd.added.map(c=>c.id),[]);fitView();aiFlash(pd.added.map(c=>c.id))}}
+ return{errs:pd.errs,added:pd.added.map(c=>c.id),changed}}
+function aiFlash(ids){ids.forEach(id=>{const e=CE.get(id);if(!e)return;e.g.classList.add('ai-new');setTimeout(()=>e.g.classList.remove('ai-new'),2600)})}
 
-/* ---------- chat state + UI ---------- */
-const AI={cfg:{p:'free',k:'',m:'',u:'',share:false,net:true,server:'',asked:false},chat:[],busy:false,ctrl:null,el:null,view:'chat',sync:{state:'off',url:'',rev:0,last:0,msg:''},
- async init(){const c=Store.json(AI_KEY_CFG);if(c)Object.assign(this.cfg,c);
-  await this.loadKey();
-  const ch=Store.json(AI_KEY_CHAT);if(Array.isArray(ch))this.chat=ch.slice(-60);
-  await Brain.load();AISync.start()},
+/* ---------- live "Voltra AI is working" banner over the canvas ---------- */
+const AIBanner={el:null,
+ show(txt,step){if(!this.el){const d=this.el=document.createElement('div');d.id='aiBanner';d.innerHTML='<span class="ab-sp"></span><b></b><small></small><button type="button" class="ab-x"></button>';$('#stage').appendChild(d);d.querySelector('.ab-x').onclick=()=>AI.stop()}
+  this.el.querySelector('b').textContent=txt;this.el.querySelector('small').textContent=step||'';this.el.querySelector('.ab-x').innerHTML=ic('close');this.el.classList.add('show');document.body.classList.add('ai-busy')},
+ hide(){if(this.el)this.el.classList.remove('show');document.body.classList.remove('ai-busy')}};
+
+/* ---------- chats: one conversation per project; clearing a chat never touches the brain ---------- */
+const AIChats={map:null,
+ load(){if(!this.map){this.map=Store.json(AI_KEY_CHATS)||{};if(typeof this.map!=='object'||Array.isArray(this.map))this.map={}}return this.map},
+ get(cid){const m=this.load()[cid];return Array.isArray(m&&m.msgs)?m.msgs:[]},
+ move(from,to){const m=this.load();if(m[from]&&!m[to]){m[to]=m[from];delete m[from];Store.set(AI_KEY_CHATS,JSON.stringify(m))}if(AI.cid===from)AI.cid=to},
+ put(cid,msgs){const m=this.load();m[cid]={t:Date.now(),msgs:msgs.slice(-60).map(x=>({r:x.r,c:x.c,q:x.q,fid:x.fid,v:x.v,err:x.err,applied:x.applied,fix:x.fix,steps:x.steps,think:x.think,mode:x.mode}))};
+  const ks=Object.keys(m);if(ks.length>40)ks.sort((a,b)=>m[a].t-m[b].t).slice(0,ks.length-40).forEach(k=>delete m[k]);Store.set(AI_KEY_CHATS,JSON.stringify(m))}};
+
+/* ---------- assistant state + UI ---------- */
+const AI={cfg:{p:'free',k:'',m:'',u:'',share:true,net:true,mode:'think'},chat:[],cid:'',busy:false,ctrl:null,el:null,view:'chat',
+ async init(){const c=Store.json(AI_KEY_CFG);if(c){Object.assign(this.cfg,c);if(c.v!==2){this.cfg.share=true;this.cfg.net=true}}this.cfg.v=2;delete this.cfg.server;this.saveCfg();
+  await this.loadKey();await Brain.load();AISync.start()},
  saveCfg(){const c=Object.assign({},this.cfg);delete c.k;Store.set(AI_KEY_CFG,JSON.stringify(c))},
- /* API keys: encrypted by the operating system in the desktop app; plain local storage only when that is unavailable */
  async setKey(k){this.cfg.k=k;let ok=false;if(DESK&&DESK.secretSet){try{ok=await DESK.secretSet('ai_key_'+this.cfg.p,k)}catch(e){}}
   if(ok)Store.set('zf_ai_key_'+this.cfg.p,'');else Store.set('zf_ai_key_'+this.cfg.p,k)},
  async loadKey(){let k='';if(DESK&&DESK.secretGet){try{k=(await DESK.secretGet('ai_key_'+this.cfg.p))||''}catch(e){}}this.cfg.k=k||Store.get('zf_ai_key_'+this.cfg.p)||''},
- saveChat(){Store.set(AI_KEY_CHAT,JSON.stringify(this.chat.slice(-60).map(m=>({r:m.r,c:m.c,q:m.q,fid:m.fid,v:m.v,err:m.err,applied:m.applied}))))},
+ /* called whenever a project is opened or created: each project has its own conversation */
+ setProject(cid){if(cid===this.cid)return;if(this.busy)this.stop();this.cid=cid;this.chat=AIChats.get(cid).slice();this.view='chat';this.render()},
+ saveChat(){if(this.cid)AIChats.put(this.cid,this.chat)},
  ready(){const pv=AI_PRESETS[this.cfg.p];return!!pv&&(pv.key!==true||!!this.cfg.k)&&(this.cfg.p!=='claude'||!!(DESK&&DESK.claude!==false))},
+ modeOk(m){return m!=='loop'||Entitlement.can('ailoop')},
+ /* ---- one model call with the shared context ---- */
+ context(q,o){const diag=aiDiagnose(),mem=Brain.recall(q,4);
+  const ctx=['CIRCUIT SNAPSHOT:\n'+aiSnapshot(),'DIAGNOSIS:\n'+(diag.length?diag.map(d=>'['+d.sev+'] '+d.msg+(d.comps.length?' (parts '+d.comps.map(i=>'#'+i).join(',')+')':'')).join('\n'):'no problems detected')];
+  if(mem.length){ctx.push('LEARNED KNOWLEDGE (from earlier conversations and the Voltra community; use if relevant, verify against the snapshot):\n'+mem.map((x,i)=>'['+(i+1)+'] '+(x.design?'Design "'+(x.f.name||'')+'": '+AIT.cap(x.f.desc||x.f.a||'',200)+(x.f.data?'\n'+AIT.cap(JSON.stringify(x.f.data),500):''):'Q: '+AIT.cap(x.f.q,120)+'\nA: '+AIT.cap(x.f.a,450))).join('\n'));mem.forEach(x=>{if(x.src==='me')x.f.uses=(x.f.uses||0)+1})}
+  const rules=Brain.rulesText();if(rules)ctx.push('USER PREFERENCES:\n'+rules);
+  (o.extra||[]).forEach(x=>ctx.push(x));
+  return ctx.join('\n\n')},
+ history(n){const hist=[];let budget=n||3500;for(let i=this.chat.length-3;i>=0&&budget>0;i--){const x=this.chat[i];if(x.err||x.pending||x.r==='s')continue;const c=x.r==='a'?aiStrip(x.c)+(aiBlocks(x.c).length?'\n[proposed actions omitted]':''):x.c;budget-=AIT.tokEst(c);if(budget<0)break;hist.unshift({role:x.r==='u'?'user':'assistant',content:AIT.cap(c,900)})}return hist},
+ async call(sys,msgs,onText,temp){return AIRun.stream(this.cfg,sys,msgs,onText||(()=>{}),this.ctrl.signal,{temp})},
+ step(m,k,txt,st){const s={k,t:txt,st:st||'run'};(m.steps||(m.steps=[])).push(s);this.paintLast();return s},
+ done(m,s,st,txt){s.st=st||'ok';if(txt!=null)s.t=txt;this.paintLast()},
  /* ---- conversation ---- */
  async ask(q,o){o=o||{};q=String(q||'').trim();if(!q||this.busy)return;
   if(!this.ready()){this.view='set';this.render();this.note(t('ai_need_setup'));return}
+  let mode=o.mode||this.cfg.mode;if(!this.modeOk(mode)){Paywall.open('ailoop');mode='think'}
   Brain.learnPrefs(q);Brain.me.stats.asked++;Brain.save();
-  this.chat.push({r:'u',c:q});const m={r:'a',c:'',q,pending:1};this.chat.push(m);this.busy=true;this.render();
-  const intent=aiIntent(q),diag=aiDiagnose(),mem=Brain.recall(q,4);
-  const ctx=['CIRCUIT SNAPSHOT:\n'+aiSnapshot(),'DIAGNOSIS:\n'+(diag.length?diag.map(d=>'['+d.sev+'] '+d.msg+(d.comps.length?' (parts '+d.comps.map(i=>'#'+i).join(',')+')':'')).join('\n'):'no problems detected')];
-  if(mem.length)ctx.push('LEARNED KNOWLEDGE (from earlier conversations and the ZINGO community; use it if relevant, verify against the snapshot):\n'+mem.map((x,i)=>'['+(i+1)+'] '+(x.design?'Design "'+(x.f.name||'')+'": '+AIT.cap(x.f.desc||x.f.a||'',200)+(x.f.data?'\n'+AIT.cap(JSON.stringify(x.f.data),500):''):'Q: '+AIT.cap(x.f.q,120)+'\nA: '+AIT.cap(x.f.a,450))).join('\n'));
-  const rules=Brain.rulesText();if(rules)ctx.push('USER PREFERENCES:\n'+rules);
-  if(o.extra)ctx.push(o.extra);
-  const hist=[];let budget=3500;for(let i=this.chat.length-3;i>=0&&budget>0;i--){const x=this.chat[i];if(x.err||x.pending)continue;const c=x.r==='a'?aiStrip(x.c)+(aiBlocks(x.c).length?'\n[proposed actions omitted]':''):x.c;budget-=AIT.tokEst(c);if(budget<0)break;hist.unshift({role:x.r==='u'?'user':'assistant',content:AIT.cap(c,900)})}
-  const msgs=hist.concat([{role:'user',content:ctx.join('\n\n')+'\n\nUSER MESSAGE:\n'+q}]);
-  this.ctrl=new AbortController();mem.forEach(x=>{if(x.src==='me')x.f.uses=(x.f.uses||0)+1});
-  try{const r=await AIRun.stream(this.cfg,aiSystem(intent),msgs,txt=>{m.c=txt;this.paintLast()},this.ctrl.signal);m.c=r.text||m.c;if(!m.c.trim())throw new Error(t('ai_e_empty'))}
-  catch(e){if(e&&e.name==='AbortError'){m.c=m.c||t('ai_stopped')}else{m.err=1;m.c=(e&&e.message)||String(e)}}
-  delete m.pending;this.busy=false;this.ctrl=null;this.saveChat();this.render();this.scroll()},
- stop(){if(this.ctrl)this.ctrl.abort()},
+  this.chat.push({r:'u',c:q,mode});const m={r:'a',c:'',q,pending:1,mode,steps:[]};this.chat.push(m);this.busy=true;this.render();
+  const intent=aiIntent(q),sys=aiSystem(intent,mode),hist=this.history(mode==='fast'?1500:3500);
+  this.ctrl=new AbortController();
+  try{
+   if(mode==='fast')await this.runFast(m,q,o,sys,hist);
+   else if(mode==='loop')await this.runLoop(m,q,o,sys,hist,intent);
+   else await this.runThink(m,q,o,sys,hist,intent);
+   if(!m.c.trim())throw new Error(t('ai_e_empty'))}
+  catch(e){if(e&&e.name==='AbortError'){m.c=m.c||t('ai_stopped');(m.steps||[]).forEach(s=>{if(s.st==='run')s.st='stop'})}else{m.err=1;m.c=(e&&e.message)||String(e)}}
+  AIBanner.hide();delete m.pending;this.busy=false;this.ctrl=null;this.saveChat();this.render();this.scroll()},
+ async runFast(m,q,o,sys,hist){const r=await this.call(sys,hist.concat([{role:'user',content:this.context(q,o)+'\n\nUSER MESSAGE:\n'+q}]),txt=>{m.c=aiClean(txt);this.paintLast()},.2);m.c=aiClean(r.text)},
+ /* Think: plan (may ask for web searches) -> answer -> virtual lab -> up to 2 repairs -> learn when verified */
+ async runThink(m,q,o,sys,hist,intent){
+  const ctx=this.context(q,o);
+  const s1=this.step(m,'think',t('ai_st_think'));
+  const plan=await this.call(sys,hist.concat([{role:'user',content:ctx+'\n\nUSER MESSAGE:\n'+q+'\n\nTHINK FIRST (do not answer yet): in at most 8 short numbered lines, analyse the request: what is asked, the relevant facts from the snapshot, the design or fix (part values with calculations), and every connection needed. If you are missing facts that the internet would give (datasheet, pinout, formula), add up to 2 lines exactly like:\nSEARCH: <short query>'}]),txt=>{m.think=aiClean(txt);this.paintLast()},.2);
+  m.think=aiClean(plan.text);this.done(m,s1,'ok');
+  let web='';const qs=(m.think.match(/^\s*SEARCH\s*:\s*(.+)$/gim)||[]).map(l=>l.replace(/^\s*SEARCH\s*:\s*/i,'').trim()).filter(Boolean).slice(0,2);
+  for(const sq of qs){const s=this.step(m,'web',t('ai_st_web',{q:sq}));try{const r=await AIWeb.search(sq);web+=r.map((x,i)=>'['+x.src+'] '+x.title+': '+AIT.cap(x.text,260)).join('\n')+'\n';this.done(m,s,r.length?'ok':'warn',t('ai_st_web',{q:sq})+' · '+r.length)}catch(e){this.done(m,s,'warn')}}
+  const s2=this.step(m,'write',t('ai_st_write'));
+  const final=async extra=>{const r=await this.call(sys,hist.concat([{role:'user',content:ctx+(web?'\n\nWEB RESULTS:\n'+web:'')+'\n\nYOUR ANALYSIS:\n'+AIT.cap(m.think,700)+(extra||'')+'\n\nUSER MESSAGE:\n'+q+'\n\nNow give the final answer. End with one line: CONFIDENCE: <0-100> (how sure you are it is correct).'}]),txt=>{m.c=aiClean(txt);this.paintLast()},.25);return aiClean(r.text)};
+  m.c=await final();this.done(m,s2,'ok');
+  /* verify every proposed circuit in the virtual lab, repair it if needed */
+  let verified=false;
+  for(let round=0;round<3;round++){const plans=aiBlocks(m.c).filter(b=>!b.bad);if(!plans.length)break;
+   const s=this.step(m,'lab',t(round?'ai_st_relab':'ai_st_lab'));const pd=aiPlanDoc(plans[0]);const lab=aiLab(pd.comps,pd.wires,.6);
+   const probs=pd.errs.map(x=>({sev:'err',msg:x})).concat(lab.issues.filter(i=>i.sev!=='info'));
+   if(!probs.length){this.done(m,s,'ok',t('ai_st_lab_ok')+(lab.readings.length?' · '+lab.readings.slice(0,3).join(' · '):''));m.labOk=1;verified=true;break}
+   this.done(m,s,'warn',t('ai_st_lab_bad',{n:probs.length}));if(round===2)break;
+   const s3=this.step(m,'fix',t('ai_sp_fix'));
+   m.c=await final('\n\nYOUR PREVIOUS ANSWER:\n'+AIT.cap(m.c,1500)+'\n\nTHE VIRTUAL LAB FOUND THESE PROBLEMS IN IT (fix all of them and give the complete corrected plan):\n- '+probs.slice(0,10).map(p=>p.msg).join('\n- ')+(lab.readings.length?'\nLab readings: '+lab.readings.slice(0,8).join('; '):''));
+   this.done(m,s3,'ok')}
+  this.selfLearn(m,q,verified)},
+ /* Loop: build on the workspace in front of the user, simulate, diagnose, repeat until clean */
+ async runLoop(m,q,o,sys,hist,intent){
+  if(MOB.on)MOB.close();
+  let note='',last='',fixedAll=false;
+  for(let it=1;it<=AI_LOOP_MAX;it++){
+   AIBanner.show(t('ai_bn_work'),t('ai_bn_step',{n:it,max:AI_LOOP_MAX}));
+   const s=this.step(m,'think',t('ai_st_loop',{n:it}));
+   const r=await this.call(sys,hist.concat([{role:'user',content:this.context(q,o)+(note?'\n\nRESULT OF YOUR PREVIOUS STEP (applied to the workspace and simulated):\n'+note:'')+'\n\nUSER MESSAGE:\n'+q+'\n\nLOOP MODE: you are working directly on the workspace. Give the next set of changes as ONE ```zingo block (the workspace already contains your previous steps — do not rebuild what is there unless the user asked for a new circuit and this is step 1). When the circuit fully works and nothing is left to do, reply with a short summary and the line DONE (no block).'}]),txt=>{m.c=aiClean(txt);this.paintLast()},.25);
+   last=aiClean(r.text);m.c=last;this.done(m,s,'ok');
+   const plans=aiBlocks(last).filter(b=>!b.bad);
+   if(!plans.length){if(/\bDONE\b/.test(last)||it>1){fixedAll=!aiDiagnose().some(d=>d.sev==='err');break}note='No ```zingo block was found. Give the changes as a block.';continue}
+   const sa=this.step(m,'apply',t('ai_st_apply'));const pl=Object.assign({},plans[0],{q});if(it>1)pl.replace=false;
+   const res=aiApply(pl);this.done(m,sa,res.errs.length?'warn':'ok',t('ai_st_apply')+(res.errs.length?' · '+t('ai_st_skipped',{n:res.errs.length}):''));
+   AIBanner.show(t('ai_bn_sim'),t('ai_bn_step',{n:it,max:AI_LOOP_MAX}));
+   const sv=this.step(m,'lab',t('ai_st_sim'));await new Promise(r=>setTimeout(r,1300));
+   const diag=aiDiagnose(),bad=diag.filter(d=>d.sev!=='info'),rd=App.comps.filter(c=>c.ty!=='jn'&&!TY[c.ty].bb).map(c=>{const x=aiReading(c);return x?partName(c)+' '+x:''}).filter(Boolean).slice(0,10);
+   if(!bad.length&&!res.errs.length){this.done(m,sv,'ok',t('ai_st_lab_ok')+(rd.length?' · '+rd.slice(0,3).join(' · '):''));fixedAll=true;
+    note='Applied and simulated: no problems. Readings: '+rd.join('; ')+'\nIf everything the user asked for is done, reply with a short summary and DONE.';
+    if(it>=2||/\bDONE\b/.test(last))break;continue}
+   this.done(m,sv,'warn',t('ai_st_lab_bad',{n:bad.length+res.errs.length}));
+   note=(res.errs.length?'Steps that failed: '+res.errs.slice(0,8).join('; ')+'\n':'')+'Problems after simulation:\n- '+bad.slice(0,10).map(d=>d.msg).join('\n- ')+'\nReadings: '+rd.join('; ')}
+  m.applied=1;m.labOk=fixedAll?1:0;
+  const sum=this.step(m,'done',t(fixedAll?'ai_st_loop_ok':'ai_st_loop_stop'));this.done(m,sum,fixedAll?'ok':'warn');
+  if(fixedAll){Brain.me.stats.auto++;Brain.learnDesign(q.slice(0,80),aiStrip(last).slice(0,600),'circuit',{doc:JSON.parse(JSON.stringify(serialize(App)))},q);this.selfLearn(m,q,true)}},
+ /* the brain keeps what proved itself: verified in the lab, or the model is confident and the answer is substantial */
+ selfLearn(m,q,verified){const conf=+((/CONFIDENCE\s*:\s*(\d{1,3})/i.exec(m.c)||[])[1]||0);m.conf=conf;
+  const ans=aiStrip(m.c);if(ans.length<60)return;
+  if(verified||conf>=85){const f=Brain.learnFact(q,ans+(aiBlocks(m.c).length?'\n'+aiBlocks(m.c).filter(b=>!b.bad).map(b=>'```zingo\n'+JSON.stringify(b)+'\n```').join('\n'):''),aiIntent(q).check?'fix':'chat',{up:verified?1:0,src:'auto'});
+   if(f){m.fid=f.id;m.learned=1;Brain.me.stats.auto++;Brain.save()}}},
+ stop(){if(this.ctrl)this.ctrl.abort();AIBanner.hide()},
  vote(i,v){const m=this.chat[i];if(!m||m.r!=='a'||m.err)return;if(m.v===v)return;m.v=v;
-  if(v>0){const f=Brain.learnFact(m.q,aiStrip(m.c)+(aiBlocks(m.c).length?'\n'+aiBlocks(m.c).map(b=>'```zingo\n'+JSON.stringify(b)+'\n```').join('\n'):''),aiIntent(m.q||'').check?'fix':'chat',{up:1});if(f)m.fid=f.id;Brain.me.stats.up++;
-   if(!this.cfg.asked&&!this.cfg.share){this.cfg.asked=true;this.saveCfg();this.askShare()}}
+  if(v>0){const f=Brain.learnFact(m.q,aiStrip(m.c)+(aiBlocks(m.c).length?'\n'+aiBlocks(m.c).map(b=>'```zingo\n'+JSON.stringify(b)+'\n```').join('\n'):''),aiIntent(m.q||'').check?'fix':'chat',{up:1});if(f)m.fid=f.id;Brain.me.stats.up++}
   else{if(m.fid)Brain.vote(m.fid,-1);Brain.me.stats.down++}
   Brain.save();this.saveChat();this.render()},
  async apply(i,bi){const m=this.chat[i];if(!m)return;const plan=aiBlocks(m.c)[bi||0];if(!plan||plan.bad)return;plan.q=m.q;
+  if(MOB.on)MOB.close();AIBanner.show(t('ai_bn_apply'),'');
   const before=aiDiagnose().length,r=aiApply(plan);m.applied=(m.applied||0)+1;
-  /* let the simulation settle, then judge the result and learn from it */
-  await new Promise(res=>setTimeout(res,900));const after=aiDiagnose(),bad=after.filter(d=>d.sev==='err');
+  await new Promise(res=>setTimeout(res,1000));AIBanner.hide();const after=aiDiagnose(),bad=after.filter(d=>d.sev==='err');
   if(r.changed&&!bad.length){if((plan.actions||[]).some(a=>a&&a.do==='add'))Brain.learnDesign(plan.title||m.q,aiStrip(m.c).slice(0,600),'circuit',{actions:plan.actions,replace:!!plan.replace},m.q);
    if(before>after.length){Brain.me.stats.fixed++;Brain.learnFact(m.q,aiStrip(m.c),'fix',{up:1})}}
   const lines=[];if(r.changed)lines.push('✓ '+t('ai_applied'));if(r.errs.length)lines.push(t('ai_apply_errs')+'\n- '+r.errs.slice(0,8).join('\n- '));if(bad.length)lines.push(t('ai_after_bad')+'\n- '+bad.slice(0,5).map(d=>d.msg).join('\n- '));
   this.chat.push({r:'s',c:lines.join('\n\n')||t('ai_nochange'),fix:!!(r.errs.length||bad.length)});this.saveChat();this.render();this.scroll()},
- askFix(){const last=[...this.chat].reverse().find(x=>x.r==='s');this.ask(t('ai_q_fixafter'),{extra:'RESULT OF APPLYING YOUR LAST ACTIONS:\n'+(last?last.c:'')})},
- askShare(){Modal.open({title:t('ai_share_t'),body:'<p>'+esc(t('ai_share_q'))+'</p><p style="color:var(--mut);font-size:12.5px">'+esc(t('ai_share_d'))+'</p>',buttons:[{l:t('ai_share_no'),v:false},{l:t('ai_share_yes'),v:true,pri:1}]}).then(v=>{this.cfg.share=!!v;this.saveCfg();if(v){Brain.me.facts.filter(f=>f.up>0).slice(-50).forEach(f=>Brain.share({kind:f.kind,q:f.q,a:f.a,lang:f.lang}));AISync.kick()}this.render()})},
+ askFix(){const last=[...this.chat].reverse().find(x=>x.r==='s');this.ask(t('ai_q_fixafter'),{extra:['RESULT OF APPLYING YOUR LAST ACTIONS:\n'+(last?last.c:'')]})},
+ clear(){if(this.busy)this.stop();this.chat=[];this.saveChat();this.view='chat';this.render()},
  note(s){const e=this.el&&this.el.querySelector('.ai-note');if(e){e.textContent=s;e.hidden=!s}},
  /* ---- rendering ---- */
- md(s){/* small, safe markdown: code blocks, inline code, bold, lists, paragraphs */
+ md(s){/* safe markdown: code blocks, tables, headings, bold, inline code, lists, paragraphs */
   const parts=String(s||'').split(/```/);let h='';
-  parts.forEach((p,i)=>{if(i%2){const nl=p.indexOf('\n'),code=nl>=0?p.slice(nl+1):p;h+='<pre class="ai-code"><code>'+esc(code.replace(/\n$/,''))+'</code></pre>'}
-   else{const L=p.split('\n');let ul=false;L.forEach(line=>{let x=esc(line).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/^#{1,4}\s*(.+)$/,'<b>$1</b>');
-    if(/^\s*([-*•]|\d+[.)])\s+/.test(line)){if(!ul){h+='<ul>';ul=true}h+='<li>'+x.replace(/^\s*([-*•]|\d+[.)])\s+/,'')+'</li>'}else{if(ul){h+='</ul>';ul=false}h+=x.trim()?'<p>'+x+'</p>':''}});if(ul)h+='</ul>'}});return h},
+  parts.forEach((p,i)=>{if(i%2){const nl=p.indexOf('\n'),lang=nl>=0?p.slice(0,nl).trim():'',code=nl>=0?p.slice(nl+1):p;h+='<div class="ai-codew">'+(lang?'<span>'+esc(lang)+'</span>':'')+'<pre class="ai-code"><code>'+esc(code.replace(/\n$/,''))+'</code></pre></div>';return}
+   const L=p.split('\n');let ul=false,tb=null;const inl=x=>esc(x).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
+   const flushT=()=>{if(!tb)return;h+='<div class="ai-tw"><table><thead><tr>'+tb[0].map(c=>'<th>'+inl(c)+'</th>').join('')+'</tr></thead><tbody>'+tb.slice(1).map(r=>'<tr>'+r.map(c=>'<td>'+inl(c)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';tb=null};
+   L.forEach(line=>{const tl=line.trim();
+    if(/^\|.*\|$/.test(tl)){if(ul){h+='</ul>';ul=false}const cells=tl.slice(1,-1).split('|').map(c=>c.trim());if(cells.every(c=>/^:?-{2,}:?$/.test(c)))return;(tb||(tb=[])).push(cells);return}
+    flushT();
+    if(/^#{1,4}\s+/.test(tl)){if(ul){h+='</ul>';ul=false}h+='<h5>'+inl(tl.replace(/^#{1,4}\s+/,''))+'</h5>';return}
+    if(/^>\s?/.test(tl)){if(ul){h+='</ul>';ul=false}h+='<blockquote>'+inl(tl.replace(/^>\s?/,''))+'</blockquote>';return}
+    if(/^---+$/.test(tl)){if(ul){h+='</ul>';ul=false}h+='<hr>';return}
+    if(/^([-*•]|\d+[.)])\s+/.test(tl)){if(!ul){h+='<ul>';ul=true}h+='<li>'+inl(tl.replace(/^([-*•]|\d+[.)])\s+/,''))+'</li>';return}
+    if(ul){h+='</ul>';ul=false}if(tl)h+='<p>'+inl(tl)+'</p>'});
+   flushT();if(ul)h+='</ul>'});return h},
+ stepsHtml(m){if(!m.steps||!m.steps.length)return'';const icn={think:'spark',web:'globe',write:'code',lab:'scope',fix:'wrench',apply:'bolt',done:'check'};
+  return'<ol class="ai-steps">'+m.steps.map(s=>'<li class="'+s.st+'">'+ic(icn[s.k]||'spark')+'<span>'+esc(s.t)+'</span>'+(s.st==='run'?'<i class="ai-spin"></i>':s.st==='ok'?ic('check'):s.st==='warn'?ic('warn'):'')+'</li>').join('')+'</ol>'},
  msgHtml(m,i){if(m.r==='u')return'<div class="ai-m u"><div class="ai-b" dir="auto">'+esc(m.c).replace(/\n/g,'<br>')+'</div></div>';
   if(m.r==='s')return'<div class="ai-m s"><div class="ai-b" dir="auto">'+this.md(m.c)+(m.fix?'<div class="ai-act"><button class="btn" data-a="fixafter">'+ic('wrench')+'<span>'+esc(t('ai_fixafter'))+'</span></button></div>':'')+'</div></div>';
-  if(m.err)return'<div class="ai-m a"><div class="ai-b err" dir="auto">'+ic('warn')+'<span>'+esc(m.c)+'</span><div class="ai-act"><button class="btn" data-a="retry" data-i="'+i+'">'+ic('reset')+'<span>'+esc(t('ai_retry'))+'</span></button><button class="btn" data-a="set">'+ic('gear')+'<span>'+esc(t('settings'))+'</span></button></div></div></div>';
-  const blocks=aiBlocks(m.c),body=this.md(aiStrip(m.c))||(m.pending?'<p class="ai-dots"><i></i><i></i><i></i></p>':'');
-  const cards=blocks.map((b,bi)=>b.bad?'<div class="ai-card bad">'+esc(t('ai_badblock'))+'</div>':'<div class="ai-card"><div class="ai-ct">'+ic('bolt')+'<b dir="auto">'+esc(b.title||t('ai_plan'))+'</b></div><div class="ai-cs">'+esc(aiPreview(b))+'</div>'+(m.pending?'':'<button class="btn pri" data-a="apply" data-i="'+i+'" data-b="'+bi+'">'+ic('check')+'<span>'+esc(t(m.applied?'ai_apply_again':'ai_apply'))+'</span></button>')+'</div>').join('');
-  const foot=m.pending?'':'<div class="ai-foot"><button class="ai-v'+(m.v>0?' on':'')+'" data-a="up" data-i="'+i+'" title="'+esc(t('ai_good'))+'">'+ic('check')+'</button><button class="ai-v'+(m.v<0?' on':'')+'" data-a="down" data-i="'+i+'" title="'+esc(t('ai_bad'))+'">'+ic('close')+'</button><button class="ai-v" data-a="copy" data-i="'+i+'" title="'+esc(t('copy'))+'">'+ic('copy')+'</button></div>';
-  return'<div class="ai-m a"><div class="ai-av">'+ic('zingo')+'</div><div class="ai-b" dir="auto">'+body+cards+foot+'</div></div>'},
- paintLast(){const box=this.el&&this.el.querySelector('.ai-list');if(!box)return;const i=this.chat.length-1,n=box.lastElementChild;if(!n)return;
-  const tmp=document.createElement('div');tmp.innerHTML=this.msgHtml(this.chat[i],i);n.replaceWith(tmp.firstElementChild);this.scroll(true)},
+  if(m.err)return'<div class="ai-m a"><div class="ai-av">'+ic('zingo')+'</div><div class="ai-b err" dir="auto">'+ic('warn')+'<span>'+esc(m.c)+'</span><div class="ai-act"><button class="btn" data-a="retry" data-i="'+i+'">'+ic('reset')+'<span>'+esc(t('ai_retry'))+'</span></button><button class="btn" data-a="set">'+ic('gear')+'<span>'+esc(t('settings'))+'</span></button></div></div></div>';
+  const blocks=aiBlocks(m.c),body=this.md(aiStrip(m.c))||(m.pending&&!(m.steps&&m.steps.length)?'<p class="ai-dots"><i></i><i></i><i></i></p>':'');
+  const think=m.think?'<details class="ai-think"'+(m.pending&&!m.c?' open':'')+'><summary>'+ic('spark')+'<span>'+esc(t('ai_thinking'))+'</span></summary><div dir="auto">'+this.md(aiStrip(m.think))+'</div></details>':'';
+  const cards=blocks.map((b,bi)=>b.bad?'<div class="ai-card bad">'+esc(t('ai_badblock'))+'</div>':'<div class="ai-card"><div class="ai-ct">'+ic('bolt')+'<b dir="auto">'+esc(b.title||t('ai_plan'))+'</b>'+(m.labOk?'<span class="ai-ok">'+ic('check')+esc(t('ai_lab_badge'))+'</span>':'')+'</div><div class="ai-cs">'+esc(aiPreview(b))+'</div>'+(m.pending||m.mode==='loop'?'':'<button class="btn pri" data-a="apply" data-i="'+i+'" data-b="'+bi+'">'+ic('check')+'<span>'+esc(t(m.applied?'ai_apply_again':'ai_apply'))+'</span></button>')+'</div>').join('');
+  const badge=m.learned?'<span class="ai-learn" title="'+esc(t('ai_learned_t'))+'">'+ic('spark')+esc(t('ai_learned'))+'</span>':'';
+  const foot=m.pending?'':'<div class="ai-foot"><button class="ai-v'+(m.v>0?' on':'')+'" data-a="up" data-i="'+i+'" title="'+esc(t('ai_good'))+'">'+ic('check')+'</button><button class="ai-v'+(m.v<0?' on':'')+'" data-a="down" data-i="'+i+'" title="'+esc(t('ai_bad'))+'">'+ic('close')+'</button><button class="ai-v" data-a="copy" data-i="'+i+'" title="'+esc(t('copy'))+'">'+ic('copy')+'</button>'+badge+'</div>';
+  return'<div class="ai-m a"><div class="ai-av">'+ic('zingo')+'</div><div class="ai-b" dir="auto">'+this.stepsHtml(m)+think+body+cards+foot+'</div></div>'},
+ paintLast(){const box=this.el&&this.el.querySelector('.ai-list');if(!box)return;const i=this.chat.length-1,n=box.lastElementChild;if(!n||!this.chat[i])return;
+  const open=n.querySelector('details.ai-think[open]');const tmp=document.createElement('div');tmp.innerHTML=this.msgHtml(this.chat[i],i);const nn=tmp.firstElementChild;if(open){const d=nn.querySelector('details.ai-think');if(d)d.open=true}n.replaceWith(nn);this.scroll(true)},
  scroll(soft){const b=this.el&&this.el.querySelector('.ai-list');if(!b)return;if(soft&&b.scrollHeight-b.scrollTop-b.clientHeight>160)return;b.scrollTop=b.scrollHeight},
+ modesHtml(){return'<div class="ai-modes" role="radiogroup">'+[['fast','bolt','ai_m_fast'],['think','spark','ai_m_think'],['loop','reset','ai_m_loop']].map(([k,i,l])=>'<button type="button" role="radio" aria-checked="'+(this.cfg.mode===k)+'" data-a="mode" data-k="'+k+'">'+ic(i)+'<span>'+esc(t(l))+'</span>'+(k==='loop'&&!Entitlement.can('ailoop')?'<i class="lk">'+ic('lock')+'</i>':'')+'</button>').join('')+'</div>'},
  render(){const el=this.el;if(!el)return;const pv=AI_PRESETS[this.cfg.p]||AI_PRESETS.free,cn=Brain.counts();
-  const head='<div class="ai-h"><div class="ai-hl">'+ic('zingo')+'<div><b>ZINGO AI</b><small>'+esc(t(pv.n))+(this.cfg.m?' · '+esc(this.cfg.m):'')+'</small></div></div>'
-   +'<span class="ai-sync '+this.syncCls()+'" title="'+esc(this.syncTip())+'"><i></i><span>'+esc(t('ai_brain'))+' '+cn.me+(cn.net?' + '+cn.net:'')+'</span></span>'
-   +'<button class="ib" data-a="new" data-tt="ai_newchat">'+ic('plus')+'</button><button class="ib'+(this.view==='set'?' on':'')+'" data-a="set" data-tt="settings">'+ic('gear')+'</button></div>';
+  const head='<div class="ai-h"><div class="ai-hl">'+ic('zingo')+'<div><b>Voltra AI</b><small>'+esc(t(pv.n))+(this.cfg.m?' · '+esc(this.cfg.m):'')+'</small></div></div>'
+   +'<span class="ai-sync '+this.syncCls()+'" title="'+esc(this.syncTip())+'"><i></i><span>'+esc(t('ai_brain'))+' '+(cn.me+cn.net)+'</span></span>'
+   +'<button class="ib" data-a="new" title="'+esc(t('ai_newchat'))+'">'+ic('trash')+'</button><button class="ib'+(this.view==='set'?' on':'')+'" data-a="set" title="'+esc(t('settings'))+'">'+ic('gear')+'</button></div>';
   if(this.view==='set'){el.innerHTML=head+this.setHtml();this.bindSet();return}
-  const list=this.chat.length?this.chat.map((m,i)=>this.msgHtml(m,i)).join(''):'<div class="ai-hello"><div class="ai-hi">'+ic('zingo')+'</div><b>'+esc(t('ai_hello_t'))+'</b><p>'+esc(t('ai_hello_d'))+'</p></div>';
-  const chips=['ai_c_check','ai_c_explain','ai_c_build','ai_c_part','ai_c_calc'].map(k=>'<button class="ai-chip" data-a="chip" data-k="'+k+'">'+esc(t(k))+'</button>').join('');
+  const list=this.chat.length?this.chat.map((m,i)=>this.msgHtml(m,i)).join(''):'<div class="ai-hello"><div class="ai-hi">'+ic('zingo')+'</div><b>'+esc(t('ai_hello_t'))+'</b><p>'+esc(t('ai_hello_d'))+'</p><div class="ai-feat"><span>'+ic('bolt')+esc(t('ai_f1'))+'</span><span>'+ic('scope')+esc(t('ai_f2'))+'</span><span>'+ic('globe')+esc(t('ai_f3'))+'</span><span>'+ic('chip')+esc(t('ai_f4'))+'</span></div></div>';
+  const chips=['ai_c_check','ai_c_explain','ai_c_build','ai_c_code','ai_c_part','ai_c_calc'].map(k=>'<button class="ai-chip" data-a="chip" data-k="'+k+'">'+esc(t(k))+'</button>').join('');
   el.innerHTML=head+'<div class="ai-list">'+list+'</div><p class="ai-note" hidden></p><div class="ai-chips">'+chips+'</div>'
-   +'<div class="ai-in"><textarea rows="2" dir="auto" placeholder="'+esc(t('ai_ph'))+'"></textarea>'+(this.busy?'<button class="ib pri" data-a="stop" data-tt="ai_stop">'+ic('pause')+'</button>':'<button class="ib pri" data-a="send" data-tt="send">'+ic('play')+'</button>')+'</div>';
-  const ta=el.querySelector('textarea');ta.value=this._draft||'';ta.oninput=()=>{this._draft=ta.value};
-  ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();this.send()}};
+   +'<div class="ai-inw">'+this.modesHtml()+'<div class="ai-in"><textarea rows="2" dir="auto" placeholder="'+esc(t('ai_ph'))+'"></textarea>'+(this.busy?'<button class="ib pri stop" data-a="stop" title="'+esc(t('ai_stop'))+'">'+ic('pause')+'</button>':'<button class="ib pri" data-a="send" title="'+esc(t('send'))+'">'+ic('send')+'</button>')+'</div></div>';
+  const ta=el.querySelector('textarea');ta.value=this._draft||'';const fit=()=>{ta.style.height='auto';ta.style.height=Math.min(160,ta.scrollHeight)+'px'};ta.oninput=()=>{this._draft=ta.value;fit()};fit();
+  ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&!MOB.on){e.preventDefault();this.send()}};
   this.scroll()},
  send(){const ta=this.el&&this.el.querySelector('textarea');const q=ta?ta.value:'';if(!q.trim())return;this._draft='';this.ask(q)},
- /* refresh only the sync indicators, so typing in the chat or the settings is never interrupted */
  paintSync(){const el=this.el;if(!el)return;const c=Brain.counts(),cls=this.syncCls(),tip=this.syncTip(),chip=el.querySelector('.ai-sync');
-  if(chip){chip.className='ai-sync '+cls;chip.title=tip;chip.lastChild.textContent=t('ai_brain')+' '+c.me+(c.net?' + '+c.net:'')}
-  const h=el.querySelector('#aiSyncHint');if(h){h.className='ai-hint '+cls;h.textContent=tip+(AISync.st.last?' · '+new Date(AISync.st.last).toLocaleTimeString():'')+(c.out?' · '+t('ai_s_outbox',{n:c.out}):'')}},
+  if(chip){chip.className='ai-sync '+cls;chip.title=tip;chip.lastChild.textContent=t('ai_brain')+' '+(c.me+c.net)}
+  const h=el.querySelector('#aiSyncHint');if(h){h.className='ai-hint '+cls;h.textContent=tip}},
  syncCls(){const s=AISync.st.state;return s==='ok'?'ok':s==='busy'?'busy':s==='err'?'err':''},
- syncTip(){const s=AISync.st;return s.state==='ok'?t('ai_sync_ok',{host:s.host||'',rev:s.rev}):s.state==='err'?t('ai_sync_err')+(s.msg?': '+s.msg:''):s.state==='busy'?t('ai_sync_busy'):t('ai_sync_off')},
- setHtml(){const c=this.cfg,pv=AI_PRESETS[c.p]||AI_PRESETS.free,cn=Brain.counts(),s=AISync.st;
+ /* the server address is never shown: the user only sees whether the cloud brain is reachable */
+ syncTip(){const s=AISync.st;return s.state==='ok'?t('ai_sync_ok2',{rev:s.rev}):s.state==='err'?t('ai_sync_err2'):s.state==='busy'?t('ai_sync_busy'):t('ai_sync_off')},
+ setHtml(){const c=this.cfg,pv=AI_PRESETS[c.p]||AI_PRESETS.free,cn=Brain.counts();
   const opts=Object.keys(AI_PRESETS).filter(k=>!AI_PRESETS[k].desk||(DESK&&DESK.claude!==false)).map(k=>'<option value="'+k+'"'+(k===c.p?' selected':'')+'>'+esc(t(AI_PRESETS[k].n))+'</option>').join('');
   return'<div class="ai-set">'
    +'<h4>'+esc(t('ai_s_model'))+'</h4>'
@@ -5143,12 +5361,10 @@ const AI={cfg:{p:'free',k:'',m:'',u:'',share:false,net:true,server:'',asked:fals
    +'<label>'+esc(t('ai_s_mdl'))+'<input id="aiM" type="text" spellcheck="false" placeholder="'+esc(pv.m||'model-id')+'" value="'+esc(c.m||'')+'"></label>'
    +(c.p==='claude'?'<p class="ai-hint">'+esc(t('ai_s_claude'))+'</p>':'')
    +'<h4>'+esc(t('ai_s_brain'))+'</h4>'
-   +'<div class="ai-stats"><div><b>'+cn.me+'</b><span>'+esc(t('ai_st_me'))+'</span></div><div><b>'+cn.net+'</b><span>'+esc(t('ai_st_net'))+'</span></div><div><b>'+Brain.me.stats.up+'</b><span>'+esc(t('ai_st_up'))+'</span></div><div><b>'+Brain.me.stats.fixed+'</b><span>'+esc(t('ai_st_fix'))+'</span></div></div>'
+   +'<div class="ai-stats"><div><b>'+cn.me+'</b><span>'+esc(t('ai_st_me'))+'</span></div><div><b>'+cn.net+'</b><span>'+esc(t('ai_st_net'))+'</span></div><div><b>'+(Brain.me.stats.auto||0)+'</b><span>'+esc(t('ai_st_auto'))+'</span></div><div><b>'+Brain.me.stats.fixed+'</b><span>'+esc(t('ai_st_fix'))+'</span></div></div>'
    +'<div class="row2"><span>'+esc(t('ai_s_net'))+'</span><button class="sw" role="switch" id="aiNet" aria-checked="'+!!c.net+'"></button></div>'
    +'<div class="row2"><span>'+esc(t('ai_s_share'))+'<small>'+esc(t('ai_share_d'))+'</small></span><button class="sw" role="switch" id="aiShare" aria-checked="'+!!c.share+'"></button></div>'
-   +'<label>'+esc(t('ai_s_server'))+'<input id="aiSrv" type="url" spellcheck="false" placeholder="'+esc(t('ai_s_server_ph'))+'" value="'+esc(c.server||'')+'"></label>'
-   +'<p id="aiSyncHint" class="ai-hint '+this.syncCls()+'">'+esc(this.syncTip())+(s.last?' · '+esc(new Date(s.last).toLocaleTimeString()):'')+(cn.out?' · '+esc(t('ai_s_outbox',{n:cn.out})):'')+'</p>'
-   +'<div class="ai-row"><button class="btn" id="aiSyncNow">'+ic('reset')+'<span>'+esc(t('ai_s_sync'))+'</span></button><button class="btn" id="aiExp">'+ic('save')+'<span>'+esc(t('ai_s_export'))+'</span></button><button class="btn" id="aiImp">'+ic('open')+'<span>'+esc(t('ai_s_import'))+'</span></button><button class="btn dng" id="aiClr">'+ic('trash')+'<span>'+esc(t('ai_s_clear'))+'</span></button></div>'
+   +'<p id="aiSyncHint" class="ai-hint '+this.syncCls()+'">'+esc(this.syncTip())+'</p>'
    +'<div class="ai-row"><button class="btn pri" id="aiDone">'+ic('check')+'<span>'+esc(t('ok'))+'</span></button></div></div>'},
  bindSet(){const el=this.el,c=this.cfg,$e=s=>el.querySelector(s);
   $e('#aiP').onchange=async e=>{c.p=e.target.value;c.m='';if(c.p!=='custom'&&c.p!=='openrouter')c.u='';await this.loadKey();this.saveCfg();this.render()};
@@ -5156,48 +5372,45 @@ const AI={cfg:{p:'free',k:'',m:'',u:'',share:false,net:true,server:'',asked:fals
   const u=$e('#aiU');if(u)u.onchange=()=>{c.u=u.value.trim();this.saveCfg()};
   $e('#aiM').onchange=e=>{c.m=e.target.value.trim();this.saveCfg()};
   $e('#aiNet').onclick=()=>{c.net=!c.net;this.saveCfg();this.render();if(c.net)AISync.kick()};
-  $e('#aiShare').onclick=()=>{if(!c.share){this.askShare()}else{c.share=false;this.saveCfg();this.render()}};
-  $e('#aiSrv').onchange=e=>{const v=e.target.value.trim();if(v&&!/^(https:\/\/|http:\/\/(127\.0\.0\.1|localhost)(:\d+)?)[^\s]*$/.test(v)){this.note(t('ai_e_url'));return}c.server=v.replace(/\/+$/,'');this.saveCfg();AISync.kick()};
-  $e('#aiSyncNow').onclick=()=>AISync.kick(true);
-  $e('#aiExp').onclick=()=>saveFile('zingo-ai-brain.json',new Blob([JSON.stringify({format:'zingo-brain',v:1,me:Brain.me},null,1)],{type:'application/json'}),'text');
-  $e('#aiImp').onclick=()=>{const i=document.createElement('input');i.type='file';i.accept='.json';i.onchange=()=>{const f=i.files&&i.files[0];if(!f)return;f.text().then(tx=>{try{const j=JSON.parse(tx),me=j&&j.me;if(!me||!Array.isArray(me.facts))throw 0;
-    me.facts.forEach(x=>{if(x&&x.q&&x.a)Brain.learnFact(x.q,x.a,x.kind,{up:x.up||0,share:false})});(me.designs||[]).forEach(d=>{if(d&&d.name&&!Brain.me.designs.some(y=>y.q===d.q))Brain.me.designs.push(d)});Brain.save();this.render();flashOk(t('ai_imported'))}catch(e){Toast.show(t('pj_open_fail'),true,{key:'aiimp'})}})};i.click()};
-  $e('#aiClr').onclick=()=>Modal.confirm(t('ai_s_clear'),t('ai_clear_q'),t('ai_s_clear'),true).then(ok=>{if(!ok)return;Brain.me={v:1,facts:[],designs:[],rules:[],stats:{asked:0,learned:0,up:0,down:0,applied:0,fixed:0},nid:1};Brain.outbox=[];Brain.save();this.render()});
+  $e('#aiShare').onclick=()=>{c.share=!c.share;this.saveCfg();this.render();if(c.share)AISync.kick()};
   $e('#aiDone').onclick=()=>{this.view='chat';this.render()}},
  bind(){const el=this.el;el.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||!el.contains(b))return;const a=b.dataset.a,i=+b.dataset.i;
   if(a==='send')this.send();else if(a==='stop')this.stop();else if(a==='set'){this.view=this.view==='set'?'chat':'set';this.render()}
-  else if(a==='new'){if(this.busy)this.stop();this.chat=[];this.saveChat();this.view='chat';this.render()}
-  else if(a==='chip'){const k=b.dataset.k;if(k==='ai_c_build'||k==='ai_c_part'||k==='ai_c_calc'){const ta=el.querySelector('textarea');ta.value=t(k+'_q');ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);this._draft=ta.value}else this.ask(t(k+'_q'))}
+  else if(a==='new'){if(!this.chat.length)return;Modal.confirm(t('ai_newchat'),t('ai_clear_chat_q'),t('ai_newchat')).then(ok=>{if(ok)this.clear()})}
+  else if(a==='mode'){const k=b.dataset.k;if(!this.modeOk(k)){Paywall.open('ailoop');return}this.cfg.mode=k;this.saveCfg();el.querySelectorAll('.ai-modes button').forEach(x=>x.setAttribute('aria-checked',String(x.dataset.k===k)))}
+  else if(a==='chip'){const k=b.dataset.k;if(k==='ai_c_check'||k==='ai_c_explain')this.ask(t(k+'_q'));else{const ta=el.querySelector('textarea');ta.value=t(k+'_q');ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);this._draft=ta.value;ta.dispatchEvent(new Event('input'))}}
   else if(a==='up')this.vote(i,1);else if(a==='down')this.vote(i,-1);
   else if(a==='copy'){try{navigator.clipboard.writeText(aiStrip(this.chat[i].c))}catch(_){}flashOk(t('ai_copied'))}
   else if(a==='apply')this.apply(i,+b.dataset.b);else if(a==='fixafter')this.askFix();
-  else if(a==='retry'){const m=this.chat[i],q=m&&m.q;this.chat.splice(i-1,2);if(q)this.ask(q);else this.render()}})},
+  else if(a==='retry'){const m=this.chat[i],q=m&&m.q,md=m&&m.mode;this.chat.splice(i-1,2);if(q)this.ask(q,{mode:md});else this.render()}})},
  mount(){this.el=$('#tabAi');if(!this.el)return;this.bind();this.render()}};
 
-/* ---------- community sync: resolve the server (Firestore doc written by app.js, or a manual URL), pull the shared brain, push the outbox ---------- */
-const AISync={st:{state:'off',host:'',rev:0,last:0,msg:''},timer:0,busy:false,
- start(){clearInterval(this.timer);this.timer=setInterval(()=>this.run(),15*60*1000);setTimeout(()=>this.run(),4000)},
- kick(force){this.run(force)},
+/* ---------- community sync: automatic; resolve the server from Firestore, push only new items, pull the shared brain ---------- */
+const AISync={st:{state:'off',rev:0,last:0},timer:0,busy:false,_s:0,
+ start(){clearInterval(this.timer);this.timer=setInterval(()=>this.run(),10*60*1000);setTimeout(()=>this.run(),3000)},
+ kick(){this.run(true)},
+ soon(){clearTimeout(this._s);this._s=setTimeout(()=>this.run(),2500)},   /* new learning is sent within seconds when the server is up */
  async http(method,url,body,ms){
   if(DESK&&DESK.net){const r=await DESK.net({method,url,body:body?JSON.stringify(body):'',timeout:ms||20000});if(!r||!r.ok)throw new Error(r&&r.error||'HTTP '+(r&&r.status));return r.text?JSON.parse(r.text):{}}
   const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),ms||20000);
   try{const res=await fetch(url,{method,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,signal:ctl.signal});if(!res.ok)throw new Error('HTTP '+res.status);const tx=await res.text();return tx?JSON.parse(tx):{}}finally{clearTimeout(to)}},
- async resolve(){if(AI.cfg.server)return AI.cfg.server;
+ base:'',baseT:0,
+ async resolve(force){if(this.base&&!force&&Date.now()-this.baseT<5*60e3)return this.base;
   const u='https://firestore.googleapis.com/v1/projects/'+AI_FB.projectId+'/databases/(default)/documents/'+AI_FB.doc+'?key='+AI_FB.apiKey;
   const j=await this.http('GET',u,null,12000),f=j&&j.fields||{},url=f.url&&f.url.stringValue,on=!f.online||f.online.booleanValue!==false;
-  if(!url||!on)throw new Error(t('ai_sync_nosrv'));if(!/^https:\/\/[a-z0-9.-]+(:\d+)?(\/[^\s]*)?$/i.test(url))throw new Error('bad url');return url.replace(/\/+$/,'')},
+  if(!url||!on)throw new Error('offline');if(!/^https:\/\/[a-z0-9.-]+(:\d+)?(\/[^\s]*)?$/i.test(url))throw new Error('bad url');this.base=url.replace(/\/+$/,'');this.baseT=Date.now();return this.base},
  client(){let id=Store.get('zf_ai_client');if(!id){id='c'+Math.random().toString(36).slice(2,12)+Date.now().toString(36);Store.set('zf_ai_client',id)}return id},
- async run(force){if(this.busy||(!AI.cfg.net&&!AI.cfg.share))return;if(!Brain.ready)return;this.busy=true;this.set('busy');
-  try{const base=await this.resolve();this.st.host=base.replace(/^https:\/\//,'').split('/')[0];
-   const h=await this.http('GET',base+'/api/health',null,12000);if(!h||h.app!=='zingo-brain')throw new Error(t('ai_sync_notzingo'));
-   if(AI.cfg.share&&Brain.outbox.length){const batch=Brain.outbox.slice(0,50);const r=await this.http('POST',base+'/api/contribute',{client:this.client(),app:'zingo-fast',ver:1,items:batch},25000);
-    if(r&&r.ok){Brain.outbox.splice(0,batch.length);Brain.save()}}
-   if(AI.cfg.net&&(force||h.rev!==Brain.net.rev)){const b=await this.http('GET',base+'/api/brain?rev='+(force?0:Brain.net.rev),null,30000);
+ async run(force){if(this.busy||(!AI.cfg.net&&!AI.cfg.share)||!Brain.ready)return;this.busy=true;if(force)this.set('busy');
+  try{let base=await this.resolve(force);let h;try{h=await this.http('GET',base+'/api/health',null,12000)}catch(e){base=await this.resolve(true);h=await this.http('GET',base+'/api/health',null,12000)}
+   if(!h||h.app!=='zingo-brain')throw new Error('not a brain server');
+   while(AI.cfg.share&&Brain.outbox.length){const batch=Brain.outbox.slice(0,50);const r=await this.http('POST',base+'/api/contribute',{client:this.client(),app:'voltra',ver:2,items:batch},25000);
+    if(!r||!r.ok)break;Brain.markSent(batch);Brain.outbox.splice(0,batch.length);Brain.save()}
+   if(AI.cfg.net&&h.rev!==Brain.net.rev){const b=await this.http('GET',base+'/api/brain?rev='+Brain.net.rev,null,30000);
     if(b&&!b.unchanged&&Array.isArray(b.facts)){Brain.net={rev:+b.rev||0,facts:b.facts.slice(0,20000),designs:Array.isArray(b.designs)?b.designs.slice(0,2000):[],rules:[]};AIStore.set('net',Brain.net)}}
    this.st.rev=Brain.net.rev;this.st.last=Date.now();this.set('ok')}
-  catch(e){this.set('err',String(e&&e.message||e).slice(0,120))}
+  catch(e){this.set('err')}
   finally{this.busy=false}},
- set(s,msg){this.st.state=s;this.st.msg=msg||'';AI.paintSync()}};
+ set(s){this.st.state=s;AI.paintSync()}};
 
 /* ============================================================
    Start-up
