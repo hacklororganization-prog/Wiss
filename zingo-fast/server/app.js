@@ -53,11 +53,15 @@ const keyOf=(kind,q)=>crypto.createHash('sha256').update(kind+'|'+norm(q).replac
 const clientId=(c,ip)=>crypto.createHash('sha256').update('zingo|'+String(c||'')+'|'+(c?'':ip)).digest('base64url').slice(0,16);
 
 /* ---------------- curation ---------------- */
+/* questions that only make sense for one user's circuit (the app's quick buttons) are never shared */
+const GENERIC=['check my circuit: find every mistake or risk, explain the root cause and fix it.','explain how this circuit works, step by step, with the current and voltage of each part.','your changes were applied but there are problems. fix them.',
+  'افحص دائرتي: اكتشف كل خطا او خطر، واشرح السبب الجذري، واصلحه.','اشرح كيف تعمل هذه الدائره خطوه بخطوه مع التيار والجهد في كل قطعه.','طبقت تغييراتك لكن توجد مشاكل. اصلحها.'];
+const noIds=s=>String(s).replace(/`?#\d+(?:\.[^\s`,)]+)?`?/g,'').replace(/\(\s*\)/g,'').replace(/[ \t]{2,}/g,' ');
 function validate(it){if(!it||typeof it!=='object')return null;const kind=['chat','fix','design'].includes(it.kind)?it.kind:null;if(!kind)return null;
-  const q=scrub(clean(it.q,600)).trim();if(q.length<4)return null;const o={kind,q,lang:/^(ar|en)$/.test(it.lang)?it.lang:'en'};
+  const q=noIds(scrub(clean(it.q,600))).trim();if(q.length<4||GENERIC.includes(norm(q).replace(/\s+/g,' ')))return null;const o={kind,q,lang:/^(ar|en)$/.test(it.lang)?it.lang:'en'};
   if(kind==='design'){o.name=scrub(clean(it.name||q,80)).trim();o.a=scrub(clean(it.a,1500));o.dkind=it.dkind==='part'?'part':'circuit';
     let data=it.data;try{const js=JSON.stringify(data);if(!data||typeof data!=='object'||js.length>60000)return null;data=JSON.parse(js)}catch(e){return null}o.data=data}
-  else{o.a=scrub(clean(it.a,6000)).trim();if(o.a.length<8)return null}
+  else{o.a=noIds(scrub(clean(it.a,6000))).trim();if(o.a.length<8)return null}
   if((o.q+o.a).split(/https?:\/\//).length>6)return null;   /* link spam */
   return o}
 function findSimilar(list,o){const k=keyOf(o.kind,o.q);let hit=list.find(x=>x.k===k);if(hit)return hit;const qt=toks(o.q);

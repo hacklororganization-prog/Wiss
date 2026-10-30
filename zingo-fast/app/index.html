@@ -4870,12 +4870,12 @@ const Brain={me:{v:1,facts:[],designs:[],rules:[],stats:{asked:0,learned:0,up:0,
  save(){clearTimeout(this._t);this._t=setTimeout(()=>{AIStore.set('brain',this.me);AIStore.set('outbox',this.outbox)},400)},
  find(list,q,th){const qt=AIT.toks(q);if(!qt.length)return null;const docs=list.map(f=>AIT.toks(f.q||f.name||'')),idf=AIT.idfMap(docs.concat([qt]));
   for(let i=0;i<docs.length;i++)if(AIT.cos(qt,docs[i],idf)>(th||.86))return list[i];return null},
- learnFact(q,a,kind,o){q=String(q||'').trim();a=String(a||'').trim();if(q.length<4||a.length<8)return null;o=o||{};
+ learnFact(q,a,kind,o){q=String(q||'').trim();const gen=this.generic(q);if(gen){const ty=[...new Set(App.comps.filter(c=>c.ty!=='jn'&&!TY[c.ty].bb).map(c=>t('p_'+c.ty)))].slice(0,12).join(', ');if(ty)q+=' ['+ty+']'}a=String(a||'').trim();if(q.length<4||a.length<8)return null;o=o||{};
   let f=this.find(this.me.facts,q);
   if(f){f.a=a;f.kind=kind||f.kind;f.up=(f.up||0)+(o.up||0);f.t=Date.now()}
   else{f={id:this.me.nid++,q:q.slice(0,600),a:a.slice(0,6000),kind:kind||'chat',up:o.up||0,down:0,uses:0,t:Date.now(),lang:LANG};this.me.facts.push(f);this.me.stats.learned++}
   if(this.me.facts.length>2500){this.me.facts.sort((x,y)=>((y.up||0)-(y.down||0)+(y.uses||0)*.2)-((x.up||0)-(x.down||0)+(x.uses||0)*.2));this.me.facts.length=2000}
-  this.save();if(o.share!==false)this.share({kind:f.kind,q:f.q,a:f.a,lang:LANG});return f},
+  this.save();if(o.share!==false&&!gen)this.share({kind:f.kind,q:f.q,a:f.a,lang:LANG});return f},
  learnDesign(name,desc,kind,data,q){const d={id:this.me.nid++,name:String(name||'').slice(0,80),q:String(q||desc||name||'').slice(0,400),desc:String(desc||'').slice(0,600),kind,data,up:1,t:Date.now()};
   const old=this.find(this.me.designs,d.q,.9);if(old)Object.assign(old,d,{id:old.id,up:(old.up||0)+1});else this.me.designs.push(d);
   if(this.me.designs.length>300)this.me.designs.splice(0,this.me.designs.length-300);
@@ -4897,7 +4897,10 @@ const Brain={me:{v:1,facts:[],designs:[],rules:[],stats:{asked:0,learned:0,up:0,
   pool.forEach(p=>{let s=.75*AIT.cos(qt,p.d,idf)+.25*AIT.dice(qj,p.d.join(' '));const f=p.f;s*=1+Math.min(f.up||f.votes||0,5)*.06;s-=(f.down||0)*.12;if(p.src==='net')s*=.92;if(f.kind==='fix')s*=1.05;p.s=s});
   return pool.filter(p=>p.s>.28).sort((a,b)=>b.s-a.s).slice(0,k||4)},
  /* community sharing: only items the user approved of, scrubbed of personal data, only when sharing is on */
- share(it){if(!AI.cfg.share)return;const x=Object.assign({},it);x.q=AIT.scrub(x.q).slice(0,600);if(x.a)x.a=AIT.scrub(x.a).slice(0,6000);if(x.name)x.name=AIT.scrub(x.name).slice(0,80);
+ /* questions that only make sense for one particular circuit (quick buttons, "fix what you just applied") */
+ generic(q){const n=AIT.norm(q).trim();return['ai_c_check_q','ai_c_explain_q','ai_q_fixafter'].some(k=>[I18N.en[k],I18N.ar[k]].some(s=>s&&AIT.norm(s).trim()===n))},
+ share(it){if(!AI.cfg.share)return;if(this.generic(it.q))return;const x=Object.assign({},it);const noIds=s=>String(s).replace(/`?#\d+(?:\.[^\s`,)]+)?`?/g,'').replace(/\(\s*\)/g,'').replace(/[ \t]{2,}/g,' ');
+  x.q=noIds(AIT.scrub(x.q)).slice(0,600);if(x.a)x.a=noIds(AIT.scrub(x.a)).slice(0,6000);if(x.name)x.name=AIT.scrub(x.name).slice(0,80);
   x.h=AIT.h32(x.kind+'|'+x.q);if(this.outbox.some(o=>o.h===x.h))return;this.outbox.push(x);if(this.outbox.length>400)this.outbox.splice(0,this.outbox.length-400);this.save()},
  counts(){return{me:this.me.facts.length+this.me.designs.length,rules:this.me.rules.length,net:this.net.facts.length+this.net.designs.length,out:this.outbox.length}}};
 
