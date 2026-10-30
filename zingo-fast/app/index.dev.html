@@ -1084,6 +1084,64 @@ body.mob .pj #pjName{display:none}body.mob .pj{padding:0 10px}body.mob #parts .s
 @container dock (max-width:440px){#dock .tabs button.tab:not([aria-selected=true]){flex:0 0 40px}#dock .tabs button.tab:not([aria-selected=true])>span:last-child{display:none}#dock .tabs button.tab[aria-selected=true]{flex:1 1 auto}}
 .lc-t b{white-space:normal;font-size:13px;line-height:1.35;overflow-wrap:anywhere}
 #serIn input::placeholder{font-family:var(--ui);letter-spacing:0}
+/* ===== v3 polish: settings, oscilloscope, part builder ===== */
+.srow{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line2)}.sec>h4+.srow{border-top:0;padding-top:2px}
+.srow.col{flex-wrap:wrap}.srow.col>:last-child{flex:1 0 calc(100% - 40px);max-width:calc(100% - 40px);margin-inline-start:40px}
+.sri{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--acc) 11%,transparent);color:var(--acc)}.sri .i{width:15px;height:15px}
+.srt{flex:1;min-width:0}.srt b{display:block;font-size:13px;font-weight:600}.srt small{display:block;color:var(--mut);font-size:11.5px;line-height:1.45;margin-top:1px}
+.sseg{display:flex;gap:2px;padding:3px;border-radius:12px;background:var(--bg2);border:1px solid var(--line2)}
+.sseg button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:32px;padding:0 8px;border:0;border-radius:9px;background:transparent;color:var(--mut);font:600 12px var(--ui);cursor:pointer;white-space:nowrap;min-width:0}.sseg button span{overflow:hidden;text-overflow:ellipsis}
+.sseg button:hover{color:var(--ink)}.sseg button[aria-checked=true]{background:var(--panel2);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.16)}.sseg button[aria-checked=true] .i{color:var(--acc)}.sseg .i{width:14px;height:14px}
+.sseg.ic3 button{flex-direction:column;gap:3px;min-height:52px}.sseg.ic3 .i{width:18px;height:18px}
+.acc-dots{gap:8px}.acc-dots button{width:28px;height:28px}
+.bgsw{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.bgsw button{display:flex;flex-direction:column;gap:5px;align-items:stretch;padding:5px;border:1px solid var(--line2);border-radius:12px;background:var(--bg2);color:var(--mut);font:600 11.5px var(--ui);cursor:pointer}
+.bgsw i{display:block;height:30px;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}.bgsw button[aria-pressed=true]{border-color:var(--acc);color:var(--ink);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 15%,transparent)}
+.sfoot{display:flex;flex-direction:column;gap:10px;padding:4px 2px 10px}
+.stip{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--acc) 7%,var(--bg2));color:var(--mut);font-size:12px;line-height:1.6}.stip .i{width:15px;height:15px;color:var(--acc);flex:none;margin-top:2px}
+.slinks{display:grid;grid-template-columns:1fr 1fr;gap:6px}.slinks button{display:flex;align-items:center;justify-content:center;gap:6px;height:36px;border:1px solid var(--line2);border-radius:10px;background:var(--bg2);color:var(--ink);font:600 12px var(--ui);cursor:pointer}.slinks button:hover{border-color:var(--acc)}.slinks .i{width:15px;height:15px;color:var(--acc)}
+.sver{margin:0;text-align:center;color:var(--mut);font:11px var(--mono);opacity:.75}
+/* oscilloscope */
+#scopeP{background:#0b1219;border:1px solid #1e2a38;color:#e7eef6;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35);transition:width .25s,height .25s}
+#scopeP header{display:flex;align-items:center;gap:6px;padding:8px 8px 8px 12px;background:#0f1822;border-bottom:1px solid #1b2836;font-weight:600}
+#scopeP .sc-t{display:flex;align-items:center;gap:8px;font-size:13.5px}.sc-live{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 10px #22c55e;animation:aiPulse 1.6s infinite}
+#scopeP .sp{flex:1}.sc-ch{font:700 10.5px var(--mono);padding:2px 7px;border-radius:6px}.sc-ch.c1{color:#ffd54a;background:#ffd54a1f}.sc-ch.c2{color:#4ade80;background:#4ade801f}
+#scopeP .ib{color:#9fb0c3;width:32px;height:32px;border-radius:9px}#scopeP .ib:hover{background:#1b2836;color:#fff}#scopeP .ib .i{width:16px;height:16px}
+.sc-scr{padding:8px 8px 0;background:#0b1219}.sc-scr canvas{display:block;width:100%;border-radius:10px;box-shadow:inset 0 0 0 1px #16303c}
+#scv{aspect-ratio:2/1;height:auto!important;max-height:46vh}
+.sc-meas{display:flex;flex-direction:column;gap:4px;padding:8px;font:12px var(--mono);direction:ltr}
+.scm{display:flex;align-items:center;gap:10px;padding:5px 8px;border-radius:9px;background:#111b26}.scm b{font-size:10.5px;padding:1px 6px;border-radius:5px}.scm.c1 b{color:#ffd54a;background:#ffd54a1f}.scm.c2 b{color:#4ade80;background:#4ade801f}
+.scm span{display:flex;align-items:baseline;gap:4px;color:#e7eef6;white-space:nowrap}.scm small{color:#6b8196;font-size:10px}
+#scopeP .scc{padding:4px 8px 10px;gap:6px;background:#0b1219}#scopeP .scc label{color:#8aa0b5;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em}
+#scopeP .scc select{height:32px;border-radius:9px;border:1px solid #223246;background:#111b26;color:#e7eef6;font:600 12px var(--ui);padding:0 6px}
+#scopeP.big{width:min(860px,calc(100% - var(--pw) - 100px))!important}
+body.mob #scopeP.big{width:calc(100% - 16px)!important}
+body.mob .scm{flex-wrap:wrap;gap:6px 10px}
+/* part builder */
+#pb{background:rgba(3,6,12,.6);backdrop-filter:blur(6px)}
+.pbw{border-radius:22px;box-shadow:0 30px 90px rgba(0,0,0,.4)}
+.pbh{gap:8px;padding:12px 14px;background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 6%,var(--panel2)),var(--panel2))}
+.pbt{gap:10px;color:var(--ink);font-size:15px}.pbt b{font-weight:800}
+.pbt-ic{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#22d3ee,#2563eb 55%,#4c1d95);color:#fff}.pbt .pbt-ic svg{width:17px;height:17px}
+.pname{height:38px;border-radius:11px;font-size:14px;width:260px}
+.pbh .btn{height:36px;border-radius:10px;gap:6px;padding:0 12px}
+.pclose{width:36px;height:36px;border-radius:10px}
+.ptabs{gap:6px;padding:10px 14px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.ptab{display:flex;align-items:center;gap:8px;height:36px;padding:0 14px 0 6px;border:1px solid var(--line2)!important;border-radius:20px;background:var(--bg2);color:var(--mut);font:600 12.5px var(--ui);white-space:nowrap;flex:none}
+.ptab i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);font:700 11.5px var(--mono);font-style:normal}
+.ptab.done i{background:color-mix(in srgb,var(--ok) 15%,var(--panel2));border-color:color-mix(in srgb,var(--ok) 45%,var(--line));color:var(--ok)}
+.ptab.on{color:var(--ink);border-color:color-mix(in srgb,var(--acc) 55%,var(--line))!important;background:color-mix(in srgb,var(--acc) 9%,var(--bg2))}.ptab.on i{background:linear-gradient(135deg,var(--acc),var(--acc2));border-color:transparent;color:var(--accink)}
+.ptb{gap:4px;padding:10px 8px}.ptool{width:40px;height:40px;border-radius:12px}.ptool.on{background:linear-gradient(135deg,var(--acc),var(--acc2));box-shadow:0 4px 12px color-mix(in srgb,var(--acc) 35%,transparent)}
+.pstage{background-color:var(--bg);background-image:radial-gradient(color-mix(in srgb,var(--mut) 28%,transparent) 1px,transparent 1px);background-size:18px 18px}
+.pcanvas{border-radius:14px;box-shadow:0 0 0 1px var(--line),0 16px 40px rgba(0,0,0,.15)}
+.pside{gap:10px;padding:14px}.psec{border-radius:14px;padding:12px;gap:10px;background:var(--bg2)}
+.psec h5{display:flex;align-items:center;gap:8px;font-size:11.5px}.psec h5::before{content:'';width:3px;height:12px;border-radius:2px;background:var(--acc)}
+.pn{height:34px;border-radius:9px}
+.ppin{padding:4px;border-radius:10px}.ppin:hover{background:var(--hov)}
+.pli{border-radius:9px;height:32px}
+.ptile{border-radius:14px;padding:12px 14px;transition:transform .12s,border-color .12s,box-shadow .12s}.ptile:hover{transform:translateY(-2px);box-shadow:0 8px 20px color-mix(in srgb,var(--acc) 14%,transparent)}
+.pcard{border-radius:16px;padding:14px;box-shadow:0 1px 0 rgba(0,0,0,.04)}
+.phelp{padding:10px 14px;border-radius:12px;background:color-mix(in srgb,var(--acc) 7%,var(--bg2));color:var(--mut)}
+body.mob .ptab span{display:none}body.mob .ptab.on span{display:inline}body.mob .ptab{padding:0 10px 0 6px}
 </style>
 </head>
 <body>
@@ -1172,8 +1230,9 @@ body.mob .pj #pjName{display:none}body.mob .pj{padding:0 10px}body.mob #parts .s
     <button class="ib dng" id="sbDel" data-tt="delete"><span data-i="trash"></span></button>
    </div>
    <div id="scopeP" role="dialog">
-    <header><span data-t="scope"></span><span><button class="ib" id="scHold" data-tt="hold"><span data-i="pause"></span></button><button class="ib" id="scClose" data-tt="close"><span data-i="close"></span></button></span></header>
-    <canvas id="scv" width="420" height="210"></canvas>
+    <header><span class="sc-t"><i class="sc-live"></i><b data-t="scope"></b></span><span class="sc-ch c1">CH1</span><span class="sc-ch c2">CH2</span><span class="sp"></span><button class="ib" id="scAuto" data-tt="sc_auto"><span data-i="spark"></span></button><button class="ib" id="scBig" data-tt="wide"><span data-i="expand"></span></button><button class="ib" id="scHold" data-tt="hold"><span data-i="pause"></span></button><button class="ib" id="scClose" data-tt="close"><span data-i="close"></span></button></header>
+    <div class="sc-scr"><canvas id="scv" width="420" height="210"></canvas></div>
+    <div class="sc-meas" id="scMeas"></div>
     <div class="scc">
      <label><span data-t="sc_time"></span><select id="scT"></select></label>
      <label><span>CH1 V/div</span><select id="scV1"></select></label>
@@ -1748,6 +1807,12 @@ Object.assign(I18N.fr,{"add_parts": "Composants", "ph_hint": "Cliquez pour ajout
 Object.assign(I18N.en,{"rd_v": "Voltage", "rd_i": "Current", "rd_p": "Power", "ser_ph": "Send to the board…", "lab_t": "Live Lab", "lab_dig": "Digital", "lab_ana": "Analog", "lab_live": "Live", "lab_add_d": "Click a sensor to add it to the circuit"});
 Object.assign(I18N.ar,{"rd_v": "الجهد", "rd_i": "التيار", "rd_p": "القدرة", "ser_ph": "أرسل إلى اللوحة…", "lab_t": "المختبر الحي", "lab_dig": "رقمي", "lab_ana": "تماثلي", "lab_live": "مباشر", "lab_add_d": "انقر على حساس لإضافته إلى الدائرة"});
 Object.assign(I18N.fr,{"rd_v": "Tension", "rd_i": "Courant", "rd_p": "Puissance", "ser_ph": "Envoyer à la carte…", "lab_t": "Labo en direct", "lab_dig": "Numérique", "lab_ana": "Analogique", "lab_live": "En direct", "lab_add_d": "Cliquez sur un capteur pour l’ajouter au circuit"});
+Object.assign(I18N.en,{"st_canvas": "Canvas", "snap_d": "Parts and wire corners align to the grid", "volt_colors_d": "Wires change colour with their voltage", "st_bg_d": "Dark themes only", "perf_d": "Detected for this device: {lvl}"});
+Object.assign(I18N.ar,{"st_canvas": "اللوحة", "snap_d": "تصطف القطع وزوايا الأسلاك على الشبكة", "volt_colors_d": "يتغير لون السلك حسب جهده", "st_bg_d": "للسمات الداكنة فقط", "perf_d": "المكتشف لهذا الجهاز: {lvl}"});
+Object.assign(I18N.fr,{"st_canvas": "Canevas", "snap_d": "Les composants et les coins de fils s’alignent sur la grille", "volt_colors_d": "Les fils changent de couleur selon leur tension", "st_bg_d": "Thèmes sombres uniquement", "perf_d": "Détecté pour cet appareil : {lvl}"});
+Object.assign(I18N.en,{"sc_auto": "Auto-scale"});
+Object.assign(I18N.ar,{"sc_auto": "ضبط تلقائي"});
+Object.assign(I18N.fr,{"sc_auto": "Échelle auto"});
 const LANGS=[['ar','العربية'],['en','English'],['fr','Français']];
 let LANG=(()=>{const s=Settings.lang;if(LANGS.some(l=>l[0]===s))return s;const n=((navigator.language||'en')+'').toLowerCase();return n.indexOf('ar')===0?'ar':n.indexOf('fr')===0?'fr':'en'})();
 function t(k,v){let s=(I18N[LANG]&&I18N[LANG][k])||I18N.en[k]||k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s}
@@ -4014,7 +4079,14 @@ const Scope={open:false,hold:false,td:1e-3,v1:1,v2:1,trig:1,
   $('#scT').onchange=e=>this.td=+e.target.value;$('#scV1').onchange=e=>this.v1=+e.target.value;$('#scV2').onchange=e=>this.v2=+e.target.value;$('#scTr').onchange=e=>this.trig=+e.target.value;
   $('#scTr').value='1';
   $('#scHold').onclick=()=>{this.hold=!this.hold;$('#scHold').innerHTML=ic(this.hold?'play':'pause')};
-  $('#scClose').onclick=()=>this.toggle(false)},
+  $('#scClose').onclick=()=>this.toggle(false);
+  $('#scBig').onclick=()=>{$('#scopeP').classList.toggle('big');setTimeout(()=>this.draw(true),30)};
+  $('#scAuto').onclick=()=>this.auto()},
+ /* auto-scale: time base from the measured frequency, volts/div from the peak-to-peak of each channel */
+ auto(){const st=this.st;if(!st)return;const f=st[0].f||st[1].f;if(f>0){const want=2/f/10;let best=TDIV[0];TDIV.forEach(x=>{if(Math.abs(Math.log(x/want))<Math.abs(Math.log(best/want)))best=x});this.td=best;$('#scT').value=String(best)}
+  [0,1].forEach(ch=>{const a=Math.max(Math.abs(st[ch].max),Math.abs(st[ch].min));if(!(a>0))return;const want=a/3.2;let best=VDIV[VDIV.length-1];for(const x of VDIV)if(x>=want){best=x;break}this['v'+(ch+1)]=best;$('#scV'+(ch+1)).value=String(best)});Aud.click()},
+ meas(){const el=$('#scMeas'),st=this.st;if(!el||!st)return;const now=performance.now();if(now-(this._mt||0)<250)return;this._mt=now;
+  el.innerHTML=st.map((m,ch)=>m.n?'<div class="scm c'+(ch+1)+'"><b>CH'+(ch+1)+'</b><span><small>Vpp</small>'+si(m.max-m.min,'V')+'</span><span><small>max</small>'+si(m.max,'V')+'</span><span><small>min</small>'+si(m.min,'V')+'</span><span><small>f</small>'+(m.f>0?si(m.f,'Hz'):'—')+'</span></div>':'').join('')},
  toggle(on,quiet){const want=on===undefined?!this.open:on;if(want&&!Entitlement.can('scope')){if(!quiet)Paywall.open('scope');return}this.open=want;$('#scopeP').classList.toggle('show',this.open);$('#bScope').setAttribute('aria-pressed',this.open);$('#bScope').classList.toggle('on',this.open);if(this.open)this.draw(true)},
  draw(force){
   if(!this.open||(this.hold&&!force))return;const cvs=$('#scv'),r=cvs.getBoundingClientRect(),dpr=Math.min(Perf.lite?1:2,window.devicePixelRatio||1);
@@ -4028,14 +4100,18 @@ const Scope={open:false,hold:false,td:1e-3,v1:1,v2:1,trig:1,
   const win=this.td*10,idx=k=>(o.i-1-k+SCOPE_CAP*2)%SCOPE_CAP,tNow=o.t[idx(0)];let tEnd=tNow;
   if(this.trig&&o.n>8){ // latest rising edge of CH1 through its mean, far enough back to fill the screen
    const lvl=0;for(let k=0;k<o.n-1;k++){const i1=idx(k),i0=idx(k+1);if(tNow-o.t[i1]<win)continue;if(o.a[i0]<=lvl&&o.a[i1]>lvl){tEnd=o.t[i1]+win;if(tEnd>tNow)tEnd=tNow;break}if(tNow-o.t[i1]>win*6)break}}
-  const t0=tEnd-win;
+  const t0=tEnd-win;this.st=[0,1].map(()=>({n:0,max:-1e9,min:1e9,f:0}));
+  /* measurements over the visible window: extremes and frequency (rising crossings of the mid level) */
+  [o.a,o.b].forEach((buf,ch)=>{const m=this.st[ch];const ks=[];for(let k=0;k<o.n;k++){const i=idx(k),tt=o.t[i];if(tt>tEnd)continue;if(tt<t0-win)break;ks.push(i);const v=buf[i];if(v>m.max)m.max=v;if(v<m.min)m.min=v}m.n=ks.length;
+   if(m.n>4&&m.max-m.min>1e-3){const mid=(m.max+m.min)/2,hy=(m.max-m.min)*.1;let arm=false,first=0,last=0,cnt=0;for(let j=ks.length-1;j>=0;j--){const v=buf[ks[j]],tt=o.t[ks[j]];if(v<mid-hy)arm=true;else if(arm&&v>mid+hy){arm=false;if(!cnt)first=tt;last=tt;cnt++}}if(cnt>=2&&last>first)m.f=(cnt-1)/(last-first)}});
+  this.meas();
   [[o.a,this.v1,'#ffd54a'],[o.b,this.v2,'#4ade80']].forEach(([buf,vd,col],ch)=>{
    if(!this.mn||this.mn.length!==W){this.mn=new Float32Array(W);this.mx=new Float32Array(W)}const mn=this.mn,mx=this.mx;mn.fill(1e9);mx.fill(-1e9);let any=false;
    for(let k=0;k<o.n;k++){const i=idx(k),tt=o.t[i];if(tt>tEnd)continue;if(tt<t0)break;const x=Math.min(W-1,Math.max(0,Math.floor((tt-t0)/win*W))),v=buf[i];if(v<mn[x])mn[x]=v;if(v>mx[x])mx[x]=v;any=true}
    if(!any)return;g.strokeStyle=col;g.lineWidth=1.6*dpr;g.beginPath();let pv=null,started=false;
    for(let x=0;x<W;x++){if(mn[x]>1e8)continue;const y1=H/2-mn[x]/vd*(H/8),y2=H/2-mx[x]/vd*(H/8);if(!started){g.moveTo(x,y1);started=true}else g.lineTo(x,y1);if(y2!==y1)g.lineTo(x,y2);pv=x}
-   g.stroke();g.fillStyle=col;g.fillText('CH'+(ch+1)+': '+si(buf[idx(0)],'V'),(8+ch*100)*dpr,H-8*dpr)});
-  g.fillStyle='#9fd';g.fillText(si(this.td,'s')+'/div',W-80*dpr,H-8*dpr)}};
+   g.stroke()});
+  g.fillStyle='#7fb8c8';g.fillText(si(this.td,'s')+'/div',W-74*dpr,H-8*dpr);g.fillStyle='#ffd54a';g.fillText(si(this.v1,'V')+'/div',8*dpr,H-8*dpr);g.fillStyle='#4ade80';g.fillText(si(this.v2,'V')+'/div',78*dpr,H-8*dpr)}};
 
 /* ===== SECTION: ui (p7d_input.js) ===== */
 const ptrs=new Map();let G=null,longT=0;
@@ -4427,29 +4503,32 @@ function buildPanel(){
   WIRE_COLORS.forEach((col,i)=>{const b=mk('button','dot');b.style.background=col||'var(--wire)';b.setAttribute('aria-label',t('wire_color')+' '+(i+1));b.setAttribute('aria-pressed',cur.every(x=>x===col));
    b.onclick=()=>{App.wsel.forEach(k=>{if(App.wires[k])App.wires[k].col=col});Run.tWire=0;Hist.commit();Panel.key='';buildPanel()};g.appendChild(b)});
   s.appendChild(g);s.appendChild(btnEl('trash',t('delete'),deleteSelection,'dng'));box.appendChild(s);return}
- /* nothing selected: circuit settings */
- const s=secEl(t('settings'));
- const ws=mk('select');[['orth','w_orth'],['curve','w_curve']].forEach(o=>{const op=mk('option',null,esc(t(o[1])));op.value=o[0];ws.appendChild(op)});ws.value=Settings.wstyle;ws.onchange=()=>{Settings.wstyle=ws.value;saveSettings();relayoutAll()};
- s.appendChild(rowEl(t('wire_style'),ws));
- s.appendChild(rowEl(t('snap'),swEl(Settings.snap,v=>{Settings.snap=v;saveSettings()})));
- s.appendChild(rowEl(t('show_names'),swEl(Settings.names!==false,v=>{Settings.names=v;saveSettings();syncComps()})));
- s.appendChild(rowEl(t('show_vals'),swEl(Settings.vals,v=>{Settings.vals=v;saveSettings();syncComps()})));
- s.appendChild(rowEl(t('volt_colors'),swEl(Settings.vcol,v=>{Settings.vcol=v;saveSettings();Run.tWire=0})));
- const ps=mk('select');ps.setAttribute('aria-label',t('perf_mode'));
- [['auto',t('perf_auto')+' ('+t('perf_'+Perf.detect())+')'],['low',t('perf_low')],['mid',t('perf_mid')],['high',t('perf_high')]].forEach(o=>{const op=mk('option',null,esc(o[1]));op.value=o[0];ps.appendChild(op)});
- ps.value=Settings.perf;ps.onchange=()=>{Settings.perf=ps.value;Perf.cap=null;Perf.bad=0;saveSettings();Perf.apply();Run.tWire=0};
- s.appendChild(rowEl(t('perf_mode'),ps));
- box.appendChild(s);
- const ap=secEl(t('st_look')),sel=(opts,cur,on)=>{const e=mk('select');opts.forEach(([v,l])=>{const o=mk('option',null,esc(l));o.value=v;e.appendChild(o)});e.value=cur;e.onchange=()=>on(e.value);return e};
- ap.appendChild(rowEl(t('theme'),sel([['auto',t('th_auto')],['dark',t('th_dark')],['light',t('th_light')]],Settings.theme,v=>{Settings.theme=v;saveSettings();Veil.run(applyTheme,60)})));
+ /* nothing selected: settings, as visual choices */
+ const seg=(opts,cur,on,cls)=>{const g=mk('div','sseg'+(cls?' '+cls:''));g.setAttribute('role','radiogroup');opts.forEach(([v,l,i])=>{const b=mk('button',null,(i?ic(i):'')+'<span>'+esc(l)+'</span>');b.type='button';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(v===cur));
+  b.onclick=()=>{if(b.getAttribute('aria-checked')==='true')return;g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-checked',String(x===b)));on(v)};g.appendChild(b)});return g};
+ const srow=(icon,label,desc,ctl,col)=>{const r=mk('div','srow'+(col?' col':''));r.innerHTML='<span class="sri">'+ic(icon)+'</span><div class="srt"><b>'+esc(label)+'</b>'+(desc?'<small>'+esc(desc)+'</small>':'')+'</div>';r.appendChild(ctl);return r};
+ const cv0=secEl(t('st_canvas'));
+ cv0.appendChild(srow('pointer',t('wire_style'),'',seg([['orth',t('w_orth')],['curve',t('w_curve')]],Settings.wstyle,v=>{Settings.wstyle=v;saveSettings();relayoutAll()}),1));
+ cv0.appendChild(srow('marquee',t('snap'),t('snap_d'),swEl(Settings.snap,v=>{Settings.snap=v;saveSettings()})));
+ cv0.appendChild(srow('file',t('show_names'),'',swEl(Settings.names!==false,v=>{Settings.names=v;saveSettings();syncComps()})));
+ cv0.appendChild(srow('sliders',t('show_vals'),'',swEl(Settings.vals,v=>{Settings.vals=v;saveSettings();syncComps()})));
+ cv0.appendChild(srow('bolt',t('volt_colors'),t('volt_colors_d'),swEl(Settings.vcol,v=>{Settings.vcol=v;saveSettings();Run.tWire=0})));
+ box.appendChild(cv0);
+ const ap=secEl(t('st_look'));
+ ap.appendChild(srow('sun',t('theme'),'',seg([['auto',t('th_auto'),'eye'],['light',t('th_light'),'sun'],['dark',t('th_dark'),'moon']],Settings.theme,v=>{Settings.theme=v;saveSettings();Veil.run(applyTheme,60)},'ic3'),1));
  const dots=mk('div','acc-dots');[['cyan','#22d3ee'],['blue','#3b82f6'],['violet','#8b5cf6'],['emerald','#10b981'],['amber','#f59e0b'],['rose','#f43f5e']].forEach(([k,c])=>{const b=mk('button');b.type='button';b.style.background=c;b.title=k;b.setAttribute('aria-label',k);b.setAttribute('aria-pressed',String((Settings.accent||'cyan')===k));b.onclick=()=>{Settings.accent=k;saveSettings();applyTheme();Panel.key='';buildPanel()};dots.appendChild(b)});
- ap.appendChild(rowEl(t('st_accent'),dots));
- ap.appendChild(rowEl(t('st_bg'),sel([['default',t('st_bg_def')],['midnight',t('st_bg_mid')],['graphite',t('st_bg_gra')]],Settings.bgs||'default',v=>{Settings.bgs=v;saveSettings();Veil.run(applyTheme,60)})));
- ap.appendChild(rowEl(t('lang'),sel(LANGS,LANG,v=>chooseLang(v))));
- ap.appendChild(rowEl(t('st_density'),sel([['normal',t('st_dn_norm')],['compact',t('st_dn_comp')]],Settings.density||'normal',v=>{Settings.density=v;saveSettings();Veil.run(()=>{applyTheme();try{fitView()}catch(e){}},60)})));
- ap.appendChild(rowEl(t('st_motion'),swEl((Settings.motion||'on')==='on',v=>{Settings.motion=v?'on':'off';saveSettings();applyTheme()})));
+ ap.appendChild(srow('spark',t('st_accent'),'',dots,1));
+ const bgs=mk('div','bgsw');[['default','st_bg_def','#0a1017','#0f1822'],['midnight','st_bg_mid','#05070d','#0a0e18'],['graphite','st_bg_gra','#121314','#202124']].forEach(([k,l,c1,c2])=>{const b=mk('button',null,'<i style="background:linear-gradient(135deg,'+c1+','+c2+')"></i><span>'+esc(t(l))+'</span>');b.type='button';b.setAttribute('aria-pressed',String((Settings.bgs||'default')===k));b.onclick=()=>{Settings.bgs=k;saveSettings();Veil.run(applyTheme,60);Panel.key='';setTimeout(buildPanel,200)};bgs.appendChild(b)});
+ ap.appendChild(srow('panel',t('st_bg'),t('st_bg_d'),bgs,1));
+ ap.appendChild(srow('globe',t('lang'),'',seg(LANGS.map(([k,n])=>[k,n]),LANG,v=>chooseLang(v)),1));
+ ap.appendChild(srow('expand',t('st_density'),'',seg([['normal',t('st_dn_norm')],['compact',t('st_dn_comp')]],Settings.density||'normal',v=>{Settings.density=v;saveSettings();Veil.run(()=>{applyTheme();try{fitView()}catch(e){}},60)}),1));
+ ap.appendChild(srow('play',t('st_motion'),'',swEl((Settings.motion||'on')==='on',v=>{Settings.motion=v?'on':'off';saveSettings();applyTheme()})));
  box.appendChild(ap);
- box.appendChild(mk('div','hint',esc(t('hint_idle'))))}
+ const pf=secEl(t('perf_mode'));
+ pf.appendChild(srow('chip',t('perf_mode'),t('perf_d',{lvl:t('perf_'+Perf.detect())}),seg([['auto',t('perf_auto')],['low',t('perf_low')],['mid',t('perf_mid')],['high',t('perf_high')]],Settings.perf,v=>{Settings.perf=v;Perf.cap=null;Perf.bad=0;saveSettings();Perf.apply();Run.tWire=0}),1));
+ box.appendChild(pf);
+ const ft=mk('div','sfoot');ft.innerHTML='<div class="stip">'+ic('info')+'<span>'+esc(t('hint_idle'))+'</span></div><div class="slinks"><button type="button" data-k="keys">'+ic('keys')+'<span>'+esc(t('shortcuts'))+'</span></button><button type="button" data-k="about">'+ic('info')+'<span>'+esc(t('about'))+'</span></button></div><p class="sver">Voltra 2.0 · '+esc(t('offline'))+'</p>';
+ ft.querySelector('[data-k=keys]').onclick=shortcutsDialog;ft.querySelector('[data-k=about]').onclick=aboutDialog;box.appendChild(ft)}
 
 function updateReadout(){
  const c=Panel.comp;if(!c||!$('#rdBox'))return;const r=c._r||{},num=x=>typeof x==='number'&&Number.isFinite(x);
@@ -5380,7 +5459,7 @@ function pbMoreTab(host){
 /* ---- shell: open / render / save / import / export ---- */
 function pbRender(){
  if(!PB.el)return;const tabs=[['design','pb_tab_design'],['params','pb_tab_params'],['logic','pb_tab_logic'],['fx','pb_tab_fx'],['more','pb_tab_more']];
- PB.tabsEl.innerHTML='';tabs.forEach(([id,k])=>{const b=H('button',{type:'button',cls:'ptab'+(PB.tab===id?' on':''),text:t(k)});b.onclick=()=>{PB.tab=id;pbRender()};PB.tabsEl.appendChild(b)});
+ PB.tabsEl.innerHTML='';const cur=tabs.findIndex(x=>x[0]===PB.tab);tabs.forEach(([id,k],i)=>{const b=H('button',{type:'button',cls:'ptab'+(PB.tab===id?' on':'')+(i<cur?' done':''),html:'<i>'+(i+1)+'</i><span>'+esc(t(k).replace(/^[0-9\u0660-\u0669]+\s*·\s*/,''))+'</span>'});b.onclick=()=>{PB.tab=id;pbRender()};PB.tabsEl.appendChild(b)});
  const host=PB.body;host.innerHTML='';host.dataset.tab=PB.tab;PB.svg=null;PB.side=null;PB.stage=null;PB.toolbar=null;
  ({design:pbDesignTab,params:pbParamsTab,logic:pbLogicTab,fx:pbFxTab,more:pbMoreTab})[PB.tab](host);
  PB.nameIn.value=PB.d.name}
@@ -5390,7 +5469,7 @@ function pbBuild(){
  PB.tabsEl=H('nav',{cls:'ptabs'});PB.body=H('div',{cls:'pbody'});
  const tplBtn=pbBtn('flask',t('pb_templates'),()=>{const r=tplBtn.getBoundingClientRect();Pop.show('ctx',[{h:t('pb_tpl_hint')}].concat(pbTemplates().map(x=>({i:'chip',l:x.name,run:()=>{const go=()=>{const id=PB.d.id;PB.d=cleanPart(x.def);PB.d.id=id;PB.d.rev=PB.d.rev;PB.sel=null;PB.dirty=true;pbRender()};if(PB.dirty)Modal.confirm(t('pb_templates'),t('pb_tpl_hint'),t('ok'),true).then(ok=>{if(ok)go()});else go()}}))),r.left,r.bottom+4)});
  const file=H('input',{type:'file',accept:'.json,application/json',hidden:true});file.onchange=()=>{const f=file.files[0];file.value='';if(!f)return;f.text().then(txt=>pbImportText(txt,true)).catch(()=>pbInfo(t('pb_bad_file')))};
- const head=H('header',{cls:'pbh'},[H('div',{cls:'pbt'},[H('span',{html:ic('wrench')}),H('b',{text:t('pb_title')})]),PB.nameIn,H('span',{cls:'sp'}),tplBtn,
+ const head=H('header',{cls:'pbh'},[H('div',{cls:'pbt'},[H('span',{cls:'pbt-ic',html:ic('sliders')}),H('b',{text:t('pb_title')})]),PB.nameIn,H('span',{cls:'sp'}),tplBtn,
   pbBtn('open',t('pb_import'),()=>file.click()),pbBtn('save',t('pb_export'),()=>pbExport(PB.d)),file,
   pbBtn('save',t('pb_save'),()=>PB.save(false),'pri'),pbBtn('plus',t('pb_place'),()=>PB.save(true),'pri'),pbIcB('✕',t('pb_close'),()=>PB.close(),'pclose')]);
  el.appendChild(H('div',{cls:'pbw'},[head,PB.tabsEl,PB.body]));document.body.appendChild(el);PB.el=el;
@@ -5585,7 +5664,7 @@ function shortcutsDialog(){
  const rows=[['Space',t('run')+' / '+t('pause')],['Ctrl+Z / Ctrl+Y',t('undo')+' / '+t('redo')],['Ctrl+C / Ctrl+X / Ctrl+V',t('copy')+' / '+t('paste')],['Ctrl+D',t('duplicate')],['Ctrl+A',t('select_all')],['Ctrl+S',t('export_json')],
   ['Delete',t('delete')],['R / F',t('rotate')+' / '+t('flip')],['+ / −',t('zin')+' / '+t('zout')],['0',t('fit')],['← ↑ → ↓',t('nudge')],['H',t('focus')],['[ / ]',t('sc_panels')],['/',t('sc_search')],['Esc',t('cancel')]];
  Modal.open({title:t('shortcuts'),body:'<table>'+rows.map(r=>'<tr><td><kbd>'+esc(r[0])+'</kbd></td><td>'+esc(r[1])+'</td></tr>').join('')+'</table>'});}
-function aboutDialog(){Modal.open({title:t('app'),body:'<p>'+esc(t('about_text'))+'</p><p>'+esc(t('contact'))+': <a href="mailto:ahmedhamdi0s10@gmail.com" style="color:var(--acc);user-select:text">ahmedhamdi0s10@gmail.com</a></p><p class="mono" style="color:var(--mut)">v1.0 · '+esc(t('offline'))+'</p>'})}
+function aboutDialog(){Modal.open({title:t('app'),body:'<p>'+esc(t('about_text'))+'</p><p>'+esc(t('contact'))+': <a href="mailto:ahmedhamdi0s10@gmail.com" style="color:var(--acc);user-select:text">ahmedhamdi0s10@gmail.com</a></p><p class="mono" style="color:var(--mut)">v2.0 · '+esc(t('offline'))+'</p>'})}
 
 /* ---- menus ---- */
 const NARROW=window.matchMedia?window.matchMedia('(max-width:760px)'):{matches:false};
