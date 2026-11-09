@@ -83,9 +83,10 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
-            ./gradlew --no-daemon :app:connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true
+            ./gradlew --no-daemon :app:connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true || touch tests_failed
             mkdir -p snapshots && adb exec-out run-as studio.pyreels.app tar c files/snapshots > snapshots/s.tar && tar xf snapshots/s.tar -C snapshots --strip-components=2 || true
             for f in snapshots/*.jpg; do echo "SNAP-BEGIN $(basename $f)"; base64 -w 4000 "$f"; echo "SNAP-END"; done || true
+            test ! -f tests_failed
       - if: always()
         uses: actions/upload-artifact@v4
         with:

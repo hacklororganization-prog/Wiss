@@ -129,7 +129,8 @@ fun HomeScreen(nav: Navigator, modifier: Modifier, vm: HomeViewModel = hiltViewM
                 item {
                     CalmCard {
                         Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                            VideoPreview(video, Modifier.width(120.dp), autoPlay = true, safeZones = false, onSafeZones = {}, controls = false, muted = true, loop = true)
+                            // respects the system "remove animations" accessibility setting
+                            VideoPreview(video, Modifier.width(120.dp), autoPlay = android.animation.ValueAnimator.areAnimatorsEnabled(), safeZones = false, onSafeZones = {}, controls = false, muted = true, loop = true)
                             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(ui.t("تابع من حيث توقفت", "Continue where you left off"), color = Muted, style = MaterialTheme.typography.labelMedium)
                                 Text(p.title, style = MaterialTheme.typography.titleMedium)
