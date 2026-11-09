@@ -1,0 +1,53 @@
+name: build-apk
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch: {}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.7.2
+    env:
+      GODOT_ANDROID_KEYSTORE_DEBUG_PATH: /root/debug.keystore
+      GODOT_ANDROID_KEYSTORE_DEBUG_USER: androiddebugkey
+      GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: android
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Godot home
+        run: |
+          mkdir -p ~/.local/share/godot/export_templates ~/.config
+          if [ "$HOME" != "/root" ]; then
+            cp -r /root/.config/godot ~/.config/godot
+            cp -r /root/.local/share/godot/export_templates/* ~/.local/share/godot/export_templates/
+          fi
+          ls ~/.local/share/godot/export_templates/
+          grep -E "android|java|keystore" ~/.config/godot/editor_settings-4*.tres || true
+      - name: Import
+        run: godot --headless --path . --import 2>&1 | tee import.log
+      - name: Parse check
+        run: |
+          for f in scripts/*.gd tests/*.gd; do godot --headless --path . --check-only --script "$f" 2>&1 | grep -E "ERROR|Parse" && echo "in $f" || true; done | tee parse.log
+      - name: Smoke test (autoplay bot)
+        run: |
+          timeout 600 godot --headless --path . res://tests/smoke.tscn 2>&1 | tee smoke.log || true
+          grep -q "SMOKE PASS" smoke.log
+          ! grep -E "SCRIPT ERROR|Parse Error|Failed to load|Invalid call|Invalid access" smoke.log
+      - name: Export APK
+        if: always()
+        run: |
+          mkdir -p build
+          godot --headless --path . --export-debug "Android" build/7senin_demo.apk 2>&1 | tee export.log
+          unzip -t build/7senin_demo.apk > /dev/null && echo "ZIP OK"
+          ls -la build/
+          AAPT=$(ls /usr/lib/android-sdk/build-tools/*/aapt | head -1)
+          $AAPT dump badging build/7senin_demo.apk | grep -E "package|sdkVersion|native-code|orientation|launchable" || true
+          unzip -l build/7senin_demo.apk | grep -E "lib/" || true
+      - name: Upload APK
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: 7senin_demo_apk
+          path: |
+            build/7senin_demo.apk
+            *.log

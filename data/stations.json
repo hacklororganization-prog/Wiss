@@ -1,0 +1,19 @@
+{
+  "_note": "Demo slice. Positions in meters (x, y, z). Ring road: x in [-20,20], z in [-12,12]. Edit names/years/papers here only.",
+  "home": {"id": "ahmed", "name": "أحمد", "seed": 7, "pos": [0, 0, 20], "yaw_deg": 180},
+  "stations": [
+    {"id": "omar", "order": 1, "uncle": "عمر", "year": 2016, "mechanic": "dialogue_and_inspect",
+     "seed": 11, "pos": [28, 0, 0], "yaw_deg": -90, "lit_window": true,
+     "dialogue_key": "omar_station1", "paper_key": "paper_2016"},
+    {"id": "gate_house", "order": 4, "uncle": "عادل", "year": 2018, "mechanic": "hold_still",
+     "seed": 23, "pos": [0, 0, -20], "yaw_deg": 0, "lit_window": false, "hold_seconds": 8.0,
+     "gate_open_deg": 22.0, "paper_key": "paper_2018"}
+  ],
+  "street_lamps": {"alley": [-21.8, 0, 13.6], "w1": [-8, 0, -10.0]},
+  "watcher_points": {
+    "W0": [-21, 0, 12.2], "W1": [-8, 0, -10.9], "W3": [1.0, 0, -13.4], "W4_distance": 8.0
+  },
+  "player_start_intro": [0, 0, 17.6],
+  "player_start_play": [0, 0, 12.6],
+  "dog_start": [3.5, 0, 11.4]
+}

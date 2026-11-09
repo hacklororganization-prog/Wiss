@@ -1,0 +1,131 @@
+{
+ "_note": "variants=0 means single file <name>.ogg. Override any file by placing audio_custom/<file>.ogg",
+ "sounds": {
+  "step_dirt": {
+   "variants": 4,
+   "bus": "SFX",
+   "db": -8,
+   "loop": false
+  },
+  "cane": {
+   "variants": 3,
+   "bus": "SFX",
+   "db": -2,
+   "loop": false
+  },
+  "cane_far": {
+   "variants": 2,
+   "bus": "SFX",
+   "db": -4,
+   "loop": false
+  },
+  "dog_near": {
+   "variants": 3,
+   "bus": "SFX",
+   "db": -3,
+   "loop": false
+  },
+  "dog_far": {
+   "variants": 3,
+   "bus": "SFX",
+   "db": -6,
+   "loop": false
+  },
+  "wind_loop": {
+   "variants": 0,
+   "bus": "Ambience",
+   "db": -6,
+   "loop": true
+  },
+  "crickets_loop": {
+   "variants": 0,
+   "bus": "Ambience",
+   "db": -8,
+   "loop": true
+  },
+  "fireworks": {
+   "variants": 3,
+   "bus": "SFX",
+   "db": -4,
+   "loop": false
+  },
+  "gate_creak": {
+   "variants": 2,
+   "bus": "SFX",
+   "db": -4,
+   "loop": false
+  },
+  "gate_latch": {
+   "variants": 2,
+   "bus": "SFX",
+   "db": -4,
+   "loop": false
+  },
+  "flash_click": {
+   "variants": 2,
+   "bus": "SFX",
+   "db": -6,
+   "loop": false
+  },
+  "lamp_flicker": {
+   "variants": 2,
+   "bus": "SFX",
+   "db": -6,
+   "loop": false
+  },
+  "lamp_off": {
+   "variants": 2,
+   "bus": "SFX",
+   "db": -6,
+   "loop": false
+  },
+  "paper": {
+   "variants": 3,
+   "bus": "SFX",
+   "db": -4,
+   "loop": false
+  },
+  "cat_meow": {
+   "variants": 2,
+   "bus": "SFX",
+   "db": -4,
+   "loop": false
+  },
+  "cat_hiss": {
+   "variants": 2,
+   "bus": "SFX",
+   "db": -2,
+   "loop": false
+  },
+  "cat_jump": {
+   "variants": 2,
+   "bus": "SFX",
+   "db": 0,
+   "loop": false
+  },
+  "fall": {
+   "variants": 1,
+   "bus": "SFX",
+   "db": -2,
+   "loop": false
+  },
+  "wake": {
+   "variants": 1,
+   "bus": "SFX",
+   "db": -4,
+   "loop": false
+  },
+  "ui_click": {
+   "variants": 2,
+   "bus": "UI",
+   "db": -6,
+   "loop": false
+  },
+  "splash": {
+   "variants": 1,
+   "bus": "UI",
+   "db": -2,
+   "loop": false
+  }
+ }
+}

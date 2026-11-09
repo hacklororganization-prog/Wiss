@@ -1,0 +1,41 @@
+{
+  "_note": "Arabic text. Keys marked MISSING_FROM_STORY must be replaced verbatim from 7_SENIN_Story_Final.md (the story file was not provided to the build). Do not paraphrase.",
+  "time_1159": "11:59 PM",
+  "time_1200": "12:00 AM",
+  "time_1201": "12:01 AM",
+  "title": "7 سنين",
+  "credit": "Ahmed Hamdi",
+  "hint_station1": "اللي قاله عمّي... نتأكد منو.",
+  "ahmed_ask": "شكون إنتِ؟",
+  "tap": "تك",
+  "flashback": [
+    {"who": "عمر", "text": "[MISSING_FROM_STORY §4B — السطر 1]"},
+    {"who": "عبد السلام", "text": "[MISSING_FROM_STORY §4B — السطر 2]"},
+    {"who": "محمد", "text": "[MISSING_FROM_STORY §4B — السطر 3]"},
+    {"who": "حمزة", "text": "[MISSING_FROM_STORY §4B — السطر 4]"},
+    {"who": "هيثم", "text": "[MISSING_FROM_STORY §4B — السطر 5]"}
+  ],
+  "omar_station1": [
+    {"who": "عمر", "text": "[MISSING_FROM_STORY §4C.1 — كلام عمر عند البوابة]"}
+  ],
+  "paper_2016": "[MISSING_FROM_STORY §5 — نص ورقة 2016]",
+  "paper_2018": "[MISSING_FROM_STORY §5 — نص ورقة 2018]",
+  "paper_final": "[MISSING_FROM_STORY §4E — نص الورقة الأخيرة]",
+  "ui_start": "ابدأ",
+  "ui_settings": "الإعدادات",
+  "ui_quit": "خروج",
+  "ui_back": "رجوع",
+  "ui_close": "إغلاق",
+  "ui_volume": "الصوت",
+  "ui_quality": "الجودة",
+  "ui_quality_low": "منخفضة",
+  "ui_quality_med": "متوسطة",
+  "ui_sens": "حساسية النظر",
+  "ui_demo_end": "نهاية النسخة التجريبية",
+  "ui_to_menu": "العودة إلى القائمة",
+  "act_inspect": "فحص",
+  "act_pick": "التقط",
+  "act_hold": "ثبّت",
+  "act_speak": "تكلّم",
+  "act_flash": "ضوء"
+}
