@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="calm_bg">#FF1B222C</color>
+    <color name="calm_accent">#FFE8C872</color>
+    <color name="icon_bg">#FF223040</color>
+</resources>
