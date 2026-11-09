@@ -201,7 +201,7 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         var hh = 16f
         name?.let { hh += it.height + 2f }
         body?.let { hh += it.height }
-        if (m.codeScreenshot && m.code != null) { contentW = bubbleMax; hh += screenshotH(m.code) + 14f }
+        if (m.codeScreenshot && m.code != null) { contentW = bubbleMax; hh += screenshotH(m.code ?: "") + 14f }
         else code?.let { hh += it.height + 34f }
         when (m.kind) {
             MessageKind.ANALOGY -> { contentW = bubbleMax; hh += 70f + (if (m.analogyItems.isEmpty()) 0f else 168f) }
