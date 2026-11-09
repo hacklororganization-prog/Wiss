@@ -394,12 +394,8 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         val np = text.paint(TextKit.Face.MONO, 22f, g.c(g.p.lineNumber))
         code.split('\n').forEachIndexed { i, _ -> canvas.drawText((i + 1).toString(), x + 4f, y + 54f + 22f + i * 40f + 18f, np) }
         drawHighlighted(canvas, code, x + 40f, y + 54f + 14f, 28f, 40f)
-        // time chip over the photo, like a real image message
-        val tp = text.paint(TextKit.Face.REGULAR, 20f, 0xFFFFFFFF.toInt())
-        val tw = tp.measureText(time) + 20f
-        g.rect.set(x - 4f, y + hgt - 38f, x - 4f + tw, y + hgt - 10f)
-        g.fill.color = 0x66000000; canvas.drawRoundRect(g.rect, 14f, 14f, g.fill)
-        canvas.drawText(time, x + 6f, y + hgt - 17f, tp)
+        // the bubble already shows the time under the caption: no second time chip on the photo
+        @Suppress("UNUSED_VARIABLE") val unusedTime = time
         return hgt
     }
 
