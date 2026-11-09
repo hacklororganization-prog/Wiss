@@ -218,7 +218,7 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
                 y = y - l.totalH - (if (gr) 6f else gap)
             }
             // date pill + encryption notice above the first message when there is room
-            if (firstTop - 200f > listTop) drawPills(canvas, firstTop - 190f)
+            if (firstTop - 236f > listTop) drawPills(canvas, firstTop - 226f)
         } else drawPills(canvas, listTop + 24f)
         canvas.restore()
     }

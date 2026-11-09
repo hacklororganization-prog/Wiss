@@ -320,7 +320,7 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
                 // soft highlighter stroke behind the last line
                 val lastLine = body.lineCount - 1
                 val lw = body.getLineWidth(lastLine)
-                g.fill.color = g.alpha(accent, 0.22f)
+                g.fill.color = g.alpha(accent, 0.22f * ((card.reveal - 0.5f) / 0.5f).coerceIn(0f, 1f))
                 val ly = y + body.getLineBottom(lastLine) - 26f
                 canvas.drawRoundRect(cx - lw / 2 - 12f, ly - 22f, cx + lw / 2 + 12f, ly + 6f, 12f, 12f, g.fill)
             }
