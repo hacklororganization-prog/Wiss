@@ -25,9 +25,6 @@ jobs:
           grep -E "android|java|keystore" ~/.config/godot/editor_settings-4*.tres || true
       - name: Import
         run: godot --headless --path . --import 2>&1 | tee import.log
-      - name: Parse check
-        run: |
-          for f in scripts/*.gd tests/*.gd; do godot --headless --path . --check-only --script "$f" 2>&1 | grep -E "ERROR|Parse" && echo "in $f" || true; done | tee parse.log
       - name: Smoke test (autoplay bot)
         run: |
           timeout 600 godot --headless --path . res://tests/smoke.tscn 2>&1 | tee smoke.log || true

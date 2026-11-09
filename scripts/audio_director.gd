@@ -23,7 +23,7 @@ func _load(file: String) -> AudioStream:
 		return _cache[file]
 	var st: AudioStream = null
 	for ext in [".ogg", ".wav", ".mp3"]:
-		var p := "res://audio_custom/" + file + ext
+		var p: String = "res://audio_custom/" + file + str(ext)
 		if ResourceLoader.exists(p):
 			st = load(p)
 			break
