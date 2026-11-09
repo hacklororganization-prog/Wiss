@@ -279,7 +279,7 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
             val emoji = m.reactions.joinToString("") { reactionEmoji(it) }
             val ep = text.paint(TextKit.Face.REGULAR, 26f * sc, s.waText)
             val pw = ep.measureText(emoji) + 26f
-            val rx = if (m.outgoing) x1 - pw - 18f else x0 + 18f
+            val rx = x1 - pw - 18f
             g.rect.set(rx, y1 - 8f, rx + pw, y1 + 34f)
             g.fill.color = if (s.dark) g.blend(color, 0xFF000000.toInt(), 0.25f) else s.waPill
             canvas.drawRoundRect(g.rect, 21f, 21f, g.fill)

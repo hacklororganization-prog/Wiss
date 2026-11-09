@@ -46,7 +46,8 @@ object DurationEstimator {
             is Scene.Chat -> {
                 val ideal = (if (scene.from == "ahmed") composeMs(scene.text) else typingIndicatorMs(scene.text)) + Easing.ENTER_MS + max(readMs(scene.text), 1_400) +
                     (if (scene.code != null) 1_500 else 0) + (if (scene.reactions.isNotEmpty()) 600 else 0)
-                val minMs = max(1_800L, 450 + max(minReadMs(scene.text), 1_000)) + (if (scene.code != null) 1_000 else 0)
+                val typingMin = if (scene.from == "ahmed") composeMs(scene.text) * 3 / 4 else 450L
+                val minMs = max(1_800L, typingMin + max(minReadMs(scene.text), 1_000)) + (if (scene.code != null) 1_000 else 0)
                 SceneBounds(minMs, max(ideal, minMs), (ideal * 1.4).roundToLong())
             }
             is Scene.Analogy -> {

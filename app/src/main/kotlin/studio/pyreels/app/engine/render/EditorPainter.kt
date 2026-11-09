@@ -27,7 +27,8 @@ class EditorPainter(private val g: Gfx, private val w: Float, private val h: Flo
         canvas.drawRect(0f, 0f, w, h, g.fill)
         val kbH = kbFull * code.keyboard
         val editorBottom = h - symH - kbH
-        drawCode(canvas, code, editorBottom)
+        val noteShift = code.note?.let { noteHeight(it.text) * it.appear } ?: 0f
+        drawCode(canvas, code, editorBottom, noteShift)
         drawAppBar(canvas, code)
         drawSymbolBar(canvas, code, editorBottom)
         if (kbH > 1f) drawKeyboard(canvas, code, h - kbH)
@@ -67,11 +68,16 @@ class EditorPainter(private val g: Gfx, private val w: Float, private val h: Flo
         return min(36f, min(byWidth, byHeight)).coerceAtLeast(22f)
     }
 
-    private fun drawCode(canvas: Canvas, code: CodeView, editorBottom: Float) {
+    private fun noteHeight(msg: String): Float {
+        val l = text.layout(msg.replace("`", ""), (w - 170).toInt(), 34f, s.waText, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_NORMAL, 1, spacing = 0.92f)
+        return l.height + 26f + 44f
+    }
+
+    private fun drawCode(canvas: Canvas, code: CodeView, editorBottom: Float, shift: Float = 0f) {
         val lines = code.text.split('\n')
         val size = monoSize(lines)
         val lh = size * 1.45f
-        val top = barBottom + 18f
+        val top = barBottom + 18f + shift
         g.fill.color = s.edGutter
         canvas.drawRect(0f, barBottom, gutterW, editorBottom, g.fill)
         canvas.save()

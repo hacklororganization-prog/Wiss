@@ -185,7 +185,7 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
         g.withAlpha(canvas, appear, sw, sh) {
             val h = 104f
             val y = sh - 112f - h - 26f + (1f - appear) * 10f
-            val itemW = 214f
+            val itemW = 262f
             val w = itemW * actions.size + 30f
             val x0 = sw / 2 - w / 2
             g.rect.set(x0, y, x0 + w, y + h)
@@ -194,7 +194,7 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
             g.stroke.color = g.alpha(palette.focus.toInt(), 0.6f); g.stroke.strokeWidth = 3f; canvas.drawRoundRect(g.rect, h / 2, h / 2, g.stroke)
             actions.forEachIndexed { i, a ->
                 val cx = x0 + w - 15f - itemW * (i + 0.5f)
-                val iconX = cx + 58f
+                val iconX = cx + 78f
                 val cy = y + h / 2
                 when (a) {
                     "like" -> g.drawHeart(canvas, iconX, cy, 24f * (1f + 0.15f * heart))
@@ -293,7 +293,8 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
             val accent = when (card.kind) { CardKind.RECAP -> palette.tickRead.toInt(); CardKind.KEY_SENTENCE -> palette.focus.toInt(); CardKind.TEASER -> palette.terminalOk.toInt() }
             val icon = when (card.kind) { CardKind.RECAP -> "↺"; CardKind.KEY_SENTENCE -> "★"; CardKind.TEASER -> "▶" }
             val size = if (card.kind == CardKind.KEY_SENTENCE) Tokens.Type.KEY_SENTENCE else 64f
-            val body = text.layout(card.text, iw, size, palette.text.toInt(), TextKit.Face.BOLD, Layout.Alignment.ALIGN_CENTER, 1, spacing = 1.05f)
+            val bodyText = card.text.removePrefix(card.label).trimStart(':', '：', ' ', '…')
+            val body = text.layout(bodyText.ifBlank { card.text }, iw, size, palette.text.toInt(), TextKit.Face.BOLD, Layout.Alignment.ALIGN_CENTER, 1, spacing = 1.05f)
             val label = text.layout(card.label, iw, 38f, accent, TextKit.Face.BOLD, Layout.Alignment.ALIGN_CENTER, 1, maxLines = 1)
             val sub = card.sub?.let { text.layout("💬 $it", iw - 40, 38f, palette.text.toInt(), TextKit.Face.SEMI, Layout.Alignment.ALIGN_CENTER, 1, spacing = 0.95f) }
             val total = 120f + label.height + 50f + body.height + (sub?.let { it.height + 110f } ?: 0f) + 60f
@@ -311,9 +312,6 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
             y += 160f
             g.drawAt(canvas, label, x0 + 50f, y); y += label.height + 40f
             if (card.kind == CardKind.KEY_SENTENCE) {
-                val qp = text.paint(TextKit.Face.BOLD, 140f, g.alpha(accent, 0.25f))
-                canvas.drawText("”", x1 - 110f, y + 60f, qp)
-                canvas.drawText("“", x0 + 40f, y + body.height + 70f, qp)
                 // soft highlighter stroke behind the last line
                 val lastLine = body.lineCount - 1
                 val lw = body.getLineWidth(lastLine)
@@ -367,6 +365,6 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
             x -= gap
         }
         val series = text.layout(m.series.name ?: "تعلّم البرمجة مع أحمد", (x1 - x0).toInt(), 40f, palette.textMuted.toInt(), TextKit.Face.SEMI, Layout.Alignment.ALIGN_CENTER, 1, maxLines = 1)
-        g.drawAt(canvas, series, x0, safeBottom - series.height - 10f)
+        g.drawAt(canvas, series, x0, y + 200f)
     }
 }
