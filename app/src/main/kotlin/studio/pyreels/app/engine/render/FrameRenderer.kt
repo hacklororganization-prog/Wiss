@@ -190,9 +190,10 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
         // Messages, bottom-aligned
         val listTop = headerTop + headerH + 24f
         var y = bottom - 24f
-        if (chat.typingFrom != null) {
+        val typingFrom = chat.typingFrom
+        if (typingFrom != null) {
             val h = 92f
-            drawTyping(canvas, chat.typingFrom, chat.typingPhase, y - h)
+            drawTyping(canvas, typingFrom, chat.typingPhase, y - h)
             y -= h + 22f
         }
         val msgs = chat.messages
@@ -530,9 +531,10 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
             stroke.color = alpha(c(palette.focus), if (changing) 0.4f + 0.6f * (1f - v.change) else 0.25f); stroke.strokeWidth = 3f
             canvas.drawRoundRect(rect, 18f, 18f, stroke)
             canvas.save(); canvas.clipRect(rect)
-            if (changing && v.previous != null) {
+            val previous = v.previous
+            if (changing && previous != null) {
                 valuePaint.alpha = ((1f - v.change) * 255).toInt()
-                canvas.drawText(v.previous, bx + 22f, y + 106f - v.change * 30f, valuePaint)
+                canvas.drawText(previous, bx + 22f, y + 106f - v.change * 30f, valuePaint)
                 valuePaint.alpha = (v.change * 255).toInt()
                 canvas.drawText(v.value, bx + 22f, y + 106f + (1f - v.change) * 30f, valuePaint)
                 valuePaint.alpha = 255

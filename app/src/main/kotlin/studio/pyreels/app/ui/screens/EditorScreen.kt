@@ -297,8 +297,9 @@ fun EditorScreen(nav: Navigator, projectId: Long, safeZones: Boolean, onSafeZone
                 Text(if (r.canExport) ui.t("يمكن التصدير. الملاحظات أدناه نصائح فقط.", "Export allowed. Notes below are tips only.") else ui.t("يوجد أخطاء تمنع التصدير.", "There are blocking errors."), color = Muted)
                 r.problems.forEach { p ->
                     ProblemRow(p)
-                    if (p.fix == "split" || p.fix == "shiftEngage") {
-                        TextButton(onClick = { vm.applyFix(p.fix, p.sceneIndex); report = vm.quality() }) {
+                    val fix = p.fix
+                    if (fix == "split" || fix == "shiftEngage") {
+                        TextButton(onClick = { vm.applyFix(fix, p.sceneIndex); report = vm.quality() }) {
                             Text(if (p.fix == "split") ui.t("قسّم الفقاعة", "Split bubble") else ui.t("انقل لحظة التفاعل", "Move engage moment"))
                         }
                     }
