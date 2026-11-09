@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
     private fun handleIntent(i: Intent?) {
         i ?: return
         val text = when (i.action) {
-            Intent.ACTION_SEND -> i.getStringExtra(Intent.EXTRA_TEXT) ?: (if (android.os.Build.VERSION.SDK_INT >= 33) i.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java) else @Suppress("DEPRECATION") i.getParcelableExtra(Intent.EXTRA_STREAM))?.let { read(it) }
+            Intent.ACTION_SEND -> i.getStringExtra(Intent.EXTRA_TEXT) ?: (if (android.os.Build.VERSION.SDK_INT >= 33) i.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java) else @Suppress("DEPRECATION") i.getParcelableExtra<Uri>(Intent.EXTRA_STREAM))?.let { read(it) }
             Intent.ACTION_VIEW -> i.data?.let { read(it) }
             else -> null
         }
