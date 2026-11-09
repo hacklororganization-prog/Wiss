@@ -108,13 +108,17 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         g.iconBack(canvas, w - 38f, cy, 34f, s.waHeaderText, pointRight = true)
         // group avatar: two members side by side inside one circle
         val ax = w - 104f
-        g.fill.color = g.blend(s.waHeader, 0xFFFFFFFF.toInt(), 0.12f)
+        // one clean group avatar: a circle with two people (no overlapping mini avatars)
+        g.fill.color = g.blend(s.waHeader, 0xFFFFFFFF.toInt(), if (s.dark) 0.16f else 0.28f)
         canvas.drawCircle(ax, cy, 38f, g.fill)
-        val teachers = scenario.cast.filter { it.role == "teacher" }.take(2)
-        if (teachers.isNotEmpty()) {
-            g.avatar(canvas, teachers[0].id, ax + 12f, cy - 8f, 20f)
-            g.avatar(canvas, "ahmed", ax - 12f, cy + 10f, 20f)
-        }
+        val person = g.alpha(s.waHeaderText, 0.9f)
+        val back = g.alpha(s.waHeaderText, 0.5f)
+        g.fill.color = back
+        canvas.drawCircle(ax + 11f, cy - 9f, 8f, g.fill)
+        g.rect.set(ax - 2f, cy + 1f, ax + 24f, cy + 22f); canvas.drawArc(g.rect, 180f, 180f, true, g.fill)
+        g.fill.color = person
+        canvas.drawCircle(ax - 6f, cy - 6f, 10f, g.fill)
+        g.rect.set(ax - 22f, cy + 6f, ax + 10f, cy + 32f); canvas.drawArc(g.rect, 180f, 180f, true, g.fill)
         val tw = (w - 360f).toInt()
         val name = text.layout(chat.groupName, tw, 36f, s.waHeaderText, TextKit.Face.BOLD, Layout.Alignment.ALIGN_NORMAL, 1, spacing = 0.95f, maxLines = 1)
         val typing = chat.typingFrom?.takeIf { it != "ahmed" }
@@ -277,7 +281,8 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         }
         add("اليوم", s.waPill, s.waTime, 26f)
         add("الرسائل والمكالمات مشفّرة تمامًا بين الطرفين. لا يمكن لأحد خارج هذه الدردشة قراءتها أو الاستماع إليها.", s.waNotice, s.waNoticeText, 24f, lock = true, maxW = w - 120f)
-        add("أنشأ $creator المجموعة «$group»", s.waPill, s.waTime, 24f)
+        add("أنشأ $creator المجموعة", s.waPill, s.waTime, 24f)
+        @Suppress("UNUSED_VARIABLE") val unusedGroup = group
         add("أضاف $creator أحمد", s.waPill, s.waTime, 24f)
         teachers.drop(1).forEach { add("أضاف $creator ${g.nameOf(it.id)}", s.waPill, s.waTime, 24f) }
         items
