@@ -1,0 +1,234 @@
+{
+  "schema": "pyreels/1",
+  "meta": {
+    "title": "الحلقة for",
+    "language": "ar",
+    "lesson": {
+      "id": "py-for",
+      "concept": "for",
+      "level": "beginner"
+    },
+    "targetSeconds": 90,
+    "theme": "calm-dark",
+    "ambient": "soft_rain",
+    "series": {
+      "name": "بايثون مع أحمد",
+      "episode": 17,
+      "previousRecap": "تعلّمنا أن while تكرّر حتى يصبح الشرط خطأ.",
+      "nextTeaser": "في الحلقة القادمة: range… مسطرة تبدأ من الصفر!"
+    }
+  },
+  "cast": [
+    {
+      "id": "ahmed",
+      "role": "learner",
+      "name": "أحمد"
+    },
+    {
+      "id": "python",
+      "role": "teacher",
+      "language": "python",
+      "name": "بايثون"
+    },
+    {
+      "id": "java",
+      "role": "teacher",
+      "language": "java",
+      "name": "جافا"
+    },
+    {
+      "id": "cpp",
+      "role": "teacher",
+      "language": "cpp",
+      "name": "سي++"
+    }
+  ],
+  "scenes": [
+    {
+      "type": "hook_predict",
+      "language": "python",
+      "code": "for i in range(3):\n    print(i)"
+    },
+    {
+      "type": "recap",
+      "text": "تعلّمنا أن while تكرّر حتى يصبح الشرط خطأ."
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "أريد أن أطبع رسالة لكل صديق… هل أكتبها مرارًا؟"
+    },
+    {
+      "type": "chat",
+      "from": "python",
+      "text": "لا داعي! الحلقة for تكرّر عنك.",
+      "say": true
+    },
+    {
+      "type": "analogy",
+      "title": "for = توزيع الحلوى على الصف",
+      "items": [
+        {
+          "label": "الطالب 1",
+          "value": "🍬"
+        },
+        {
+          "label": "الطالب 2",
+          "value": "🍬"
+        },
+        {
+          "label": "الطالب 3",
+          "value": "🍬"
+        }
+      ],
+      "from": "python",
+      "text": "تمرّ على كل طالب مرة واحدة، ثم تتوقف."
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "وكيف تعرف متى تتوقف؟"
+    },
+    {
+      "type": "chat",
+      "from": "python",
+      "text": "عندما ينتهي العدّ. `range(3)` تعني: 0 ثم 1 ثم 2.",
+      "speakCode": true,
+      "say": true
+    },
+    {
+      "type": "chat",
+      "from": "java",
+      "text": "وعندي: `for (int i = 0; i < 3; i++)` بالتفصيل الممل 😅"
+    },
+    {
+      "type": "chat",
+      "from": "cpp",
+      "text": "ونفسها عندي… لكني أنهيها قبلكم 😎",
+      "reactions": [
+        "laugh"
+      ]
+    },
+    {
+      "type": "code_type",
+      "language": "python",
+      "code": "for i in range(3):\n    print(i)",
+      "typing": "natural",
+      "focusLines": [
+        1
+      ]
+    },
+    {
+      "type": "run",
+      "language": "python",
+      "exec": "real",
+      "trace": [
+        {
+          "line": 1,
+          "vars": {
+            "i": 0
+          },
+          "iteration": 1
+        },
+        {
+          "line": 2,
+          "vars": {
+            "i": 0
+          },
+          "iteration": 1,
+          "out": "0"
+        },
+        {
+          "line": 1,
+          "vars": {
+            "i": 1
+          },
+          "iteration": 2
+        },
+        {
+          "line": 2,
+          "vars": {
+            "i": 1
+          },
+          "iteration": 2,
+          "out": "1"
+        },
+        {
+          "line": 1,
+          "vars": {
+            "i": 2
+          },
+          "iteration": 3
+        },
+        {
+          "line": 2,
+          "vars": {
+            "i": 2
+          },
+          "iteration": 3,
+          "out": "2"
+        }
+      ],
+      "output": "0\n1\n2"
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "ثلاث دورات! وi تغيّرت كل مرة 🎉"
+    },
+    {
+      "type": "engage_moment",
+      "from": "python",
+      "text": "ممتاز يا أحمد! لو أردت حلقة جديدة كل أسبوع، تابعنا 🌱",
+      "actions": [
+        "follow",
+        "like"
+      ],
+      "bridge": "حسنًا يا أحمد، نكمل!"
+    },
+    {
+      "type": "reveal",
+      "answer": "0 ثم 1 ثم 2",
+      "text": "range(3) تبدأ من صفر وتتوقف قبل 3، فلا تُطبع 3 أبدًا.",
+      "from": "python",
+      "say": true,
+      "speakCode": true
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "وماذا لو كتبت الرقم مباشرة بدل range؟"
+    },
+    {
+      "type": "common_mistake",
+      "language": "python",
+      "code": "for i in 5:\n    print(i)",
+      "error": "TypeError: 'int' object is not iterable",
+      "explain": "لا يمكن المرور على عدد؛ استخدم range(5).",
+      "fix": "for i in range(5):\n    print(i)",
+      "libraryId": "for-int-not-iterable",
+      "from": "python",
+      "fixOutput": "0\n1\n2\n3\n4"
+    },
+    {
+      "type": "chat",
+      "from": "java",
+      "text": "القاعدة واضحة: نمرّ على مجموعة، لا على رقم."
+    },
+    {
+      "type": "key_sentence",
+      "text": "for تمرّ على كل عنصر مرة.",
+      "say": true
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "تحدٍّ: كم مرة يُطبع السطر في `range(5)`؟ 👇",
+      "challenge": true
+    },
+    {
+      "type": "teaser",
+      "text": "في الحلقة القادمة: range… مسطرة تبدأ من الصفر!"
+    }
+  ]
+}

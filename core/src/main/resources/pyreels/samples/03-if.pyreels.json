@@ -1,0 +1,210 @@
+{
+  "schema": "pyreels/1",
+  "meta": {
+    "title": "الشرط if",
+    "language": "ar",
+    "lesson": {
+      "id": "py-if",
+      "concept": "if",
+      "level": "beginner"
+    },
+    "targetSeconds": 90,
+    "theme": "calm-light",
+    "ambient": "warm_keys",
+    "series": {
+      "name": "بايثون مع أحمد",
+      "episode": 13,
+      "previousRecap": "تعلّمنا أن == تسأل: هل القيمتان متساويتان؟",
+      "nextTeaser": "في الحلقة القادمة: else… الخطة البديلة!"
+    }
+  },
+  "cast": [
+    {
+      "id": "ahmed",
+      "role": "learner",
+      "name": "أحمد"
+    },
+    {
+      "id": "python",
+      "role": "teacher",
+      "language": "python",
+      "name": "بايثون"
+    },
+    {
+      "id": "javascript",
+      "role": "teacher",
+      "language": "javascript",
+      "name": "جافاسكربت"
+    }
+  ],
+  "scenes": [
+    {
+      "type": "hook_predict",
+      "language": "python",
+      "code": "age = 15\nif age >= 18:\n    print(\"مسموح\")\nprint(\"انتهى\")"
+    },
+    {
+      "type": "recap",
+      "text": "تعلّمنا أن == تسأل: هل القيمتان متساويتان؟"
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "كيف يتخذ البرنامج قرارًا؟ هل يفكّر مثلنا؟"
+    },
+    {
+      "type": "chat",
+      "from": "python",
+      "text": "يسأل سؤالًا واحدًا: هل الشرط صحيح؟",
+      "say": true
+    },
+    {
+      "type": "chat",
+      "from": "javascript",
+      "text": "وإن كان صحيحًا… ينفّذ! بسيطة 🎉"
+    },
+    {
+      "type": "analogy",
+      "title": "if = باب له مفتاح",
+      "items": [
+        {
+          "label": "الشرط",
+          "value": "المفتاح"
+        },
+        {
+          "label": "الكود",
+          "value": "الغرفة"
+        }
+      ],
+      "from": "python",
+      "text": "من معه المفتاح يدخل، ومن لا يملكه يكمل طريقه."
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "يعني إن لم يتحقق الشرط يتجاوز الكود؟"
+    },
+    {
+      "type": "chat",
+      "from": "python",
+      "text": "نعم، ويكمل ما بعده بهدوء.",
+      "say": true
+    },
+    {
+      "type": "chat",
+      "from": "python",
+      "text": "ولاحظ النقطتين : والمسافة البادئة.",
+      "reactions": [
+        "heart"
+      ]
+    },
+    {
+      "type": "code_type",
+      "language": "python",
+      "code": "age = 20\nif age >= 18:\n    print(\"مسموح\")\nprint(\"انتهى\")",
+      "typing": "natural",
+      "focusLines": [
+        2,
+        3
+      ]
+    },
+    {
+      "type": "run",
+      "language": "python",
+      "exec": "real",
+      "trace": [
+        {
+          "line": 1,
+          "vars": {
+            "age": 20
+          }
+        },
+        {
+          "line": 2,
+          "vars": {
+            "age": 20
+          }
+        },
+        {
+          "line": 3,
+          "vars": {
+            "age": 20
+          },
+          "out": "مسموح"
+        },
+        {
+          "line": 4,
+          "vars": {
+            "age": 20
+          },
+          "out": "انتهى"
+        }
+      ],
+      "output": "مسموح\nانتهى"
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "دخل الغرفة لأن 20 أكبر من 18! 🎉"
+    },
+    {
+      "type": "engage_moment",
+      "from": "javascript",
+      "text": "قرار ذكي يا أحمد 😄 إن استمتعت، شارك الدرس مع صديق يتعلّم معك!",
+      "actions": [
+        "share",
+        "like",
+        "follow"
+      ],
+      "bridge": "حسنًا يا أحمد، نكمل!"
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "لكن ماذا عن الكود الأول؟ العمر كان 15."
+    },
+    {
+      "type": "reveal",
+      "answer": "انتهى",
+      "text": "15 أصغر من 18، فلم يُفتح الباب، وطُبع «انتهى» فقط.",
+      "from": "python",
+      "say": true
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "ولو نسيت النقطتين بعد الشرط؟"
+    },
+    {
+      "type": "common_mistake",
+      "language": "python",
+      "code": "x = 5\nif x > 3\n    print(\"كبير\")",
+      "error": "SyntaxError: expected ':'",
+      "explain": "سطر if يجب أن ينتهي بنقطتين :",
+      "fix": "x = 5\nif x > 3:\n    print(\"كبير\")",
+      "libraryId": "if-missing-colon",
+      "from": "python",
+      "fixOutput": "كبير"
+    },
+    {
+      "type": "chat",
+      "from": "javascript",
+      "text": "أنا أستخدم أقواسًا { }، وبايثون يستخدم : والمسافة."
+    },
+    {
+      "type": "key_sentence",
+      "text": "if تسأل أولًا ثم تنفّذ.",
+      "say": true
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "تحدٍّ: لو كان العمر 18 بالضبط، ماذا يُطبع؟ 👇",
+      "challenge": true
+    },
+    {
+      "type": "teaser",
+      "text": "في الحلقة القادمة: else… الخطة البديلة!"
+    }
+  ]
+}

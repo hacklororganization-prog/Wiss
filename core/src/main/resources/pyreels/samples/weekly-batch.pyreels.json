@@ -1,0 +1,1138 @@
+{
+  "schema": "pyreels/1",
+  "batch": [
+    {
+      "schema": "pyreels/1",
+      "meta": {
+        "title": "المتغيرات",
+        "lesson": {
+          "id": "py-variables",
+          "concept": "variable"
+        },
+        "series": {
+          "name": "بايثون مع أحمد",
+          "episode": 3,
+          "previousRecap": "في الحلقة الماضية تعلّمنا التعليقات: ما بعد # لا يراه بايثون.",
+          "nextTeaser": "في الحلقة القادمة: تسمية المتغيرات"
+        }
+      },
+      "cast": [
+        {
+          "id": "ahmed",
+          "role": "learner",
+          "name": "أحمد"
+        },
+        {
+          "id": "python",
+          "role": "teacher",
+          "name": "بايثون",
+          "language": "python"
+        }
+      ],
+      "scenes": [
+        {
+          "type": "hook_predict",
+          "code": "x = 5\nx = x + 2\nprint(x)"
+        },
+        {
+          "type": "recap",
+          "text": "في الحلقة الماضية تعلّمنا التعليقات: ما بعد # لا يراه بايثون."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "ما هو المتغيرات؟ وهل هو صعب؟"
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "سؤال ممتاز يا أحمد! المتغير اسم نحفظ فيه قيمة لنستخدمها لاحقًا."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "طيب، كيف أتخيّل ذلك؟"
+        },
+        {
+          "type": "analogy",
+          "title": "المتغير صندوق عليه اسم.",
+          "items": [
+            {
+              "label": "x",
+              "value": "5"
+            }
+          ],
+          "from": "python",
+          "text": "تخيّلها هكذا، وسيصبح الكود سهلًا."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "آه! بدأت أفهم 😊",
+          "reactions": [
+            "heart"
+          ]
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "لنكتبها معًا بالكود."
+        },
+        {
+          "type": "code_type",
+          "code": "x = 5\nx = x + 2\nprint(x)",
+          "focusLines": [
+            1
+          ],
+          "caption": "تابع كل سطر بهدوء"
+        },
+        {
+          "type": "run",
+          "exec": "real",
+          "trace": [
+            {
+              "line": 1,
+              "vars": {
+                "x": 5
+              }
+            },
+            {
+              "line": 2,
+              "vars": {
+                "x": 5
+              }
+            },
+            {
+              "line": 3,
+              "vars": {
+                "x": 5
+              }
+            }
+          ],
+          "output": "7"
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "اشتغل! ظهرت النتيجة 🎉"
+        },
+        {
+          "type": "engage_moment",
+          "text": "أحسنت يا أحمد! إن استفدت، تابعنا لنكمل الرحلة معًا."
+        },
+        {
+          "type": "reveal",
+          "answer": "7",
+          "text": "هذه إجابة سؤال البداية! هل توقّعتها؟",
+          "from": "python"
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "وماذا لو أخطأت في الكتابة؟"
+        },
+        {
+          "type": "common_mistake",
+          "code": "print(y)",
+          "error": "NameError: name 'y' is not defined",
+          "explain": "استخدمنا المتغير y قبل أن ننشئه.",
+          "fix": "y = 3\nprint(y)",
+          "fixOutput": "3",
+          "libraryId": "name-undefined",
+          "from": "python"
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "تذكّر هذه القاعدة دائمًا:"
+        },
+        {
+          "type": "key_sentence",
+          "text": "المتغير صندوق له اسم وقيمة."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "تحدٍّ لكم: غيّروا القيمة في الكود، ماذا سيُطبع؟ اكتبوا في التعليقات 👇",
+          "challenge": true
+        },
+        {
+          "type": "teaser",
+          "text": "في الحلقة القادمة: تسمية المتغيرات"
+        }
+      ]
+    },
+    {
+      "schema": "pyreels/1",
+      "meta": {
+        "title": "تسمية المتغيرات",
+        "lesson": {
+          "id": "py-var-names",
+          "concept": "naming"
+        },
+        "series": {
+          "name": "بايثون مع أحمد",
+          "episode": 4,
+          "previousRecap": "في الحلقة الماضية تعلّمنا المتغيرات: المتغير صندوق له اسم وقيمة.",
+          "nextTeaser": "في الحلقة القادمة: الأعداد والعمليات"
+        }
+      },
+      "cast": [
+        {
+          "id": "ahmed",
+          "role": "learner",
+          "name": "أحمد"
+        },
+        {
+          "id": "python",
+          "role": "teacher",
+          "name": "بايثون",
+          "language": "python"
+        },
+        {
+          "id": "java",
+          "role": "teacher",
+          "name": "جافا",
+          "language": "java"
+        }
+      ],
+      "scenes": [
+        {
+          "type": "hook_predict",
+          "code": "user_age = 20\nprint(user_age)"
+        },
+        {
+          "type": "recap",
+          "text": "تذكير: المتغير صندوق له اسم وقيمة."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "ما هو تسمية المتغيرات؟ وهل هو صعب؟"
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "سؤال ممتاز يا أحمد! الاسم يبدأ بحرف، بلا مسافات، ويصف المحتوى."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "طيب، كيف أتخيّل ذلك؟"
+        },
+        {
+          "type": "analogy",
+          "title": "الاسم مثل ملصق على علبة: واضح يوفّر الوقت.",
+          "items": [
+            {
+              "label": "user_age",
+              "value": "20"
+            }
+          ],
+          "from": "python",
+          "text": "تخيّلها هكذا، وسيصبح الكود سهلًا."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "آه! بدأت أفهم 😊",
+          "reactions": [
+            "heart"
+          ]
+        },
+        {
+          "type": "chat",
+          "from": "java",
+          "text": "وعندي في جافا نفس الفكرة، لكن أحب أن أكتب النوع أولًا."
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "لنكتبها معًا بالكود."
+        },
+        {
+          "type": "code_type",
+          "code": "user_age = 20\nprint(user_age)",
+          "focusLines": [
+            1
+          ],
+          "caption": "تابع كل سطر بهدوء"
+        },
+        {
+          "type": "run",
+          "exec": "real",
+          "trace": [
+            {
+              "line": 1,
+              "vars": {
+                "user_age": 20
+              }
+            },
+            {
+              "line": 2,
+              "vars": {
+                "user_age": 20
+              }
+            }
+          ],
+          "output": "20"
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "اشتغل! ظهرت النتيجة 🎉"
+        },
+        {
+          "type": "engage_moment",
+          "text": "أحمد صار مبرمجًا! إن أعجبك الدرس ادعمنا بلايك 😄"
+        },
+        {
+          "type": "reveal",
+          "answer": "20",
+          "text": "هذه إجابة سؤال البداية! هل توقّعتها؟",
+          "from": "python"
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "وماذا لو أخطأت في الكتابة؟"
+        },
+        {
+          "type": "common_mistake",
+          "code": "score = 10\nprint(scroe)",
+          "error": "NameError: name 'scroe' is not defined. Did you mean: 'score'?",
+          "explain": "اسم المتغير مكتوب بشكل مختلف عن الأصل.",
+          "fix": "score = 10\nprint(score)",
+          "fixOutput": "10",
+          "libraryId": "name-typo",
+          "from": "python"
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "تذكّر هذه القاعدة دائمًا:"
+        },
+        {
+          "type": "key_sentence",
+          "text": "سمِّ المتغير بما يحتويه."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "تحدٍّ لكم: غيّروا القيمة في الكود، ماذا سيُطبع؟ اكتبوا في التعليقات 👇",
+          "challenge": true
+        },
+        {
+          "type": "teaser",
+          "text": "في الحلقة القادمة: الأعداد والعمليات"
+        }
+      ]
+    },
+    {
+      "schema": "pyreels/1",
+      "meta": {
+        "title": "الأعداد والعمليات",
+        "lesson": {
+          "id": "py-numbers",
+          "concept": "number"
+        },
+        "series": {
+          "name": "بايثون مع أحمد",
+          "episode": 5,
+          "previousRecap": "في الحلقة الماضية تعلّمنا تسمية المتغيرات: سمِّ المتغير بما يحتويه.",
+          "nextTeaser": "في الحلقة القادمة: النصوص"
+        }
+      },
+      "cast": [
+        {
+          "id": "ahmed",
+          "role": "learner",
+          "name": "أحمد"
+        },
+        {
+          "id": "python",
+          "role": "teacher",
+          "name": "بايثون",
+          "language": "python"
+        }
+      ],
+      "scenes": [
+        {
+          "type": "hook_predict",
+          "code": "a = 10\nb = 3\nprint(a + b)"
+        },
+        {
+          "type": "recap",
+          "text": "تذكير: سمِّ المتغير بما يحتويه."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "ما هو الأعداد والعمليات؟ وهل هو صعب؟"
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "سؤال ممتاز يا أحمد! بايثون يحسب: + - * / مثل الآلة الحاسبة."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "طيب، كيف أتخيّل ذلك؟"
+        },
+        {
+          "type": "analogy",
+          "title": "بايثون آلة حاسبة لا تتعب.",
+          "items": [
+            {
+              "label": "a",
+              "value": "10"
+            },
+            {
+              "label": "b",
+              "value": "3"
+            }
+          ],
+          "from": "python",
+          "text": "تخيّلها هكذا، وسيصبح الكود سهلًا."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "آه! بدأت أفهم 😊",
+          "reactions": [
+            "heart"
+          ]
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "لنكتبها معًا بالكود."
+        },
+        {
+          "type": "code_type",
+          "code": "a = 10\nb = 3\nprint(a + b)",
+          "focusLines": [
+            1
+          ],
+          "caption": "تابع كل سطر بهدوء"
+        },
+        {
+          "type": "run",
+          "exec": "real",
+          "trace": [
+            {
+              "line": 1,
+              "vars": {
+                "a": 10
+              }
+            },
+            {
+              "line": 2,
+              "vars": {
+                "a": 10,
+                "b": 3
+              }
+            },
+            {
+              "line": 3,
+              "vars": {
+                "a": 10,
+                "b": 3
+              }
+            }
+          ],
+          "output": "13"
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "اشتغل! ظهرت النتيجة 🎉"
+        },
+        {
+          "type": "engage_moment",
+          "text": "أحسنت يا أحمد! إن استفدت، تابعنا لنكمل الرحلة معًا."
+        },
+        {
+          "type": "reveal",
+          "answer": "13",
+          "text": "هذه إجابة سؤال البداية! هل توقّعتها؟",
+          "from": "python"
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "وماذا لو أخطأت في الكتابة؟"
+        },
+        {
+          "type": "common_mistake",
+          "code": "print(10 / 0)",
+          "error": "ZeroDivisionError: division by zero",
+          "explain": "لا يمكن القسمة على صفر.",
+          "fix": "print(10 / 2)",
+          "fixOutput": "5.0",
+          "libraryId": "zero-division",
+          "from": "python"
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "تذكّر هذه القاعدة دائمًا:"
+        },
+        {
+          "type": "key_sentence",
+          "text": "العمليات الحسابية تعمل كما تعلّمتها."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "تحدٍّ لكم: غيّروا القيمة في الكود، ماذا سيُطبع؟ اكتبوا في التعليقات 👇",
+          "challenge": true
+        },
+        {
+          "type": "teaser",
+          "text": "في الحلقة القادمة: النصوص"
+        }
+      ]
+    },
+    {
+      "schema": "pyreels/1",
+      "meta": {
+        "title": "النصوص",
+        "lesson": {
+          "id": "py-strings",
+          "concept": "string"
+        },
+        "series": {
+          "name": "بايثون مع أحمد",
+          "episode": 6,
+          "previousRecap": "في الحلقة الماضية تعلّمنا الأعداد والعمليات: العمليات الحسابية تعمل كما تعلّمتها.",
+          "nextTeaser": "في الحلقة القادمة: أنواع البيانات"
+        }
+      },
+      "cast": [
+        {
+          "id": "ahmed",
+          "role": "learner",
+          "name": "أحمد"
+        },
+        {
+          "id": "python",
+          "role": "teacher",
+          "name": "بايثون",
+          "language": "python"
+        },
+        {
+          "id": "javascript",
+          "role": "teacher",
+          "name": "جافاسكربت",
+          "language": "javascript"
+        }
+      ],
+      "scenes": [
+        {
+          "type": "hook_predict",
+          "code": "name = \"أحمد\"\nprint(name)"
+        },
+        {
+          "type": "recap",
+          "text": "تذكير: العمليات الحسابية تعمل كما تعلّمتها."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "فهمت الأعداد والعمليات، لكن ما علاقة النصوص به؟"
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "سؤال ممتاز يا أحمد! النص يُكتب بين علامتي تنصيص."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "طيب، كيف أتخيّل ذلك؟"
+        },
+        {
+          "type": "analogy",
+          "title": "النص مثل خرز في خيط: حروف متتالية.",
+          "items": [
+            {
+              "label": "name",
+              "value": "\"أحمد\""
+            }
+          ],
+          "from": "python",
+          "text": "تخيّلها هكذا، وسيصبح الكود سهلًا."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "آه! بدأت أفهم 😊",
+          "reactions": [
+            "heart"
+          ]
+        },
+        {
+          "type": "chat",
+          "from": "javascript",
+          "text": "وعندي في جافاسكربت تعمل في المتصفح فورًا! 🎉"
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "لنكتبها معًا بالكود."
+        },
+        {
+          "type": "code_type",
+          "code": "name = \"أحمد\"\nprint(name)",
+          "focusLines": [
+            1
+          ],
+          "caption": "تابع كل سطر بهدوء"
+        },
+        {
+          "type": "run",
+          "exec": "real",
+          "trace": [
+            {
+              "line": 1,
+              "vars": {
+                "name": "أحمد"
+              }
+            },
+            {
+              "line": 2,
+              "vars": {
+                "name": "أحمد"
+              }
+            }
+          ],
+          "output": "أحمد"
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "اشتغل! ظهرت النتيجة 🎉"
+        },
+        {
+          "type": "engage_moment",
+          "text": "أحمد صار مبرمجًا! إن أعجبك الدرس ادعمنا بلايك 😄"
+        },
+        {
+          "type": "reveal",
+          "answer": "أحمد",
+          "text": "هذه إجابة سؤال البداية! هل توقّعتها؟",
+          "from": "python"
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "وماذا لو أخطأت في الكتابة؟"
+        },
+        {
+          "type": "common_mistake",
+          "code": "print(\"مرحبا)",
+          "error": "SyntaxError: unterminated string literal (detected at line 1)",
+          "explain": "نسينا علامة التنصيص التي تُغلق النص.",
+          "fix": "print(\"مرحبا\")",
+          "fixOutput": "مرحبا",
+          "libraryId": "print-missing-quote",
+          "from": "python"
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "تذكّر هذه القاعدة دائمًا:"
+        },
+        {
+          "type": "key_sentence",
+          "text": "النص دائمًا بين علامتي تنصيص."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "تحدٍّ لكم: غيّروا القيمة في الكود، ماذا سيُطبع؟ اكتبوا في التعليقات 👇",
+          "challenge": true
+        },
+        {
+          "type": "teaser",
+          "text": "في الحلقة القادمة: أنواع البيانات"
+        }
+      ]
+    },
+    {
+      "schema": "pyreels/1",
+      "meta": {
+        "title": "أنواع البيانات",
+        "lesson": {
+          "id": "py-types",
+          "concept": "type"
+        },
+        "series": {
+          "name": "بايثون مع أحمد",
+          "episode": 7,
+          "previousRecap": "في الحلقة الماضية تعلّمنا النصوص: النص دائمًا بين علامتي تنصيص.",
+          "nextTeaser": "في الحلقة القادمة: الإدخال بـ input"
+        }
+      },
+      "cast": [
+        {
+          "id": "ahmed",
+          "role": "learner",
+          "name": "أحمد"
+        },
+        {
+          "id": "python",
+          "role": "teacher",
+          "name": "بايثون",
+          "language": "python"
+        },
+        {
+          "id": "cpp",
+          "role": "teacher",
+          "name": "سي++",
+          "language": "cpp"
+        }
+      ],
+      "scenes": [
+        {
+          "type": "hook_predict",
+          "code": "x = 5\nprint(type(x))"
+        },
+        {
+          "type": "recap",
+          "text": "تذكير: النص دائمًا بين علامتي تنصيص."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "فهمت النصوص، لكن ما علاقة أنواع البيانات به؟"
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "سؤال ممتاز يا أحمد! لكل قيمة نوع: عدد صحيح، عشري، نص، منطقي."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "طيب، كيف أتخيّل ذلك؟"
+        },
+        {
+          "type": "analogy",
+          "title": "الأنواع مثل أدراج المطبخ: لكل شيء مكانه.",
+          "items": [
+            {
+              "label": "x",
+              "value": "5"
+            }
+          ],
+          "from": "python",
+          "text": "تخيّلها هكذا، وسيصبح الكود سهلًا."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "آه! بدأت أفهم 😊",
+          "reactions": [
+            "heart"
+          ]
+        },
+        {
+          "type": "chat",
+          "from": "cpp",
+          "text": "وأنا في سي++ أنفّذها أسرع من رمشة عين 😎"
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "لنكتبها معًا بالكود."
+        },
+        {
+          "type": "code_type",
+          "code": "x = 5\nprint(type(x))",
+          "focusLines": [
+            1
+          ],
+          "caption": "تابع كل سطر بهدوء"
+        },
+        {
+          "type": "run",
+          "exec": "real",
+          "trace": [
+            {
+              "line": 1,
+              "vars": {
+                "x": 5
+              }
+            },
+            {
+              "line": 2,
+              "vars": {
+                "x": 5
+              }
+            }
+          ],
+          "output": "<class 'int'>"
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "اشتغل! ظهرت النتيجة 🎉"
+        },
+        {
+          "type": "engage_moment",
+          "text": "أحسنت يا أحمد! إن استفدت، تابعنا لنكمل الرحلة معًا."
+        },
+        {
+          "type": "reveal",
+          "answer": "<class 'int'>",
+          "text": "هذه إجابة سؤال البداية! هل توقّعتها؟",
+          "from": "python"
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "وماذا لو أخطأت في الكتابة؟"
+        },
+        {
+          "type": "common_mistake",
+          "code": "age = 20\nprint(\"عمري \" + age)",
+          "error": "TypeError: can only concatenate str (not \"int\") to str",
+          "explain": "لا يمكن جمع نص مع عدد مباشرة؛ حوّل العدد إلى نص.",
+          "fix": "age = 20\nprint(\"عمري \" + str(age))",
+          "fixOutput": "عمري 20",
+          "libraryId": "type-str-plus-int",
+          "from": "python"
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "تذكّر هذه القاعدة دائمًا:"
+        },
+        {
+          "type": "key_sentence",
+          "text": "type تخبرك بنوع القيمة."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "تحدٍّ لكم: غيّروا القيمة في الكود، ماذا سيُطبع؟ اكتبوا في التعليقات 👇",
+          "challenge": true
+        },
+        {
+          "type": "teaser",
+          "text": "في الحلقة القادمة: الإدخال بـ input"
+        }
+      ]
+    },
+    {
+      "schema": "pyreels/1",
+      "meta": {
+        "title": "الإدخال بـ input",
+        "lesson": {
+          "id": "py-input",
+          "concept": "input"
+        },
+        "series": {
+          "name": "بايثون مع أحمد",
+          "episode": 8,
+          "previousRecap": "في الحلقة الماضية تعلّمنا أنواع البيانات: type تخبرك بنوع القيمة.",
+          "nextTeaser": "في الحلقة القادمة: تحويل الأنواع"
+        }
+      },
+      "cast": [
+        {
+          "id": "ahmed",
+          "role": "learner",
+          "name": "أحمد"
+        },
+        {
+          "id": "python",
+          "role": "teacher",
+          "name": "بايثون",
+          "language": "python"
+        }
+      ],
+      "scenes": [
+        {
+          "type": "hook_predict",
+          "code": "name = \"سارة\"  # بدل input\nprint(\"أهلًا \" + name)"
+        },
+        {
+          "type": "recap",
+          "text": "تذكير: type تخبرك بنوع القيمة."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "فهمت أنواع البيانات، لكن ما علاقة الإدخال بـ input به؟"
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "سؤال ممتاز يا أحمد! input تنتظر المستخدم وتعيد ما كتبه كنص."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "طيب، كيف أتخيّل ذلك؟"
+        },
+        {
+          "type": "analogy",
+          "title": "input مثل سؤال تطرحه وتنتظر جوابه.",
+          "from": "python",
+          "text": "تخيّلها هكذا، وسيصبح الكود سهلًا."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "آه! بدأت أفهم 😊",
+          "reactions": [
+            "heart"
+          ]
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "لنكتبها معًا بالكود."
+        },
+        {
+          "type": "code_type",
+          "code": "name = \"سارة\"  # بدل input\nprint(\"أهلًا \" + name)",
+          "focusLines": [
+            1
+          ],
+          "caption": "تابع كل سطر بهدوء"
+        },
+        {
+          "type": "run",
+          "exec": "real",
+          "trace": [
+            {
+              "line": 1
+            },
+            {
+              "line": 2
+            }
+          ],
+          "output": "أهلًا سارة"
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "اشتغل! ظهرت النتيجة 🎉"
+        },
+        {
+          "type": "engage_moment",
+          "text": "أحمد صار مبرمجًا! إن أعجبك الدرس ادعمنا بلايك 😄"
+        },
+        {
+          "type": "reveal",
+          "answer": "أهلًا سارة",
+          "text": "هذه إجابة سؤال البداية! هل توقّعتها؟",
+          "from": "python"
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "وماذا لو أخطأت في الكتابة؟"
+        },
+        {
+          "type": "common_mistake",
+          "code": "age = int(\"عشرون\")",
+          "error": "ValueError: invalid literal for int() with base 10: 'عشرون'",
+          "explain": "int تحوّل الأرقام المكتوبة فقط، لا الكلمات.",
+          "fix": "age = int(\"20\")",
+          "libraryId": "value-int-text",
+          "from": "python"
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "تذكّر هذه القاعدة دائمًا:"
+        },
+        {
+          "type": "key_sentence",
+          "text": "input تعيد نصًا دائمًا."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "تحدٍّ لكم: غيّروا القيمة في الكود، ماذا سيُطبع؟ اكتبوا في التعليقات 👇",
+          "challenge": true
+        },
+        {
+          "type": "teaser",
+          "text": "في الحلقة القادمة: تحويل الأنواع"
+        }
+      ]
+    },
+    {
+      "schema": "pyreels/1",
+      "meta": {
+        "title": "تحويل الأنواع",
+        "lesson": {
+          "id": "py-casting",
+          "concept": "casting"
+        },
+        "series": {
+          "name": "بايثون مع أحمد",
+          "episode": 9,
+          "previousRecap": "في الحلقة الماضية تعلّمنا الإدخال بـ input: input تعيد نصًا دائمًا.",
+          "nextTeaser": "في الحلقة القادمة: النصوص المنسّقة f-string"
+        }
+      },
+      "cast": [
+        {
+          "id": "ahmed",
+          "role": "learner",
+          "name": "أحمد"
+        },
+        {
+          "id": "python",
+          "role": "teacher",
+          "name": "بايثون",
+          "language": "python"
+        },
+        {
+          "id": "java",
+          "role": "teacher",
+          "name": "جافا",
+          "language": "java"
+        },
+        {
+          "id": "cpp",
+          "role": "teacher",
+          "name": "سي++",
+          "language": "cpp"
+        }
+      ],
+      "scenes": [
+        {
+          "type": "hook_predict",
+          "code": "age = int(\"20\")\nprint(age + 1)"
+        },
+        {
+          "type": "recap",
+          "text": "تذكير: input تعيد نصًا دائمًا."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "فهمت الإدخال بـ input، لكن ما علاقة تحويل الأنواع به؟"
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "سؤال ممتاز يا أحمد! int و str تحوّلان القيمة من نوع لآخر."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "طيب، كيف أتخيّل ذلك؟"
+        },
+        {
+          "type": "analogy",
+          "title": "التحويل مثل صبّ الماء من كوب إلى زجاجة.",
+          "items": [
+            {
+              "label": "age",
+              "value": "int(\"20\")"
+            }
+          ],
+          "from": "python",
+          "text": "تخيّلها هكذا، وسيصبح الكود سهلًا."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "آه! بدأت أفهم 😊",
+          "reactions": [
+            "heart"
+          ]
+        },
+        {
+          "type": "chat",
+          "from": "java",
+          "text": "وعندي في جافا نفس الفكرة، لكن أحب أن أكتب النوع أولًا."
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "لنكتبها معًا بالكود."
+        },
+        {
+          "type": "code_type",
+          "code": "age = int(\"20\")\nprint(age + 1)",
+          "focusLines": [
+            1
+          ],
+          "caption": "تابع كل سطر بهدوء"
+        },
+        {
+          "type": "run",
+          "exec": "real",
+          "trace": [
+            {
+              "line": 1
+            },
+            {
+              "line": 2
+            }
+          ],
+          "output": "21"
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "اشتغل! ظهرت النتيجة 🎉"
+        },
+        {
+          "type": "engage_moment",
+          "text": "أحسنت يا أحمد! إن استفدت، تابعنا لنكمل الرحلة معًا."
+        },
+        {
+          "type": "reveal",
+          "answer": "21",
+          "text": "هذه إجابة سؤال البداية! هل توقّعتها؟",
+          "from": "python"
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "وماذا لو أخطأت في الكتابة؟"
+        },
+        {
+          "type": "common_mistake",
+          "code": "total = 5 + \"5\"",
+          "error": "TypeError: unsupported operand type(s) for +: 'int' and 'str'",
+          "explain": "العدد 5 والنص \"5\" نوعان مختلفان.",
+          "fix": "total = 5 + 5",
+          "libraryId": "type-int-plus-str",
+          "from": "python"
+        },
+        {
+          "type": "chat",
+          "from": "python",
+          "text": "تذكّر هذه القاعدة دائمًا:"
+        },
+        {
+          "type": "key_sentence",
+          "text": "حوّل النص إلى عدد قبل الحساب."
+        },
+        {
+          "type": "chat",
+          "from": "ahmed",
+          "text": "تحدٍّ لكم: غيّروا القيمة في الكود، ماذا سيُطبع؟ اكتبوا في التعليقات 👇",
+          "challenge": true
+        },
+        {
+          "type": "teaser",
+          "text": "في الحلقة القادمة: النصوص المنسّقة f-string"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,217 @@
+{
+  "schema": "pyreels/1",
+  "meta": {
+    "title": "المتغيرات في بايثون",
+    "language": "ar",
+    "lesson": {
+      "id": "py-variables",
+      "concept": "variable",
+      "level": "beginner"
+    },
+    "targetSeconds": 90,
+    "theme": "calm-dark",
+    "ambient": "calm_pad",
+    "series": {
+      "name": "بايثون مع أحمد",
+      "episode": 3,
+      "previousRecap": "تعلّمنا أن print تُظهر ما بين القوسين.",
+      "nextTeaser": "في الحلقة القادمة: كيف نسمّي المتغيرات بذكاء؟"
+    }
+  },
+  "cast": [
+    {
+      "id": "ahmed",
+      "role": "learner",
+      "name": "أحمد"
+    },
+    {
+      "id": "python",
+      "role": "teacher",
+      "language": "python",
+      "name": "بايثون"
+    },
+    {
+      "id": "java",
+      "role": "teacher",
+      "language": "java",
+      "name": "جافا"
+    }
+  ],
+  "scenes": [
+    {
+      "type": "hook_predict",
+      "language": "python",
+      "code": "x = 5\nx = x + 2\nprint(x)",
+      "question": "ماذا تتوقع أن يحدث؟",
+      "holdMs": 2000
+    },
+    {
+      "type": "recap",
+      "text": "تعلّمنا أن print تُظهر ما بين القوسين."
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "عندي سؤال… كيف يتذكّر البرنامج الأرقام؟"
+    },
+    {
+      "type": "chat",
+      "from": "python",
+      "text": "سؤال ممتاز! نستخدم شيئًا اسمه المتغير.",
+      "say": true
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "متغير؟ يبدو صعبًا 😅"
+    },
+    {
+      "type": "chat",
+      "from": "python",
+      "text": "أبدًا! تخيّل صندوقًا مكتوبًا عليه اسم.",
+      "say": true
+    },
+    {
+      "type": "analogy",
+      "title": "المتغير = صندوق عليه اسم",
+      "items": [
+        {
+          "label": "x",
+          "value": "5"
+        },
+        {
+          "label": "name",
+          "value": "\"أحمد\""
+        }
+      ],
+      "from": "python",
+      "text": "الاسم على الصندوق، والقيمة بداخله."
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "يعني أضع الرقم 5 في صندوق اسمه x؟"
+    },
+    {
+      "type": "chat",
+      "from": "python",
+      "text": "بالضبط! ونكتبها هكذا: `x = 5`",
+      "speakCode": true,
+      "say": true
+    },
+    {
+      "type": "chat",
+      "from": "java",
+      "text": "وعندي في جافا أكتب نوع الصندوق أولًا: `int x = 5;`",
+      "speakCode": true
+    },
+    {
+      "type": "chat",
+      "from": "python",
+      "text": "أما أنا فأعرف النوع وحدي 😌",
+      "reactions": [
+        "laugh"
+      ]
+    },
+    {
+      "type": "code_type",
+      "language": "python",
+      "code": "x = 5\nx = x + 2\nprint(x)",
+      "typing": "natural",
+      "focusLines": [
+        2
+      ],
+      "typo": true
+    },
+    {
+      "type": "run",
+      "language": "python",
+      "exec": "real",
+      "trace": [
+        {
+          "line": 1,
+          "vars": {
+            "x": 5
+          }
+        },
+        {
+          "line": 2,
+          "vars": {
+            "x": 7
+          }
+        },
+        {
+          "line": 3,
+          "vars": {
+            "x": 7
+          },
+          "out": "7"
+        }
+      ],
+      "output": "7"
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "طلعت 7! الصندوق تغيّر 🎉"
+    },
+    {
+      "type": "engage_moment",
+      "from": "python",
+      "text": "أحسنت يا أحمد! إن أعجبك الصندوق، ضع لايك وتابع الرحلة 💛",
+      "actions": [
+        "like",
+        "follow",
+        "share"
+      ],
+      "bridge": "حسنًا يا أحمد، نكمل!"
+    },
+    {
+      "type": "reveal",
+      "answer": "7",
+      "text": "السطر الثاني أخذ القيمة القديمة 5 وأضاف 2، ثم وضع 7 في الصندوق.",
+      "from": "python",
+      "say": true
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "وماذا لو طبعت صندوقًا لم أصنعه؟"
+    },
+    {
+      "type": "common_mistake",
+      "language": "python",
+      "code": "print(y)",
+      "error": "NameError: name 'y' is not defined",
+      "explain": "استخدمنا المتغير y قبل أن ننشئه.",
+      "fix": "y = 3\nprint(y)",
+      "libraryId": "name-undefined",
+      "from": "python",
+      "fixOutput": "3"
+    },
+    {
+      "type": "chat",
+      "from": "java",
+      "text": "لهذا أحب القواعد الواضحة: اصنع ثم استخدم."
+    },
+    {
+      "type": "key_sentence",
+      "text": "المتغير صندوق له اسم وقيمة.",
+      "say": true
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "تحدٍّ: لو كتبنا `x = x * 2` بعد السطر الثاني، كم يصبح x؟ 👇",
+      "challenge": true,
+      "reactions": [
+        "wow"
+      ]
+    },
+    {
+      "type": "teaser",
+      "text": "في الحلقة القادمة: كيف نسمّي المتغيرات بذكاء؟",
+      "challenge": "اكتب اسم متغير جميل في التعليقات"
+    }
+  ]
+}

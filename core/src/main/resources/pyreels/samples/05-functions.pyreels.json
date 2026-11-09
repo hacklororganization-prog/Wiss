@@ -1,0 +1,213 @@
+{
+  "schema": "pyreels/1",
+  "meta": {
+    "title": "الدوال",
+    "language": "ar",
+    "lesson": {
+      "id": "py-functions",
+      "concept": "function",
+      "level": "beginner"
+    },
+    "targetSeconds": 90,
+    "theme": "calm-dark",
+    "ambient": "calm_pad",
+    "series": {
+      "name": "بايثون مع أحمد",
+      "episode": 25,
+      "previousRecap": "تعلّمنا أن set تحذف التكرار تلقائيًا.",
+      "nextTeaser": "في الحلقة القادمة: المعاملات… مكوّنات الوصفة!"
+    }
+  },
+  "cast": [
+    {
+      "id": "ahmed",
+      "role": "learner",
+      "name": "أحمد"
+    },
+    {
+      "id": "python",
+      "role": "teacher",
+      "language": "python",
+      "name": "بايثون"
+    },
+    {
+      "id": "java",
+      "role": "teacher",
+      "language": "java",
+      "name": "جافا"
+    },
+    {
+      "id": "cpp",
+      "role": "teacher",
+      "language": "cpp",
+      "name": "سي++"
+    },
+    {
+      "id": "javascript",
+      "role": "teacher",
+      "language": "javascript",
+      "name": "جافاسكربت"
+    }
+  ],
+  "scenes": [
+    {
+      "type": "hook_predict",
+      "language": "python",
+      "code": "def greet():\n    print(\"مرحبا\")\n\ngreet()\ngreet()"
+    },
+    {
+      "type": "recap",
+      "text": "تعلّمنا أن set تحذف التكرار تلقائيًا."
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "أكتب نفس الأسطر في أماكن كثيرة… هل هذا طبيعي؟"
+    },
+    {
+      "type": "chat",
+      "from": "python",
+      "text": "حان وقت الدوال يا أحمد!",
+      "say": true
+    },
+    {
+      "type": "analogy",
+      "title": "الدالة = وصفة طبخ",
+      "items": [
+        {
+          "label": "التعريف",
+          "value": "الوصفة"
+        },
+        {
+          "label": "الاستدعاء",
+          "value": "الطبخ"
+        }
+      ],
+      "from": "python",
+      "text": "تكتب الوصفة مرة، وتطبخها متى شئت."
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "يعني أعرّفها مرة وأستدعيها كثيرًا؟"
+    },
+    {
+      "type": "chat",
+      "from": "python",
+      "text": "بالضبط: `def` للتعريف، والاسم مع () للاستدعاء.",
+      "speakCode": true
+    },
+    {
+      "type": "chat",
+      "from": "java",
+      "text": "عندي اسمها method وتعيش داخل class."
+    },
+    {
+      "type": "chat",
+      "from": "cpp",
+      "text": "وعندي function سريعة جدًا ⚡"
+    },
+    {
+      "type": "chat",
+      "from": "javascript",
+      "text": "وعندي function أو سهم => 🎯",
+      "reactions": [
+        "clap"
+      ]
+    },
+    {
+      "type": "code_type",
+      "language": "python",
+      "code": "def greet():\n    print(\"مرحبا\")\n\ngreet()",
+      "typing": "natural",
+      "focusLines": [
+        1,
+        4
+      ]
+    },
+    {
+      "type": "run",
+      "language": "python",
+      "exec": "real",
+      "trace": [
+        {
+          "line": 1
+        },
+        {
+          "line": 4,
+          "stack": [
+            "greet()"
+          ]
+        },
+        {
+          "line": 2,
+          "stack": [
+            "greet()"
+          ],
+          "out": "مرحبا"
+        }
+      ],
+      "output": "مرحبا"
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "الوصفة اشتغلت من سطر واحد! 🎉"
+    },
+    {
+      "type": "engage_moment",
+      "from": "python",
+      "text": "أحمد يكتب دواله الأولى 💛 إن أعجبتك السلسلة، احفظها وشاركها.",
+      "actions": [
+        "like",
+        "share"
+      ],
+      "bridge": "حسنًا يا أحمد، نكمل!"
+    },
+    {
+      "type": "reveal",
+      "answer": "مرحبا مرتين",
+      "text": "كل استدعاء لـ greet() ينفّذ الوصفة من جديد، فطُبعت مرتين.",
+      "from": "python",
+      "say": true,
+      "speakCode": true
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "وماذا لو استدعيتها قبل أن أكتبها؟"
+    },
+    {
+      "type": "common_mistake",
+      "language": "python",
+      "code": "greet()\ndef greet():\n    print(\"مرحبا\")",
+      "error": "NameError: name 'greet' is not defined",
+      "explain": "استدعينا الدالة قبل تعريفها.",
+      "fix": "def greet():\n    print(\"مرحبا\")\n\ngreet()",
+      "libraryId": "func-before-def",
+      "from": "python",
+      "fixOutput": "مرحبا",
+      "say": true
+    },
+    {
+      "type": "chat",
+      "from": "javascript",
+      "text": "عندي أحيانًا تعمل! لكن هذه قصة أخرى 😉"
+    },
+    {
+      "type": "key_sentence",
+      "text": "اكتب الدالة مرة واستدعها كثيرًا.",
+      "say": true
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "تحدٍّ: اكتب دالة تطبع اسمك ثلاث مرات 👇",
+      "challenge": true
+    },
+    {
+      "type": "teaser",
+      "text": "في الحلقة القادمة: المعاملات… مكوّنات الوصفة!"
+    }
+  ]
+}

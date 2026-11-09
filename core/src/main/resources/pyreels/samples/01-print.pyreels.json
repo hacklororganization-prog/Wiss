@@ -1,0 +1,190 @@
+{
+  "schema": "pyreels/1",
+  "meta": {
+    "title": "أول أمر: print",
+    "language": "ar",
+    "lesson": {
+      "id": "py-print",
+      "concept": "print",
+      "level": "beginner"
+    },
+    "targetSeconds": 90,
+    "theme": "calm-dark",
+    "ambient": "calm_pad",
+    "series": {
+      "name": "بايثون مع أحمد",
+      "episode": 1,
+      "previousRecap": "أهلًا بك في أول حلقة! اليوم نبدأ رحلتنا مع بايثون.",
+      "nextTeaser": "في الحلقة القادمة: التعليقات… سطور لا يراها بايثون!"
+    }
+  },
+  "cast": [
+    {
+      "id": "ahmed",
+      "role": "learner",
+      "name": "أحمد"
+    },
+    {
+      "id": "python",
+      "role": "teacher",
+      "language": "python",
+      "name": "بايثون"
+    }
+  ],
+  "scenes": [
+    {
+      "type": "hook_predict",
+      "language": "python",
+      "code": "print(\"5 + 2\")\nprint(5 + 2)"
+    },
+    {
+      "type": "recap",
+      "text": "أهلًا بك في أول حلقة! اليوم نبدأ رحلتنا مع بايثون.",
+      "say": true
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "مرحبًا! أريد أن أتعلّم البرمجة… من أين أبدأ؟"
+    },
+    {
+      "type": "chat",
+      "from": "python",
+      "text": "أهلًا يا أحمد! نبدأ بأول أمر: `print`",
+      "say": true,
+      "speakCode": true
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "وماذا يفعل print؟"
+    },
+    {
+      "type": "chat",
+      "from": "python",
+      "text": "يعرض على الشاشة أي شيء تعطيه له.",
+      "say": true
+    },
+    {
+      "type": "analogy",
+      "title": "print = مكبّر الصوت",
+      "items": [
+        {
+          "label": "تعطيه",
+          "value": "\"مرحبا\""
+        },
+        {
+          "label": "يعلن",
+          "value": "مرحبا"
+        }
+      ],
+      "from": "python",
+      "text": "ما تضعه بين القوسين يعلنه للجميع.",
+      "say": true
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "يعني أكتب الكلام بين القوسين؟"
+    },
+    {
+      "type": "chat",
+      "from": "python",
+      "text": "نعم، والنص يوضع بين علامتي تنصيص.",
+      "reactions": [
+        "like"
+      ]
+    },
+    {
+      "type": "code_type",
+      "language": "python",
+      "code": "print(\"مرحبا يا أحمد\")\nprint(5 + 2)",
+      "typing": "natural",
+      "focusLines": [
+        1
+      ],
+      "caption": "سطران فقط"
+    },
+    {
+      "type": "run",
+      "language": "python",
+      "exec": "real",
+      "trace": [
+        {
+          "line": 1,
+          "out": "مرحبا يا أحمد"
+        },
+        {
+          "line": 2,
+          "out": "7"
+        }
+      ],
+      "output": "مرحبا يا أحمد\n7"
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "واو! السطر الثاني حسب 5 + 2 بنفسه! 🎉"
+    },
+    {
+      "type": "engage_moment",
+      "from": "python",
+      "text": "أول برنامج لك يعمل يا أحمد 👏 إن أفادك الدرس، تابعنا لتكمل معنا.",
+      "actions": [
+        "like",
+        "follow",
+        "share"
+      ],
+      "bridge": "حسنًا يا أحمد، نكمل!"
+    },
+    {
+      "type": "reveal",
+      "answer": "5 + 2 ثم 7",
+      "text": "الأول نص يُطبع كما هو، والثاني عملية حسابية تُطبع نتيجتها.",
+      "from": "python",
+      "say": true
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "وماذا لو نسيت علامة التنصيص؟"
+    },
+    {
+      "type": "common_mistake",
+      "language": "python",
+      "code": "print(\"مرحبا)",
+      "error": "SyntaxError: unterminated string literal (detected at line 1)",
+      "explain": "نسينا علامة التنصيص التي تُغلق النص.",
+      "fix": "print(\"مرحبا\")",
+      "libraryId": "print-missing-quote",
+      "from": "python",
+      "fixOutput": "مرحبا"
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "خطأ هادئ… وفهمت السبب 😌"
+    },
+    {
+      "type": "chat",
+      "from": "python",
+      "text": "قاعدة اليوم بسيطة جدًا:"
+    },
+    {
+      "type": "key_sentence",
+      "text": "print تُظهر ما بين القوسين.",
+      "say": true
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "تحدٍّ: ماذا يطبع `print(\"2\" + \"2\")`؟ اكتبوا في التعليقات 👇",
+      "challenge": true
+    },
+    {
+      "type": "teaser",
+      "text": "في الحلقة القادمة: التعليقات… سطور لا يراها بايثون!",
+      "say": true
+    }
+  ]
+}

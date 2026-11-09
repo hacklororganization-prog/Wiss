@@ -1,0 +1,1040 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pyreels.studio/schema/pyreels-1.json",
+  "title": "PyReels Studio scenario (pyreels/1)",
+  "description": "A single scenario file (*.pyreels.json) or a batch wrapper {schema, batch:[...]}.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/scenario"
+    },
+    {
+      "type": "object",
+      "required": [
+        "schema",
+        "batch"
+      ],
+      "properties": {
+        "schema": {
+          "const": "pyreels/1"
+        },
+        "batch": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 7,
+          "items": {
+            "$ref": "#/$defs/scenario"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  ],
+  "$defs": {
+    "castId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_+-]{0,23}$"
+    },
+    "codeLanguage": {
+      "enum": [
+        "python",
+        "java",
+        "cpp",
+        "javascript",
+        "kotlin",
+        "csharp",
+        "go",
+        "rust",
+        "php",
+        "typescript",
+        "swift",
+        "c"
+      ]
+    },
+    "sfxId": {
+      "enum": [
+        "key_tap",
+        "msg_send",
+        "msg_recv",
+        "pop",
+        "soft_whoosh",
+        "success_chime",
+        "gentle_error",
+        "heart_pulse",
+        "tick",
+        "hook_enter",
+        "run_start",
+        "type_loop",
+        "none"
+      ]
+    },
+    "traceStep": {
+      "type": "object",
+      "required": [
+        "line"
+      ],
+      "properties": {
+        "line": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 40
+        },
+        "vars": {
+          "type": "object",
+          "maxProperties": 6,
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "array",
+              "object",
+              "null"
+            ]
+          }
+        },
+        "out": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "iteration": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99
+        },
+        "stack": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "type": "string",
+            "maxLength": 24
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "hook_predict": {
+      "type": "object",
+      "description": "Signature hook: 'Predict before I run' (always first, 3 s).",
+      "required": [
+        "type",
+        "code"
+      ],
+      "properties": {
+        "type": {
+          "const": "hook_predict"
+        },
+        "language": {
+          "$ref": "#/$defs/codeLanguage"
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "question": {
+          "type": "string",
+          "maxLength": 40,
+          "default": "ماذا تتوقع أن يحدث؟"
+        },
+        "holdMs": {
+          "type": "integer",
+          "minimum": 1500,
+          "maximum": 2500
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 500,
+          "maximum": 20000,
+          "description": "Optional fixed duration. Normally omitted: the engine computes it."
+        },
+        "say": {
+          "type": "boolean",
+          "description": "Read this scene aloud with TTS (and show captions)."
+        },
+        "sfx": {
+          "$ref": "#/$defs/sfxId"
+        },
+        "spoken": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Explicit spoken text that overrides the generated reading."
+        },
+        "speakCode": {
+          "type": "boolean",
+          "description": "Convert code/symbols in the text to natural speech before TTS."
+        },
+        "transition": {
+          "enum": [
+            "fade",
+            "slide",
+            "zoom"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "recap": {
+      "type": "object",
+      "description": "5-second recall of the previous lesson.",
+      "required": [
+        "type",
+        "text"
+      ],
+      "properties": {
+        "type": {
+          "const": "recap"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 500,
+          "maximum": 20000,
+          "description": "Optional fixed duration. Normally omitted: the engine computes it."
+        },
+        "say": {
+          "type": "boolean",
+          "description": "Read this scene aloud with TTS (and show captions)."
+        },
+        "sfx": {
+          "$ref": "#/$defs/sfxId"
+        },
+        "spoken": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Explicit spoken text that overrides the generated reading."
+        },
+        "speakCode": {
+          "type": "boolean",
+          "description": "Convert code/symbols in the text to natural speech before TTS."
+        },
+        "transition": {
+          "enum": [
+            "fade",
+            "slide",
+            "zoom"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "chat": {
+      "type": "object",
+      "description": "One WhatsApp-style message. Typing indicator and read ticks are automatic.",
+      "required": [
+        "type",
+        "from",
+        "text"
+      ],
+      "properties": {
+        "type": {
+          "const": "chat"
+        },
+        "from": {
+          "$ref": "#/$defs/castId"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 136
+        },
+        "code": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "reactions": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "enum": [
+              "heart",
+              "like",
+              "laugh",
+              "wow",
+              "clap"
+            ]
+          }
+        },
+        "challenge": {
+          "type": "boolean"
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 500,
+          "maximum": 20000,
+          "description": "Optional fixed duration. Normally omitted: the engine computes it."
+        },
+        "say": {
+          "type": "boolean",
+          "description": "Read this scene aloud with TTS (and show captions)."
+        },
+        "sfx": {
+          "$ref": "#/$defs/sfxId"
+        },
+        "spoken": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Explicit spoken text that overrides the generated reading."
+        },
+        "speakCode": {
+          "type": "boolean",
+          "description": "Convert code/symbols in the text to natural speech before TTS."
+        },
+        "transition": {
+          "enum": [
+            "fade",
+            "slide",
+            "zoom"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "analogy": {
+      "type": "object",
+      "description": "Real-life analogy card shown inside the chat (labeled boxes).",
+      "required": [
+        "type",
+        "title"
+      ],
+      "properties": {
+        "type": {
+          "const": "analogy"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 48
+        },
+        "items": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "required": [
+              "label",
+              "value"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "from": {
+          "$ref": "#/$defs/castId"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 136
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 500,
+          "maximum": 20000,
+          "description": "Optional fixed duration. Normally omitted: the engine computes it."
+        },
+        "say": {
+          "type": "boolean",
+          "description": "Read this scene aloud with TTS (and show captions)."
+        },
+        "sfx": {
+          "$ref": "#/$defs/sfxId"
+        },
+        "spoken": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Explicit spoken text that overrides the generated reading."
+        },
+        "speakCode": {
+          "type": "boolean",
+          "description": "Convert code/symbols in the text to natural speech before TTS."
+        },
+        "transition": {
+          "enum": [
+            "fade",
+            "slide",
+            "zoom"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "code_type": {
+      "type": "object",
+      "description": "Code typed naturally in the editor.",
+      "required": [
+        "type",
+        "code"
+      ],
+      "properties": {
+        "type": {
+          "const": "code_type"
+        },
+        "language": {
+          "$ref": "#/$defs/codeLanguage"
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 600
+        },
+        "typing": {
+          "enum": [
+            "natural",
+            "steady",
+            "instant"
+          ]
+        },
+        "focusLines": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 40
+          }
+        },
+        "typo": {
+          "type": "boolean"
+        },
+        "caption": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 500,
+          "maximum": 20000,
+          "description": "Optional fixed duration. Normally omitted: the engine computes it."
+        },
+        "say": {
+          "type": "boolean",
+          "description": "Read this scene aloud with TTS (and show captions)."
+        },
+        "sfx": {
+          "$ref": "#/$defs/sfxId"
+        },
+        "spoken": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Explicit spoken text that overrides the generated reading."
+        },
+        "speakCode": {
+          "type": "boolean",
+          "description": "Convert code/symbols in the text to natural speech before TTS."
+        },
+        "transition": {
+          "enum": [
+            "fade",
+            "slide",
+            "zoom"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "run": {
+      "type": "object",
+      "description": "Step-by-step execution with visual trace and terminal output. Uses the code of the previous code_type when 'code' is omitted.",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "run"
+        },
+        "language": {
+          "$ref": "#/$defs/codeLanguage"
+        },
+        "exec": {
+          "enum": [
+            "real",
+            "simulated"
+          ]
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 600
+        },
+        "trace": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "$ref": "#/$defs/traceStep"
+          }
+        },
+        "output": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "error": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "caption": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 500,
+          "maximum": 20000,
+          "description": "Optional fixed duration. Normally omitted: the engine computes it."
+        },
+        "say": {
+          "type": "boolean",
+          "description": "Read this scene aloud with TTS (and show captions)."
+        },
+        "sfx": {
+          "$ref": "#/$defs/sfxId"
+        },
+        "spoken": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Explicit spoken text that overrides the generated reading."
+        },
+        "speakCode": {
+          "type": "boolean",
+          "description": "Convert code/symbols in the text to natural speech before TTS."
+        },
+        "transition": {
+          "enum": [
+            "fade",
+            "slide",
+            "zoom"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "engage_moment": {
+      "type": "object",
+      "description": "Gentle follow/like/share moment inside the chat, placed at 45-55 s.",
+      "required": [
+        "type",
+        "text"
+      ],
+      "properties": {
+        "type": {
+          "const": "engage_moment"
+        },
+        "from": {
+          "$ref": "#/$defs/castId"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "actions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "like",
+              "follow",
+              "share"
+            ]
+          }
+        },
+        "bridge": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 48
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 500,
+          "maximum": 20000,
+          "description": "Optional fixed duration. Normally omitted: the engine computes it."
+        },
+        "say": {
+          "type": "boolean",
+          "description": "Read this scene aloud with TTS (and show captions)."
+        },
+        "sfx": {
+          "$ref": "#/$defs/sfxId"
+        },
+        "spoken": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Explicit spoken text that overrides the generated reading."
+        },
+        "speakCode": {
+          "type": "boolean",
+          "description": "Convert code/symbols in the text to natural speech before TTS."
+        },
+        "transition": {
+          "enum": [
+            "fade",
+            "slide",
+            "zoom"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "reveal": {
+      "type": "object",
+      "description": "Answer to the hook question.",
+      "required": [
+        "type",
+        "answer",
+        "text"
+      ],
+      "properties": {
+        "type": {
+          "const": "reveal"
+        },
+        "answer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 136
+        },
+        "from": {
+          "$ref": "#/$defs/castId"
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 500,
+          "maximum": 20000,
+          "description": "Optional fixed duration. Normally omitted: the engine computes it."
+        },
+        "say": {
+          "type": "boolean",
+          "description": "Read this scene aloud with TTS (and show captions)."
+        },
+        "sfx": {
+          "$ref": "#/$defs/sfxId"
+        },
+        "spoken": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Explicit spoken text that overrides the generated reading."
+        },
+        "speakCode": {
+          "type": "boolean",
+          "description": "Convert code/symbols in the text to natural speech before TTS."
+        },
+        "transition": {
+          "enum": [
+            "fade",
+            "slide",
+            "zoom"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "common_mistake": {
+      "type": "object",
+      "description": "One common beginner error shown calmly with the live fix.",
+      "required": [
+        "type",
+        "code",
+        "error",
+        "explain",
+        "fix"
+      ],
+      "properties": {
+        "type": {
+          "const": "common_mistake"
+        },
+        "language": {
+          "$ref": "#/$defs/codeLanguage"
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "error": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "explain": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 136
+        },
+        "fix": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "fixOutput": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "libraryId": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "from": {
+          "$ref": "#/$defs/castId"
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 500,
+          "maximum": 20000,
+          "description": "Optional fixed duration. Normally omitted: the engine computes it."
+        },
+        "say": {
+          "type": "boolean",
+          "description": "Read this scene aloud with TTS (and show captions)."
+        },
+        "sfx": {
+          "$ref": "#/$defs/sfxId"
+        },
+        "spoken": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Explicit spoken text that overrides the generated reading."
+        },
+        "speakCode": {
+          "type": "boolean",
+          "description": "Convert code/symbols in the text to natural speech before TTS."
+        },
+        "transition": {
+          "enum": [
+            "fade",
+            "slide",
+            "zoom"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "key_sentence": {
+      "type": "object",
+      "description": "Sentence of the day: one rule, at most 10 words.",
+      "required": [
+        "type",
+        "text"
+      ],
+      "properties": {
+        "type": {
+          "const": "key_sentence"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 70
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 500,
+          "maximum": 20000,
+          "description": "Optional fixed duration. Normally omitted: the engine computes it."
+        },
+        "say": {
+          "type": "boolean",
+          "description": "Read this scene aloud with TTS (and show captions)."
+        },
+        "sfx": {
+          "$ref": "#/$defs/sfxId"
+        },
+        "spoken": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Explicit spoken text that overrides the generated reading."
+        },
+        "speakCode": {
+          "type": "boolean",
+          "description": "Convert code/symbols in the text to natural speech before TTS."
+        },
+        "transition": {
+          "enum": [
+            "fade",
+            "slide",
+            "zoom"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "teaser": {
+      "type": "object",
+      "description": "Teaser for the next lesson (always last).",
+      "required": [
+        "type",
+        "text"
+      ],
+      "properties": {
+        "type": {
+          "const": "teaser"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "challenge": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 500,
+          "maximum": 20000,
+          "description": "Optional fixed duration. Normally omitted: the engine computes it."
+        },
+        "say": {
+          "type": "boolean",
+          "description": "Read this scene aloud with TTS (and show captions)."
+        },
+        "sfx": {
+          "$ref": "#/$defs/sfxId"
+        },
+        "spoken": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Explicit spoken text that overrides the generated reading."
+        },
+        "speakCode": {
+          "type": "boolean",
+          "description": "Convert code/symbols in the text to natural speech before TTS."
+        },
+        "transition": {
+          "enum": [
+            "fade",
+            "slide",
+            "zoom"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "scene": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/hook_predict"
+        },
+        {
+          "$ref": "#/$defs/recap"
+        },
+        {
+          "$ref": "#/$defs/chat"
+        },
+        {
+          "$ref": "#/$defs/analogy"
+        },
+        {
+          "$ref": "#/$defs/code_type"
+        },
+        {
+          "$ref": "#/$defs/run"
+        },
+        {
+          "$ref": "#/$defs/engage_moment"
+        },
+        {
+          "$ref": "#/$defs/reveal"
+        },
+        {
+          "$ref": "#/$defs/common_mistake"
+        },
+        {
+          "$ref": "#/$defs/key_sentence"
+        },
+        {
+          "$ref": "#/$defs/teaser"
+        }
+      ]
+    },
+    "scenario": {
+      "type": "object",
+      "required": [
+        "schema",
+        "meta",
+        "cast",
+        "scenes"
+      ],
+      "properties": {
+        "schema": {
+          "const": "pyreels/1"
+        },
+        "meta": {
+          "type": "object",
+          "required": [
+            "title",
+            "lesson"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "language": {
+              "enum": [
+                "ar",
+                "en"
+              ]
+            },
+            "lesson": {
+              "type": "object",
+              "required": [
+                "id",
+                "concept"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]{1,40}$"
+                },
+                "concept": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40,
+                  "description": "Exactly ONE concept."
+                },
+                "level": {
+                  "enum": [
+                    "beginner",
+                    "basics"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            },
+            "targetSeconds": {
+              "type": "integer",
+              "minimum": 30,
+              "maximum": 180
+            },
+            "theme": {
+              "enum": [
+                "calm-dark",
+                "calm-light"
+              ]
+            },
+            "series": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                "episode": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "previousRecap": {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                "nextTeaser": {
+                  "type": "string",
+                  "maxLength": 120
+                }
+              },
+              "additionalProperties": false
+            },
+            "ambient": {
+              "enum": [
+                "calm_pad",
+                "soft_rain",
+                "warm_keys",
+                "none"
+              ]
+            },
+            "watermark": {
+              "type": "boolean"
+            },
+            "groupName": {
+              "type": "string",
+              "maxLength": 30
+            }
+          },
+          "additionalProperties": false
+        },
+        "cast": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "role",
+              "name"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/castId"
+              },
+              "role": {
+                "enum": [
+                  "learner",
+                  "teacher"
+                ]
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 20
+              },
+              "language": {
+                "type": "string",
+                "maxLength": 20
+              },
+              "voice": {
+                "type": "object",
+                "properties": {
+                  "pitch": {
+                    "type": "number",
+                    "minimum": 0.5,
+                    "maximum": 2
+                  },
+                  "rate": {
+                    "type": "number",
+                    "minimum": 0.5,
+                    "maximum": 2
+                  },
+                  "locale": {
+                    "type": "string",
+                    "maxLength": 12
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "scenes": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 60,
+          "items": {
+            "$ref": "#/$defs/scene"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
