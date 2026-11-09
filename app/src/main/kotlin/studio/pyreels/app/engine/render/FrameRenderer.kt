@@ -32,7 +32,7 @@ import studio.pyreels.core.timeline.Stage
 class FrameRenderer(context: Context, private val scenario: Scenario) {
 
     private val palette: Palette = Tokens.palette(scenario.meta.theme)
-    private val skin = Skin(palette)
+    private val skin = Skin(palette, scenario.meta.chatColor)
     private val text = TextKit(Fonts.get(context))
     private val g = Gfx(text, skin, scenario)
 
@@ -43,17 +43,18 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
     private val safeTop = H * Limits.SAFE_TOP
     private val safeBottom = H * (1f - Limits.SAFE_BOTTOM)
 
-    // phone geometry (inside the safe area)
-    private val px0 = 66f
+    // phone geometry (inside the safe area); "large" lets the app screen fill the safe area
+    private val large = scenario.meta.frame == "large"
+    private val px0 = if (large) safeLeft + 4f else 66f
     private val px1 = safeRight - 4f
-    private val py0 = safeTop + 6f
-    private val py1 = safeBottom - 6f
-    private val bezel = 13f
+    private val py0 = if (large) safeTop - 8f else safeTop + 6f
+    private val py1 = if (large) safeBottom + 8f else safeBottom - 6f
+    private val bezel = if (large) 4f else 13f
     private val sx0 = px0 + bezel
     private val sy0 = py0 + bezel
     private val sw = px1 - px0 - 2 * bezel
     private val sh = py1 - py0 - 2 * bezel
-    private val screenRadius = 54f
+    private val screenRadius = if (large) 40f else 54f
     private val screenClip = Path().apply { addRoundRect(0f, 0f, sw, sh, screenRadius, screenRadius, Path.Direction.CW) }
 
     private val chat = ChatPainter(g, scenario, sw, sh)
@@ -71,8 +72,20 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
 
     var showSafeZones = false
 
+    /** Chapter boundaries (ms): explanation, code, ending — computed once from the scene list. */
+    private var chapterStarts: List<Long> = emptyList()
+    fun setChapters(timeline: studio.pyreels.core.timeline.Timeline) {
+        val sc = timeline.scenes
+        chapterStarts = listOfNotNull(
+            sc.firstOrNull { it.index > 1 }?.startMs,
+            sc.firstOrNull { it.scene is Scene.CodeType }?.startMs,
+            sc.firstOrNull { it.scene is Scene.Reveal }?.startMs,
+            sc.firstOrNull { it.scene is Scene.KeySentence }?.startMs,
+        ).sorted()
+    }
+
     fun draw(canvas: Canvas, frame: Frame) {
-        background(canvas)
+        background(canvas, frame.tMs)
         val phoneAlpha = frame.layers.filter { it.stage == Stage.CHAT || it.stage == Stage.CODE }.sumOf { it.alpha.toDouble() }.toFloat().coerceAtMost(1f)
         if (phoneAlpha > 0.01f) {
             g.withAlpha(canvas, phoneAlpha, W, H) { phoneBody(canvas) }
@@ -127,13 +140,27 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
         }
     }
 
-    private fun background(canvas: Canvas) {
+    private val glowMatrix = android.graphics.Matrix()
+
+    /** Calm background: two soft glows drift very slowly (one cycle ≈ 24 s). */
+    private fun background(canvas: Canvas, tMs: Long = 0) {
         canvas.drawRect(0f, 0f, W, H, bgPaint)
+        val a = (tMs % 24_000L) / 24_000.0 * 2 * Math.PI
+        glowMatrix.setTranslate((kotlin.math.sin(a) * 90).toFloat(), (kotlin.math.cos(a) * 60).toFloat())
+        glowPaint.shader.setLocalMatrix(glowMatrix)
         canvas.drawRect(0f, 0f, W, H, glowPaint)
+        glowMatrix.setTranslate((kotlin.math.cos(a) * 80).toFloat(), (kotlin.math.sin(a) * 70).toFloat())
+        glow2.shader.setLocalMatrix(glowMatrix)
         canvas.drawRect(0f, 0f, W, H, glow2)
     }
 
     private fun phoneBody(canvas: Canvas) {
+        if (large) {
+            g.fill.color = g.alpha(0xFF000000.toInt(), if (palette.isDark) 0.4f else 0.15f)
+            g.rect.set(px0 + 4f, py0 + 14f, px1 + 4f, py1 + 16f); canvas.drawRoundRect(g.rect, 46f, 46f, g.fill)
+            g.fill.color = skin.bezel; g.rect.set(px0, py0, px1, py1); canvas.drawRoundRect(g.rect, 44f, 44f, g.fill)
+            return
+        }
         // soft shadow, bezel, edge highlight and side buttons
         g.fill.color = g.alpha(0xFF000000.toInt(), if (palette.isDark) 0.45f else 0.18f)
         g.rect.set(px0 + 6f, py0 + 18f, px1 + 6f, py1 + 22f); canvas.drawRoundRect(g.rect, 72f, 72f, g.fill)
@@ -150,8 +177,12 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
 
     private fun chrome(canvas: Canvas, f: Frame) {
         // thin progress bar (fills from the right: RTL)
+        // progress bar split into the lesson's chapters (RTL: fills from the right)
+        val total = f.totalMs.coerceAtLeast(1).toFloat()
         g.fill.color = g.alpha(palette.textMuted.toInt(), 0.22f); canvas.drawRect(0f, 0f, W, 8f, g.fill)
         g.fill.color = palette.focus.toInt(); canvas.drawRect(W - W * f.progress, 0f, W, 8f, g.fill)
+        g.fill.color = palette.background.toInt()
+        for (b in chapterStarts) if (b > 0) { val x = W - W * (b / total); canvas.drawRect(x - 3f, 0f, x + 3f, 8f, g.fill) }
         // lesson chip above the phone
         val title = (f.episode?.let { "الحلقة $it · " } ?: "") + f.title
         val l = text.layout(title, (safeRight - safeLeft - 40).toInt(), 32f, palette.text.toInt(), TextKit.Face.SEMI, Layout.Alignment.ALIGN_CENTER, 1, maxLines = 1)

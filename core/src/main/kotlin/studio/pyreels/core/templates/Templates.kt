@@ -79,6 +79,7 @@ object Templates {
             meta = Meta(
                 title = lesson.title.take(58), language = if (b.languageStyle == "english") "en" else "ar",
                 lesson = Lesson(lesson.id, lesson.concept, b.level), targetSeconds = b.targetSeconds, theme = b.theme,
+                frame = b.frame, chatColor = b.chatColor, celebrate = b.celebrate,
                 series = Series(name = "بايثون مع أحمد", episode = history.size + 1, previousRecap = recap.take(118), nextTeaser = teaserText.take(118)),
             ),
             cast = cast(teachers),

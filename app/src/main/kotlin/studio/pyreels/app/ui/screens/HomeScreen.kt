@@ -50,6 +50,12 @@ import studio.pyreels.app.data.PresetRepository
 import studio.pyreels.app.data.ProjectEntity
 import studio.pyreels.app.data.ProjectRepository
 import studio.pyreels.app.data.SeriesRepository
+import studio.pyreels.app.data.scenario
+import studio.pyreels.app.engine.PreparedVideo
+import studio.pyreels.app.engine.VideoEngine
+import studio.pyreels.app.ui.components.VideoPreview
+import kotlinx.coroutines.flow.map
+import androidx.compose.foundation.layout.width
 import studio.pyreels.app.ui.Navigator
 import studio.pyreels.app.ui.Route
 import studio.pyreels.app.ui.components.CalmCard
@@ -70,6 +76,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val projects: ProjectRepository,
+    private val engine: VideoEngine,
     series: SeriesRepository,
     presets: PresetRepository,
 ) : ViewModel() {
@@ -79,6 +86,11 @@ class HomeViewModel @Inject constructor(
     private val seriesRepo = series
 
     fun delete(id: Long) = viewModelScope.launch { projects.delete(id) }
+
+    /** Live preview of the most recent project for the "continue" card. */
+    val latest: StateFlow<Pair<ProjectEntity, PreparedVideo>?> = projects.projects.map { l ->
+        l.firstOrNull()?.let { p -> p.scenario()?.let { p to engine.quick(it) } }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     fun openSample(file: String, done: (Long) -> Unit) = viewModelScope.launch {
         val s = ScenarioValidator.parse(Resources.text(file)).scenarios.first()
@@ -98,6 +110,7 @@ fun HomeScreen(nav: Navigator, modifier: Modifier, vm: HomeViewModel = hiltViewM
     val projects by vm.list.collectAsState()
     val history by vm.history.collectAsState()
     val presets by vm.presetList.collectAsState()
+    val latest by vm.latest.collectAsState()
     val curriculum = ContentRepository.curriculum
     val completed = history.map { it.lessonId }.toSet()
     val next = curriculum.nextFor(completed)
@@ -112,6 +125,22 @@ fun HomeScreen(nav: Navigator, modifier: Modifier, vm: HomeViewModel = hiltViewM
             Modifier.padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
+            latest?.let { (p, video) ->
+                item {
+                    CalmCard {
+                        Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                            VideoPreview(video, Modifier.width(120.dp), autoPlay = true, safeZones = false, onSafeZones = {}, controls = false, muted = true, loop = true)
+                            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Text(ui.t("تابع من حيث توقفت", "Continue where you left off"), color = Muted, style = MaterialTheme.typography.labelMedium)
+                                Text(p.title, style = MaterialTheme.typography.titleMedium)
+                                Text((p.episode?.let { ui.t("الحلقة $it", "Episode $it") } ?: p.lessonId), color = Muted, style = MaterialTheme.typography.bodySmall)
+                                Button(onClick = { nav.go(Route.Editor(p.id)) }, modifier = Modifier.fillMaxWidth()) { Text(ui.t("متابعة التحرير", "Continue editing")) }
+                                OutlinedButton(onClick = { nav.go(Route.Export(p.id)) }, modifier = Modifier.fillMaxWidth()) { Text(ui.t("تصدير ونشر", "Export & publish")) }
+                            }
+                        }
+                    }
+                }
+            }
             item {
                 CalmCard {
                     Text(ui.t("مسار الدروس", "Lesson roadmap"), style = MaterialTheme.typography.titleMedium)

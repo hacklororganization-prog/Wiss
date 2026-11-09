@@ -124,14 +124,6 @@
       "speakCode": true
     },
     {
-      "type": "chat",
-      "from": "python",
-      "text": "أما أنا فأعرف النوع وحدي 😌",
-      "reactions": [
-        "laugh"
-      ]
-    },
-    {
       "type": "code_type",
       "language": "python",
       "code": "x = 5\nx = x + 2\nprint(x)",

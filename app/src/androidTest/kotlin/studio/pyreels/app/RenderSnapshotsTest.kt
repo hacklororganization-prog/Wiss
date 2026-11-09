@@ -26,10 +26,10 @@ class RenderSnapshotsTest {
     fun renderSnapshots() {
         val dir = File(context.filesDir, "snapshots").apply { deleteRecursively(); mkdirs() }
         var count = 0
-        for ((sample, prefix) in listOf("samples/02-variables.pyreels.json" to "a", "samples/03-if.pyreels.json" to "b")) {
+        for ((sample, prefix) in listOf("samples/02-variables.pyreels.json" to "a", "samples/03-if.pyreels.json" to "b", "samples/01-print.pyreels.json" to "c")) {
             val s = ScenarioValidator.parse(Resources.text(sample)).scenarios.single()
             val tl = Timeline.build(s)
-            val r = FrameRenderer(context, s)
+            val r = FrameRenderer(context, s).apply { setChapters(tl) }
             val bmp = Bitmap.createBitmap(540, 960, Bitmap.Config.ARGB_8888)
             val c = Canvas(bmp)
             fun save(name: String) {
@@ -41,6 +41,7 @@ class RenderSnapshotsTest {
                 val type = ts.scene.typeId()
                 val key = if (type == "chat") "chat${ts.index}" else type
                 if (prefix == "b" && type != "chat" && type != "code_type") continue
+                if (prefix == "c" && !(type == "chat" && (ts.scene as studio.pyreels.core.model.Scene.Chat).code != null)) continue
                 if (!seen.add(key) && type != "chat") continue
                 if (type == "chat" && seen.count { it.startsWith("chat") } > 3) continue
                 for (frac in if (type == "code_type" || type == "run" || type == "common_mistake") listOf(0.45f, 0.92f) else listOf(0.85f)) {
@@ -68,6 +69,13 @@ class RenderSnapshotsTest {
                 val eng = tl.scenes.first { it.scene is studio.pyreels.core.model.Scene.EngageMoment }
                 at("anim-engage", eng.startMs + 2_600)
                 at("start-chat", tl.scenes[2].startMs + tl.scenes[2].durationMs - 200)
+                val win = tl.scenes[Timeline.celebrationIndex(s)]
+                at("sticker", win.endMs - 500)
+                // large frame + blue chat colour variant
+                val v = s.copy(meta = s.meta.copy(frame = "large", chatColor = "blue"))
+                val tv = Timeline.build(v)
+                val rv = FrameRenderer(context, v).apply { setChapters(tv) }
+                c.save(); c.scale(0.5f, 0.5f); rv.draw(c, tv.frameAt(win.endMs - 300)); c.restore(); save("large-blue")
             }
         }
         assertTrue(count > 10)

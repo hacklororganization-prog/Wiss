@@ -117,7 +117,7 @@
     {
       "type": "chat",
       "from": "java",
-      "text": "وعندي: `for (int i = 0; i < 3; i++)` بالتفصيل الممل 😅"
+      "text": "وعندي بالتفصيل: `for (int i=0; i<3; i++)`"
     },
     {
       "type": "chat",

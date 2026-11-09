@@ -289,6 +289,22 @@
             "slide",
             "zoom"
           ]
+        },
+        "sticker": {
+          "enum": [
+            "party",
+            "star",
+            "trophy",
+            "heart",
+            "rocket",
+            "thumbs"
+          ]
+        },
+        "codeStyle": {
+          "enum": [
+            "inline",
+            "screenshot"
+          ]
         }
       },
       "additionalProperties": false
@@ -1008,6 +1024,25 @@
                 }
               },
               "additionalProperties": false
+            },
+            "frame": {
+              "enum": [
+                "phone",
+                "large"
+              ],
+              "description": "phone = phone mock-up; large = the app fills the safe area"
+            },
+            "chatColor": {
+              "enum": [
+                "green",
+                "blue",
+                "purple",
+                "amber"
+              ]
+            },
+            "celebrate": {
+              "type": "boolean",
+              "description": "Automatic celebration sticker after the first correct output"
             }
           },
           "additionalProperties": false

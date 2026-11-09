@@ -62,6 +62,8 @@ class Timeline private constructor(
         val analogyTitle: String? = null, val analogyItems: List<Pair<String, String>> = emptyList(),
         val itemTimes: List<Long> = emptyList(), val revealAnswer: String? = null, val revealCode: String? = null,
         val voice: VoiceCue? = null,
+        val sticker: String? = null,
+        val codeScreenshot: Boolean = false,
     )
 
     /** Edit snapshots of the editor while typing: at time[i] the editor shows text[i]. */
@@ -110,8 +112,14 @@ class Timeline private constructor(
                     val outgoing = sc.from == "ahmed"
                     sfx += SfxCue(appear, sc.sfx ?: if (outgoing) SfxIds.MSG_SEND else SfxIds.MSG_RECV, 0.8f, i)
                     if (sc.reactions.isNotEmpty()) sfx += SfxCue(appear + 900, SfxIds.HEART_PULSE, 0.5f, i)
-                    messages += PlannedMessage(msgId++, i, sc.from, MessageKind.TEXT, sc.text, sc.code, s, appear, sc.reactions, sc.challenge, voice = voice)
+                    messages += PlannedMessage(msgId++, i, sc.from, MessageKind.TEXT, sc.text, sc.code, s, appear, sc.reactions, sc.challenge, voice = voice, codeScreenshot = sc.codeStyle == "screenshot")
                     texts += TextCue(appear, s + d, sc.from, sc.text)
+                    val sticker = sc.sticker ?: if (i == celebrationIndex(scenario)) "party" else null
+                    if (sticker != null) {
+                        val at = appear + 750
+                        messages += PlannedMessage(msgId++, i, sc.from, MessageKind.STICKER, "", null, at, at, emptyList(), false, sticker = sticker)
+                        sfx += SfxCue(at, SfxIds.SUCCESS_CHIME, 0.4f, i + 900)
+                    }
                 }
                 is Scene.Analogy -> {
                     val from = sc.from ?: teacher
@@ -400,6 +408,7 @@ class Timeline private constructor(
                 reactionPulse = Easing.pulse(since, 900, 900),
                 analogyTitle = m.analogyTitle, analogyItems = m.analogyItems, analogyVisible = itemsVisible,
                 revealAnswer = m.revealAnswer, revealCode = m.revealCode, challenge = m.challenge, karaokeWord = karaoke,
+                sticker = m.sticker, codeScreenshot = m.codeScreenshot, ageMs = since,
             )
         }
         val members = scenario.cast.map { it.name }
@@ -581,6 +590,14 @@ class Timeline private constructor(
     }
 
     companion object {
+        /** The chat that receives the automatic celebration sticker: Ahmed's first message after the first run. */
+        fun celebrationIndex(s: Scenario): Int {
+            if (!s.meta.celebrate) return -1
+            val firstRun = s.scenes.indexOfFirst { it is Scene.Run }
+            if (firstRun < 0) return -1
+            return (firstRun + 1 until s.scenes.size).firstOrNull { k -> val sc = s.scenes[k]; sc is Scene.Chat && sc.from == "ahmed" && sc.sticker == null } ?: -1
+        }
+
         fun stageOf(scene: Scene): Stage = when (scene) {
             is Scene.HookPredict -> Stage.HOOK
             is Scene.Recap, is Scene.KeySentence, is Scene.Teaser -> Stage.CARD
@@ -613,9 +630,12 @@ class Timeline private constructor(
             runResults: Map<Int, RunResult> = emptyMap(),
             targetMs: Long = scenario.meta.targetSeconds * 1000L,
         ): Timeline {
+            val celebrate = celebrationIndex(scenario)
             val bounds = scenario.scenes.mapIndexed { i, s ->
                 val voice = if (s.say) voiceMs[i] ?: estimateSpeechMs(s.spoken ?: s.readableText()) else null
-                DurationEstimator.bounds(s, voice)
+                val b = DurationEstimator.bounds(s, voice)
+                // a sticker needs ~1.4 s of screen time after its message
+                if ((s is Scene.Chat && s.sticker != null) || i == celebrate) SceneBounds(b.minMs + 1_400, b.idealMs + 1_400, b.maxMs + 1_400) else b
             }
             val fit = DurationFitter.fit(bounds, targetMs)
             var start = 0L

@@ -66,7 +66,8 @@ Common optional fields on every scene: `say` (boolean, read aloud by TTS), `sfx`
 
 - **Allowed SFX ids:** ${SfxIds.ALL.joinToString(", ") { "`$it`" }}. Default sounds are automatic; only set `sfx` to override.
 - **Ambient moods (meta.ambient):** ${AmbientMoods.ALL.joinToString(", ") { "`$it`" }}.
-- **Themes (meta.theme):** `calm-dark`, `calm-light`. Use `${b.theme}`.
+- **Themes (meta.theme):** `calm-dark`, `calm-light`. Use `${b.theme}`. **Frame (meta.frame):** `${b.frame}`. **Chat colour (meta.chatColor):** `${b.chatColor}`. **Celebration (meta.celebrate):** `${b.celebrate}` (the app adds a 🎉 sticker after Ahmed's first message following the first run; use `sticker` sparingly elsewhere, at most once more).
+- **Screenshots:** a chat message with `code` and `"codeStyle": "screenshot"` is shown as a photo of the editor (great when Ahmed shares his attempt).
 - **Publishing kit (meta.publish, REQUIRED in your answer):** `description` (20–220 chars), `tiktokHashtags` (exactly 5), `instagramHashtags` (exactly 5), `pinnedComment` (≤ 200 chars). See section 13.
 - **Cast ids:** `ahmed` (role `learner`, always present) + teacher ids: ${b.teachers.joinToString(", ") { "`$it`" }} (role `teacher`, field `language` = same id).
 - **Code languages:** python, java, cpp, javascript, kotlin, csharp, go, rust, php, typescript, swift, c.
@@ -98,7 +99,7 @@ Common optional fields on every scene: `say` (boolean, read aloud by TTS), `sfx`
         sb.append("tone: ${b.tone}\nhumor_level: ${b.humor}/5\n")
         sb.append("language_style: ${b.languageStyle}\n")
         sb.append("include_common_mistake: ${b.includeMistake}\ninclude_challenge: ${b.includeChallenge}\n")
-        sb.append("voice_over: ${b.voiceOver}\ntarget_seconds: ${b.targetSeconds}\ntheme: ${b.theme}\n")
+        sb.append("voice_over: ${b.voiceOver}\ntarget_seconds: ${b.targetSeconds}\ntheme: ${b.theme}\nframe: ${b.frame}\nchat_color: ${b.chatColor}\n")
         sb.append("```\n\n")
         sb.append("**Summary:** درس عن «$topic» لمستوى ${Brief.LEVELS[b.level] ?: b.level}، بأسلوب ${Brief.TONES[b.tone] ?: b.tone} (مستوى المزاح ${b.humor}/5)، ")
         sb.append("بطريقة: ${b.methods.joinToString("، ") { Brief.METHODS[it] ?: it }}. اللغة: ${Brief.STYLES[b.languageStyle] ?: b.languageStyle}. ")
@@ -324,7 +325,7 @@ Set `"speakCode": true` on scenes whose text contains code. Write a `spoken` ove
     private val sceneTable = listOf(
         Row("hook_predict", "signature 3-s hook", "code", "language, question (keep default), holdMs"),
         Row("recap", "previous lesson in one sentence", "text", ""),
-        Row("chat", "one chat message", "from, text", "code (short snippet card), reactions [heart, like, laugh, wow, clap], challenge"),
+        Row("chat", "one chat message", "from, text", "code (short snippet), codeStyle (inline / screenshot = photo of the editor), reactions [heart, like, laugh, wow, clap], sticker [party, star, trophy, heart, rocket, thumbs], challenge"),
         Row("analogy", "real-life analogy card with labeled boxes", "title", "items [{label, value}] (≤4), from, text"),
         Row("code_type", "code typed in the editor", "code", "language, typing (natural/steady/instant), focusLines, typo, caption"),
         Row("run", "execution with visual trace + terminal", "— (uses previous code_type's code)", "language, exec (real/simulated), code, trace, output, error, caption"),

@@ -31,6 +31,10 @@ import androidx.compose.material.icons.outlined.Fullscreen
 import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.material3.FilterChip
 import androidx.compose.material.icons.outlined.Verified
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -224,11 +228,13 @@ fun EditorScreen(nav: Navigator, projectId: Long, safeZones: Boolean, onSafeZone
     var addMenu by remember { mutableStateOf(false) }
     var paste by remember { mutableStateOf<String?>(null) }
     var report by remember { mutableStateOf<QualityReport?>(null) }
+    var settings by remember { mutableStateOf(false) }
 
     Column(modifier) {
         CalmTopBar(scenario?.meta?.title ?: "", { nav.back() }) {
             IconButton(onClick = vm::undo, enabled = canUndo) { Icon(Icons.AutoMirrored.Filled.Undo, ui.t("تراجع", "Undo")) }
             IconButton(onClick = vm::redo, enabled = canRedo) { Icon(Icons.AutoMirrored.Filled.Redo, ui.t("إعادة", "Redo")) }
+            IconButton(onClick = { settings = true }) { Icon(Icons.Outlined.Palette, ui.t("إعدادات الفيديو", "Video settings")) }
             IconButton(onClick = { paste = "" }) { Icon(Icons.Outlined.ContentPaste, ui.t("لصق نص الدرس", "Paste lesson text")) }
             IconButton(onClick = { report = vm.quality() }) { Icon(Icons.Outlined.Verified, ui.t("فحص الجودة", "Quality check")) }
             IconButton(onClick = { nav.go(Route.Preview(projectId)) }) { Icon(Icons.Outlined.Fullscreen, ui.t("معاينة كاملة", "Full preview")) }
@@ -290,6 +296,12 @@ fun EditorScreen(nav: Navigator, projectId: Long, safeZones: Boolean, onSafeZone
         )
     }
 
+    if (settings) scenario?.let { sc ->
+        ModalBottomSheet(onDismissRequest = { settings = false }) {
+            VideoSettings(sc) { f -> vm.edit { s -> s.copy(meta = f(s.meta)) } }
+        }
+    }
+
     report?.let { r ->
         ModalBottomSheet(onDismissRequest = { report = null }) {
             Column(Modifier.padding(18.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -307,6 +319,38 @@ fun EditorScreen(nav: Navigator, projectId: Long, safeZones: Boolean, onSafeZone
                 Spacer(Modifier.height(30.dp))
             }
         }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun VideoSettings(s: Scenario, edit: ((studio.pyreels.core.model.Meta) -> studio.pyreels.core.model.Meta) -> Unit) {
+    val ui = LocalUi.current
+    val m = s.meta
+    Column(Modifier.padding(18.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Text(ui.t("إعدادات الفيديو", "Video settings"), style = MaterialTheme.typography.titleLarge)
+        Text(ui.t("المظهر", "Theme"), style = MaterialTheme.typography.titleSmall)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(selected = m.theme == "calm-dark", onClick = { edit { it.copy(theme = "calm-dark") } }, label = { Text(ui.t("داكن هادئ", "Calm dark")) })
+            FilterChip(selected = m.theme == "calm-light", onClick = { edit { it.copy(theme = "calm-light") } }, label = { Text(ui.t("فاتح هادئ", "Calm light")) })
+        }
+        Text(ui.t("حجم الهاتف", "Phone size"), style = MaterialTheme.typography.titleSmall)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(selected = m.frame == "phone", onClick = { edit { it.copy(frame = "phone") } }, label = { Text(ui.t("هاتف", "Phone")) })
+            FilterChip(selected = m.frame == "large", onClick = { edit { it.copy(frame = "large") } }, label = { Text(ui.t("شاشة كبيرة", "Large screen")) })
+        }
+        Text(ui.t("لون المحادثة", "Chat colour"), style = MaterialTheme.typography.titleSmall)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            CHAT_COLORS.forEach { (k, v) -> FilterChip(selected = m.chatColor == k, onClick = { edit { it.copy(chatColor = k) } }, label = { Text(if (ui.english) k else v) }) }
+        }
+        Text(ui.t("الخلفية الصوتية", "Ambient sound"), style = MaterialTheme.typography.titleSmall)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf("calm_pad" to ui.t("وسادة هادئة", "Calm pad"), "soft_rain" to ui.t("مطر خفيف", "Soft rain"), "warm_keys" to ui.t("نغمات دافئة", "Warm keys"), "none" to ui.t("بلا", "None")).forEach { (k, v) ->
+                FilterChip(selected = m.ambient == k, onClick = { edit { it.copy(ambient = k) } }, label = { Text(v) })
+            }
+        }
+        ToggleRow(ui.t("ملصق احتفال عند أول نجاح 🎉", "Celebration sticker 🎉"), m.celebrate) { v -> edit { it.copy(celebrate = v) } }
+        Spacer(Modifier.height(24.dp))
     }
 }
 
@@ -347,6 +391,8 @@ private fun SceneCard(i: Int, sc: Scene, s: Scenario, open: Boolean, toggle: () 
                 },
             )
             Spacer(Modifier.width(8.dp))
+            TypeBadge(sc.typeId())
+            Spacer(Modifier.width(8.dp))
             Column(Modifier.weight(1f)) {
                 Text("${i + 1}. ${sceneLabel(sc.typeId(), !ui.english)}" + (if (sc is Scene.Chat) " · ${s.cast.firstOrNull { it.id == sc.from }?.name ?: sc.from}" else ""), style = MaterialTheme.typography.titleSmall)
                 Text(summary(sc), style = MaterialTheme.typography.bodySmall, color = Muted, maxLines = 2)
@@ -355,6 +401,27 @@ private fun SceneCard(i: Int, sc: Scene, s: Scenario, open: Boolean, toggle: () 
             IconButton(onClick = { vm.move(i, i + 1) }) { Icon(Icons.Outlined.KeyboardArrowDown, ui.t("لأسفل", "Down")) }
         }
         if (open) SceneFields(i, sc, s, vm)
+    }
+}
+
+/** Coloured round badge per scene type, so the script reads at a glance. */
+@Composable
+private fun TypeBadge(type: String) {
+    val (glyph, color) = when (type) {
+        "hook_predict" -> "?" to androidx.compose.ui.graphics.Color(0xFFE8C872)
+        "recap", "teaser" -> "↺" to androidx.compose.ui.graphics.Color(0xFF8FC9E8)
+        "chat" -> "✉" to androidx.compose.ui.graphics.Color(0xFF4CC9A4)
+        "analogy" -> "💡" to androidx.compose.ui.graphics.Color(0xFFE8C872)
+        "code_type" -> "⌨" to androidx.compose.ui.graphics.Color(0xFFC9A7E8)
+        "run" -> "▶" to androidx.compose.ui.graphics.Color(0xFF9FD3A6)
+        "engage_moment" -> "♥" to androidx.compose.ui.graphics.Color(0xFFE8838A)
+        "reveal" -> "✓" to androidx.compose.ui.graphics.Color(0xFF9FD3A6)
+        "common_mistake" -> "!" to androidx.compose.ui.graphics.Color(0xFFE8A87C)
+        "key_sentence" -> "★" to androidx.compose.ui.graphics.Color(0xFFE8C872)
+        else -> "•" to androidx.compose.ui.graphics.Color(0xFFA9B2BD)
+    }
+    Box(Modifier.size(36.dp).background(color.copy(alpha = 0.18f), androidx.compose.foundation.shape.CircleShape), contentAlignment = Alignment.Center) {
+        Text(glyph, color = color, style = MaterialTheme.typography.titleSmall)
     }
 }
 

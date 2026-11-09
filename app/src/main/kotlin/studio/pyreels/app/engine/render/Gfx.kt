@@ -15,7 +15,7 @@ import studio.pyreels.core.model.castById
  * Colours of the two in-video "apps" (a chat messenger and a code editor), derived from the
  * calm theme. Dark: blue-gray, never pure black. Light: warm paper.
  */
-class Skin(val p: Palette) {
+class Skin(val p: Palette, chatColor: String = "green") {
     private fun c(v: Long) = v.toInt()
     val dark = p.isDark
     // phone
@@ -23,14 +23,21 @@ class Skin(val p: Palette) {
     val bezelEdge = if (dark) 0xFF3A4654.toInt() else 0xFF59616C.toInt()
     val statusText = if (dark) 0xFFD8DEE4.toInt() else 0xFF1F2A30.toInt()
     // messenger
-    val waHeader = if (dark) 0xFF1E2A33.toInt() else 0xFF2F6F62.toInt()
+    val waHeader get() = if (dark) 0xFF1E2A33.toInt() else accentSetHeader
     val waHeaderText = if (dark) 0xFFE9EDEF.toInt() else 0xFFF7FAF8.toInt()
     val waHeaderSub = if (dark) 0xFF8D9AA3.toInt() else 0xFFD4E6E0.toInt()
     val waTyping = if (dark) 0xFF4CC9A4.toInt() else 0xFFE4F7EE.toInt()
     val waWall = if (dark) 0xFF111B21.toInt() else 0xFFEDE6DA.toInt()
     val waDoodle = if (dark) 0x0BFFFFFF else 0x0F000000
     val waIn = if (dark) 0xFF202C33.toInt() else 0xFFFFFFFF.toInt()
-    val waOut = if (dark) 0xFF1F5247.toInt() else 0xFFD7F2CF.toInt()
+    // Ahmed's bubbles, the light header and the round button follow the chosen chat colour
+    private val accentSet: IntArray = when (chatColor) {
+        "blue" -> intArrayOf(0xFF1F3F5C.toInt(), 0xFFD6E8FA.toInt(), 0xFF2E5E8C.toInt(), 0xFF3A7BC8.toInt(), 0xFF2F6FB5.toInt())
+        "purple" -> intArrayOf(0xFF3A2F57.toInt(), 0xFFE8DEF8.toInt(), 0xFF5B4B8A.toInt(), 0xFF7C64C4.toInt(), 0xFF6A55B0.toInt())
+        "amber" -> intArrayOf(0xFF4A3D1E.toInt(), 0xFFF7EBC9.toInt(), 0xFF8A6D2E.toInt(), 0xFFC59A3A.toInt(), 0xFFA9832D.toInt())
+        else -> intArrayOf(0xFF1F5247.toInt(), 0xFFD7F2CF.toInt(), 0xFF2F6F62.toInt(), 0xFF2BA684.toInt(), 0xFF2F8F72.toInt())
+    }
+    val waOut = if (dark) accentSet[0] else accentSet[1]
     val waText = if (dark) 0xFFE9EDEF.toInt() else 0xFF1B2328.toInt()
     val waTime = if (dark) 0xFF8D9AA3.toInt() else 0xFF6F7A80.toInt()
     val waTick = if (dark) 0xFF53BDEB.toInt() else 0xFF3A9BD1.toInt()
@@ -39,7 +46,10 @@ class Skin(val p: Palette) {
     val waNoticeText = if (dark) 0xFFE6D7A3.toInt() else 0xFF5E5427.toInt()
     val waInput = if (dark) 0xFF1E2A33.toInt() else 0xFFFFFFFF.toInt()
     val waBar = if (dark) 0xFF0F171C.toInt() else 0xFFE7E0D4.toInt()
-    val waFab = if (dark) 0xFF2BA684.toInt() else 0xFF2F8F72.toInt()
+    val waFab get() = if (dark) accentSetFab else accentSetFabLight
+    private val accentSetHeader get() = accentSet[2]
+    private val accentSetFab get() = accentSet[3]
+    private val accentSetFabLight get() = accentSet[4]
     val waIcon = if (dark) 0xFF8D9AA3.toInt() else 0xFF6F7A80.toInt()
     // editor
     val edBar = if (dark) 0xFF232A33.toInt() else 0xFF2E3640.toInt()

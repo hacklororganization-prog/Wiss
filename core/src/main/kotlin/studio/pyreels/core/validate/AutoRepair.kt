@@ -29,7 +29,7 @@ object AutoRepair {
     private val sceneKeys = mapOf(
         "hook_predict" to setOf("language", "code", "question", "holdMs"),
         "recap" to setOf("text"),
-        "chat" to setOf("from", "text", "code", "reactions", "challenge"),
+        "chat" to setOf("from", "text", "code", "reactions", "challenge", "sticker", "codeStyle"),
         "analogy" to setOf("title", "items", "from", "text"),
         "code_type" to setOf("language", "code", "typing", "focusLines", "typo", "caption"),
         "run" to setOf("language", "exec", "code", "trace", "output", "error", "caption"),

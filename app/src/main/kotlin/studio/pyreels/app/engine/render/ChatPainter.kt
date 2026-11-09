@@ -194,13 +194,15 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
             m.karaokeWord, g.c(g.p.focus), spacing = 0.92f,
         )
         val name = if (m.outgoing || grouped) null else text.layout(g.nameOf(m.from), inner, 30f, g.accent(m.from), TextKit.Face.BOLD, Layout.Alignment.ALIGN_NORMAL, 1, spacing = 0.9f, maxLines = 1)
+        if (m.kind == MessageKind.STICKER) return Laid(null, null, null, 220f, 220f, 236f).also { laid[key] = it }
         val code = m.code?.let { codeLayout(it, inner - 30) }
         var contentW = max(body?.let { text.maxLineWidth(it) } ?: 0f, name?.let { text.maxLineWidth(it) } ?: 0f)
         code?.let { contentW = max(contentW, text.maxLineWidth(it) + 30f) }
         var hh = 16f
         name?.let { hh += it.height + 2f }
         body?.let { hh += it.height }
-        code?.let { hh += it.height + 34f }
+        if (m.codeScreenshot && m.code != null) { contentW = bubbleMax; hh += screenshotH(m.code) + 14f }
+        else code?.let { hh += it.height + 34f }
         when (m.kind) {
             MessageKind.ANALOGY -> { contentW = bubbleMax; hh += 70f + (if (m.analogyItems.isEmpty()) 0f else 168f) }
             MessageKind.REVEAL -> {
@@ -229,7 +231,7 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         val msgs = chat.messages
         if (msgs.isNotEmpty()) {
             // consecutive messages from the same sender are grouped (no repeated name/avatar/tail)
-            fun grouped(k: Int) = k > 0 && msgs[k - 1].from == msgs[k].from && msgs[k - 1].reactions.isEmpty() && msgs[k].kind == MessageKind.TEXT
+            fun grouped(k: Int) = k > 0 && msgs[k - 1].from == msgs[k].from && msgs[k - 1].reactions.isEmpty() && msgs[k].kind == MessageKind.TEXT && msgs[k - 1].kind != MessageKind.STICKER
             val lastK = msgs.lastIndex
             val newest = layoutOf(msgs[lastK], grouped(lastK))
             val shift = (1f - chat.scroll) * (newest.totalH + (if (grouped(lastK)) 6f else gap))
@@ -335,7 +337,74 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         canvas.drawPath(g.path, g.fill)
     }
 
+    private fun screenshotH(code: String) = code.split('\n').size * 40f + 96f
+
+    private val stickerEmoji = mapOf("party" to "🎉", "star" to "⭐", "trophy" to "🏆", "heart" to "💖", "rocket" to "🚀", "thumbs" to "👍")
+
+    /** A big sticker (no bubble) that settles in softly, with slow calm confetti. */
+    private fun drawSticker(canvas: Canvas, m: ChatMessageView, top: Float) {
+        val size = 200f
+        val x0 = if (m.outgoing) 34f else w - 2 * avatarR - 34f - size
+        val cx = x0 + size / 2
+        val cy = top + size / 2
+        // confetti: drifts down slowly and fades out after ~2.5 s (no flashing)
+        val age = m.ageMs.coerceAtLeast(0)
+        val fade = (1f - (age - 1_200f) / 1_300f).coerceIn(0f, 1f)
+        if (fade > 0f) {
+            val colors = intArrayOf(g.c(g.p.focus), s.waTick, 0xFFE8838A.toInt(), g.c(g.p.terminalOk))
+            val r = studio.pyreels.core.timeline.Rng(m.id * 31L + 7)
+            for (k in 0 until 14) {
+                val ang = r.nextFloat() * 6.283f
+                val dist = 90f + r.nextFloat() * 70f
+                val spread = (age / 600f).coerceAtMost(1f)
+                val px = cx + kotlin.math.cos(ang) * dist * spread
+                val py = cy + kotlin.math.sin(ang) * dist * spread * 0.7f + age * 0.035f
+                g.fill.color = g.alpha(colors[k % colors.size], 0.85f * fade)
+                canvas.save(); canvas.rotate(r.signed() * 60f + age * 0.02f, px, py)
+                canvas.drawRoundRect(px - 7f, py - 4f, px + 7f, py + 4f, 3f, 3f, g.fill)
+                canvas.restore()
+            }
+        }
+        val sc = 0.7f + 0.3f * studio.pyreels.core.timeline.Easing.out(m.appear)
+        canvas.save(); canvas.scale(sc, sc, cx, cy)
+        g.fill.color = g.alpha(0xFF000000.toInt(), 0.2f); canvas.drawCircle(cx + 3f, cy + 6f, size / 2 - 6f, g.fill)
+        g.fill.color = if (s.dark) 0xFF2A3640.toInt() else 0xFFFFFFFF.toInt(); canvas.drawCircle(cx, cy, size / 2 - 6f, g.fill)
+        g.stroke.color = 0xFFFFFFFF.toInt(); g.stroke.strokeWidth = 8f; canvas.drawCircle(cx, cy, size / 2 - 10f, g.stroke)
+        val ep = text.paint(TextKit.Face.REGULAR, 120f, s.waText)
+        val emoji = stickerEmoji[m.sticker] ?: "🎉"
+        val fm = ep.fontMetrics
+        canvas.drawText(emoji, cx - ep.measureText(emoji) / 2, cy - (fm.ascent + fm.descent) / 2, ep)
+        canvas.restore()
+        val tp = text.paint(TextKit.Face.REGULAR, 22f, s.waTime)
+        val tx = if (m.outgoing) x0 + size - tp.measureText(m.timeLabel) - 8f else x0 + 8f
+        canvas.drawText(m.timeLabel, tx, top + size + 26f, tp)
+    }
+
+    /** A message that carries a "photo" of the code editor (like Ahmed sharing a screenshot). */
+    private fun drawScreenshot(canvas: Canvas, code: String, x: Float, y: Float, wIn: Float, time: String): Float {
+        val hgt = screenshotH(code)
+        g.rect.set(x - 12f, y, x + wIn + 12f, y + hgt)
+        g.fill.color = g.c(g.p.codeBg); canvas.drawRoundRect(g.rect, 18f, 18f, g.fill)
+        g.fill.color = s.edBar; canvas.drawRoundRect(x - 12f, y, x + wIn + 12f, y + 54f, 18f, 18f, g.fill)
+        canvas.drawRect(x - 12f, y + 30f, x + wIn + 12f, y + 54f, g.fill)
+        val dots = intArrayOf(0xFFE8838A.toInt(), 0xFFE8C872.toInt(), 0xFF9FD3A6.toInt())
+        for (i in 0..2) { g.fill.color = g.alpha(dots[i], 0.85f); canvas.drawCircle(x + 14f + i * 22f, y + 27f, 7f, g.fill) }
+        val fp = text.paint(TextKit.Face.MONO, 22f, g.c(g.p.textMuted))
+        canvas.drawText("main.py", x + wIn - fp.measureText("main.py"), y + 35f, fp)
+        val np = text.paint(TextKit.Face.MONO, 22f, g.c(g.p.lineNumber))
+        code.split('\n').forEachIndexed { i, _ -> canvas.drawText((i + 1).toString(), x + 4f, y + 54f + 22f + i * 40f + 18f, np) }
+        drawHighlighted(canvas, code, x + 40f, y + 54f + 14f, 28f, 40f)
+        // time chip over the photo, like a real image message
+        val tp = text.paint(TextKit.Face.REGULAR, 20f, 0xFFFFFFFF.toInt())
+        val tw = tp.measureText(time) + 20f
+        g.rect.set(x - 4f, y + hgt - 38f, x - 4f + tw, y + hgt - 10f)
+        g.fill.color = 0x66000000; canvas.drawRoundRect(g.rect, 14f, 14f, g.fill)
+        canvas.drawText(time, x + 6f, y + hgt - 17f, tp)
+        return hgt
+    }
+
     private fun drawMessage(canvas: Canvas, m: ChatMessageView, l: Laid, top: Float, grouped: Boolean = false) {
+        if (m.kind == MessageKind.STICKER) { drawSticker(canvas, m, top); return }
         val x0 = if (m.outgoing) 30f else w - 2 * avatarR - 30f - l.bubbleW
         val x1 = x0 + l.bubbleW
         val y1 = top + l.bubbleH
@@ -347,8 +416,9 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         val iw = l.bubbleW - 44f
         var y = top + 12f
         l.name?.let { g.drawRtl(canvas, it, ix, iw, y); y += it.height + 2f }
+        if (m.codeScreenshot && m.code != null) { y += 4f + drawScreenshot(canvas, m.code ?: "", ix, y + 4f, iw, m.timeLabel) + 10f }
         l.body?.let { g.drawRtl(canvas, it, ix, iw, y); y += it.height }
-        l.code?.let { cl ->
+        if (!m.codeScreenshot) l.code?.let { cl ->
             y += 10f
             g.rect.set(ix, y, ix + iw, y + cl.height + 22f)
             g.fill.color = g.c(g.p.codeBg); canvas.drawRoundRect(g.rect, 14f, 14f, g.fill)
@@ -461,8 +531,8 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
     }
 
     /** Highlighted LTR code at (x, y) top-left. */
-    fun drawHighlighted(canvas: Canvas, code: String, x: Float, y: Float, size: Float) {
-        val lh = size * 1.32f
+    fun drawHighlighted(canvas: Canvas, code: String, x: Float, y: Float, size: Float, lineH: Float = size * 1.32f) {
+        val lh = lineH
         for ((i, line) in code.split('\n').withIndex()) {
             var cx = x
             val base = y + i * lh + size

@@ -39,6 +39,12 @@ data class Meta(
     val groupName: String? = null,
     /** Publishing kit written by the AI: description, 5 TikTok + 5 Instagram hashtags, pinned comment. */
     val publish: PublishKit? = null,
+    /** "phone" (phone mock-up) or "large" (the app screen fills the whole safe area). */
+    val frame: String = "phone",
+    /** Messenger accent: green, blue, purple, amber. */
+    val chatColor: String = "green",
+    /** Automatic celebration sticker after the first successful run. */
+    val celebrate: Boolean = true,
 )
 
 @Serializable
@@ -147,6 +153,10 @@ sealed class Scene {
         val code: String? = null,
         val reactions: List<String> = emptyList(),
         val challenge: Boolean = false,
+        /** Sticker sent right after the message: party, star, trophy, heart, rocket, thumbs. */
+        val sticker: String? = null,
+        /** How `code` is shown: "inline" (code box) or "screenshot" (a photo of the editor). */
+        val codeStyle: String = "inline",
         override val durationMs: Long? = null,
         override val say: Boolean = false,
         override val sfx: String? = null,

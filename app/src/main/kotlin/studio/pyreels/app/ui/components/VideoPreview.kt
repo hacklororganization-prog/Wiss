@@ -56,10 +56,12 @@ fun VideoPreview(
     controls: Boolean = true,
     startAtMs: Long = 0,
     onTime: (Long) -> Unit = {},
+    muted: Boolean = false,
+    loop: Boolean = false,
 ) {
     val ui = LocalUi.current
     val context = LocalContext.current
-    val renderer = remember(video.scenario) { FrameRenderer(context, video.scenario) }
+    val renderer = remember(video) { FrameRenderer(context, video.scenario).apply { setChapters(video.timeline) } }
     val player = remember { PreviewPlayer() }
     var playing by remember(video) { mutableStateOf(autoPlay) }
     var time by remember(video) { mutableLongStateOf(startAtMs.coerceIn(0, video.timeline.totalMs)) }
@@ -69,12 +71,14 @@ fun VideoPreview(
     LaunchedEffect(playing, video) {
         if (playing) {
             if (time >= total - 50) time = 0
-            player.play(video, time, withAudio = true)
+            player.play(video, time, withAudio = !muted)
             while (playing) {
                 withFrameNanos { }
                 time = player.positionMs().coerceAtMost(total)
                 onTime(time)
-                if (time >= total) { playing = false }
+                if (time >= total) {
+                    if (loop) { time = 0; player.play(video, 0, withAudio = !muted) } else playing = false
+                }
             }
             player.stop()
         } else player.stop()

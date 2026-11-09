@@ -36,7 +36,7 @@ class Layer(
 
 // ---------------- Chat ----------------
 
-enum class MessageKind { TEXT, ANALOGY, REVEAL, ENGAGE }
+enum class MessageKind { TEXT, ANALOGY, REVEAL, ENGAGE, STICKER }
 
 class ChatMessageView(
     val id: Int,
@@ -58,6 +58,10 @@ class ChatMessageView(
     val challenge: Boolean = false,
     /** Word index highlighted by voice karaoke (-1 = none). */
     val karaokeWord: Int = -1,
+    val sticker: String? = null,
+    val codeScreenshot: Boolean = false,
+    /** Milliseconds since the message appeared (drives sticker confetti). */
+    val ageMs: Long = 0,
 )
 
 class ChatView(

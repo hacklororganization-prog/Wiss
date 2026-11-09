@@ -24,6 +24,9 @@ data class Brief(
     val voices: Map<String, String> = emptyMap(),
     val targetSeconds: Int = Limits.TARGET_SECONDS,
     val theme: String = "calm-dark",
+    val frame: String = "phone",
+    val chatColor: String = "green",
+    val celebrate: Boolean = true,
     val notes: String = "",
 ) {
     fun normalized(): Brief = copy(

@@ -59,7 +59,7 @@ class VideoExporter(private val context: Context) {
         val ranges = options.ranges ?: listOf(0L until timeline.totalMs)
         val totalMs = ranges.sumOf { it.last - it.first + 1 }
         val totalFrames = (totalMs * options.fps / 1000).toInt()
-        val renderer = FrameRenderer(context, video.scenario)
+        val renderer = FrameRenderer(context, video.scenario).apply { setChapters(timeline) }
 
         val mixer = AudioMixer(timeline, video.voicePcm, options.mix)
         mixer.prepare()

@@ -103,7 +103,9 @@
     {
       "type": "chat",
       "from": "ahmed",
-      "text": "يعني أكتب الكلام بين القوسين؟"
+      "text": "يعني أكتبها هكذا؟",
+      "code": "print(\"أهلًا\")",
+      "codeStyle": "screenshot"
     },
     {
       "type": "chat",

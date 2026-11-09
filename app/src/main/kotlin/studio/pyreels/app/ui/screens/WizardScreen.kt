@@ -212,6 +212,15 @@ fun WizardScreen(nav: Navigator, route: Route.Wizard, modifier: Modifier, vm: Wi
                     FilterChip(selected = b.theme == "calm-dark", onClick = { vm.update { it.copy(theme = "calm-dark") } }, label = { Text(ui.t("داكن هادئ", "Calm dark")) })
                     FilterChip(selected = b.theme == "calm-light", onClick = { vm.update { it.copy(theme = "calm-light") } }, label = { Text(ui.t("فاتح هادئ", "Calm light")) })
                 }
+                SectionTitle(ui.t("شكل الفيديو", "Video look"))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FilterChip(selected = b.frame == "phone", onClick = { vm.update { it.copy(frame = "phone") } }, label = { Text(ui.t("هاتف", "Phone")) })
+                    FilterChip(selected = b.frame == "large", onClick = { vm.update { it.copy(frame = "large") } }, label = { Text(ui.t("شاشة كبيرة", "Large screen")) })
+                }
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    CHAT_COLORS.forEach { (k, v) -> FilterChip(selected = b.chatColor == k, onClick = { vm.update { it.copy(chatColor = k) } }, label = { Text(if (ui.english) k else v) }) }
+                }
+                ToggleRow(ui.t("ملصق احتفال عند أول نجاح 🎉", "Celebration sticker at the first win 🎉"), b.celebrate) { v -> vm.update { it.copy(celebrate = v) } }
                 OutlinedTextField(b.notes, { v -> vm.update { it.copy(notes = v) } }, label = { Text(ui.t("ملاحظات إضافية", "Extra notes")) }, modifier = Modifier.fillMaxWidth(), minLines = 2)
             }
             Button(onClick = {
@@ -251,6 +260,8 @@ fun WizardScreen(nav: Navigator, route: Route.Wizard, modifier: Modifier, vm: Wi
         )
     }
 }
+
+val CHAT_COLORS = linkedMapOf("green" to "أخضر", "blue" to "أزرق", "purple" to "بنفسجي", "amber" to "كهرماني")
 
 @Composable
 fun ToggleRow(label: String, value: Boolean, onChange: (Boolean) -> Unit) {

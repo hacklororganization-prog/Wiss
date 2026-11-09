@@ -147,7 +147,7 @@ class ExportService : Service() {
         save(cap, "${base}_caption.txt", Storage.Kind.TEXT)
         // cover
         val bmp = Bitmap.createBitmap(Limits.WIDTH, Limits.HEIGHT, Bitmap.Config.ARGB_8888)
-        val renderer = FrameRenderer(this, prepared.scenario)
+        val renderer = FrameRenderer(this, prepared.scenario).apply { setChapters(prepared.timeline) }
         val canvas = Canvas(bmp)
         if (coverTimeMs != null) renderer.draw(canvas, prepared.timeline.frameAt(coverTimeMs)) else renderer.drawCover(canvas)
         val coverFile = File(dir, "${base}_cover.png")
