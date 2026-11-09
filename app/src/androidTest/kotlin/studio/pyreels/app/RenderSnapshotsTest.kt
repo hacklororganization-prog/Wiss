@@ -24,7 +24,7 @@ class RenderSnapshotsTest {
 
     @Test
     fun renderSnapshots() {
-        val dir = File(context.getExternalFilesDir(null), "snapshots").apply { deleteRecursively(); mkdirs() }
+        val dir = File(context.filesDir, "snapshots").apply { deleteRecursively(); mkdirs() }
         var count = 0
         for ((sample, prefix) in listOf("samples/02-variables.pyreels.json" to "a", "samples/03-if.pyreels.json" to "b")) {
             val s = ScenarioValidator.parse(Resources.text(sample)).scenarios.single()

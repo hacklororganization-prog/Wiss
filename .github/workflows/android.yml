@@ -84,7 +84,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
             ./gradlew --no-daemon :app:connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true
-            adb pull /sdcard/Android/data/studio.pyreels.app/files/snapshots snapshots || true
+            mkdir -p snapshots && adb exec-out run-as studio.pyreels.app tar c files/snapshots > snapshots/s.tar && tar xf snapshots/s.tar -C snapshots --strip-components=2 || true
             for f in snapshots/*.jpg; do echo "SNAP-BEGIN $(basename $f)"; base64 -w 4000 "$f"; echo "SNAP-END"; done || true
       - if: always()
         uses: actions/upload-artifact@v4
