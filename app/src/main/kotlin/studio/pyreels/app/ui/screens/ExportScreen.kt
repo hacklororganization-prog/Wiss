@@ -61,6 +61,7 @@ import studio.pyreels.app.ui.components.ProblemRow
 import studio.pyreels.app.ui.components.SectionTitle
 import studio.pyreels.app.ui.components.VideoPreview
 import studio.pyreels.app.ui.theme.LocalUi
+import studio.pyreels.core.publish.PublishPack
 import studio.pyreels.core.quality.QualityChecker
 import studio.pyreels.core.quality.QualityReport
 import studio.pyreels.core.validate.ScenarioValidator
@@ -159,7 +160,7 @@ fun ExportScreen(nav: Navigator, projectId: Long, modifier: Modifier, vm: Export
                     OutlinedButton(onClick = { pickTree.launch(null) }) { Text(if (tree == null) ui.t("اختيار مجلد للحفظ (اختياري)", "Choose a folder (optional)") else ui.t("المجلد: محدَّد ✓", "Folder: selected ✓")) }
                     if (tree != null) TextButton(onClick = { tree = null }) { Text(ui.t("الافتراضي", "Default")) }
                 }
-                Text(ui.t("الافتراضي: Movies/PyReelsStudio", "Default: Movies/PyReelsStudio"), color = Muted, style = MaterialTheme.typography.bodySmall)
+                Text(ui.t("الافتراضي: DCIM/PyReelsStudio (يظهر في المعرض)، والنصوص في Download/PyReelsStudio", "Default: DCIM/PyReelsStudio (shows in the gallery); texts in Download/PyReelsStudio"), color = Muted, style = MaterialTheme.typography.bodySmall)
             }
             video?.let { v ->
                 CalmCard {
@@ -204,6 +205,24 @@ fun ExportScreen(nav: Navigator, projectId: Long, modifier: Modifier, vm: Export
                             OutlinedButton(onClick = { shareUri(context, uri, "video/mp4") }) { Text(ui.t("مشاركة", "Share")) }
                             OutlinedButton(onClick = { saveVideoAs.launch("${video?.scenario?.meta?.lesson?.id ?: "video"}.mp4") }) { Text(ui.t("حفظ باسم…", "Save as…")) }
                         }
+                    }
+                }
+            }
+            video?.scenario?.let { sc ->
+                val cap = remember(sc) { PublishPack.caption(sc) }
+                CalmCard {
+                    SectionTitle(ui.t("حزمة الانتشار", "Reach kit"))
+                    if (sc.meta.publish == null) Text(ui.t("لم يكتبها الذكاء الاصطناعي؛ هذه نسخة تلقائية من القوالب.", "Not written by the AI; this is an automatic version."), color = Muted, style = MaterialTheme.typography.bodySmall)
+                    Text(cap.description, style = MaterialTheme.typography.bodyMedium)
+                    Text("TikTok", style = MaterialTheme.typography.labelLarge)
+                    Text(cap.tiktokHashtags.joinToString(" "), color = MaterialTheme.colorScheme.primary)
+                    Text("Instagram", style = MaterialTheme.typography.labelLarge)
+                    Text(cap.instagramHashtags.joinToString(" "), color = MaterialTheme.colorScheme.primary)
+                    Text(ui.t("التعليق المثبّت: ", "Pinned comment: ") + cap.pinnedComment, style = MaterialTheme.typography.bodySmall, color = Muted)
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedButton(onClick = { copyText(context, cap.tiktokText()) }) { Text(ui.t("نسخ لتيك توك", "Copy for TikTok")) }
+                        OutlinedButton(onClick = { copyText(context, cap.instagramText()) }) { Text(ui.t("نسخ لإنستغرام", "Copy for Instagram")) }
+                        OutlinedButton(onClick = { copyText(context, cap.pinnedComment) }) { Text(ui.t("نسخ التعليق", "Copy comment")) }
                     }
                 }
             }

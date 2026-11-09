@@ -26,15 +26,19 @@ class EditorPainter(private val g: Gfx, private val w: Float, private val h: Flo
         g.fill.color = s.edBg
         canvas.drawRect(0f, 0f, w, h, g.fill)
         val kbH = kbFull * code.keyboard
-        val editorBottom = h - symH - kbH
+        val termH0 = 400f * code.terminalVisible
+        val hasPanel = code.vars.isNotEmpty() || code.iteration != null || code.stack.isNotEmpty()
+        val panelTop = h - max(termH0, kbH + symH) - 176f
+        // the code area ends above the variables panel and the terminal: no box on top of the code
+        val editorBottom = if (hasPanel) min(h - symH - kbH, panelTop - 12f) else min(h - symH - kbH, h - termH0)
         val noteShift = code.note?.let { noteHeight(it.text) * it.appear } ?: 0f
         drawCode(canvas, code, editorBottom, noteShift)
         drawAppBar(canvas, code)
-        drawSymbolBar(canvas, code, editorBottom)
+        if (code.terminalVisible < 0.99f) drawSymbolBar(canvas, code, h - symH - kbH)
         if (kbH > 1f) drawKeyboard(canvas, code, h - kbH)
         val termH = 400f * code.terminalVisible
-        if (code.terminalVisible <= 0.01f || code.terminal.isEmpty()) drawFab(canvas, code, editorBottom)
-        if (code.vars.isNotEmpty() || code.iteration != null || code.stack.isNotEmpty()) drawTracePanel(canvas, code, h - max(termH, kbH + symH) - 176f)
+        if (code.terminalVisible <= 0.01f || code.terminal.isEmpty()) drawFab(canvas, code, min(editorBottom, h - symH - kbH))
+        if (hasPanel) drawTracePanel(canvas, code, panelTop)
         if (termH > 1f && code.terminal.isNotEmpty()) drawTerminal(canvas, code, h - termH)
         code.note?.let { drawNotification(canvas, it.from, it.text, it.appear, it.karaokeWord) }
     }

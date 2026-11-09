@@ -1,5 +1,6 @@
 package studio.pyreels.core.publish
 
+import studio.pyreels.core.model.PublishKit
 import studio.pyreels.core.model.Scenario
 import studio.pyreels.core.model.Scene
 import studio.pyreels.core.model.castById
@@ -68,30 +69,59 @@ object PublishPack {
         return "%02d:%02d:%02d,%03d".format(h, m, s, r)
     }
 
-    data class Caption(val hookLine: String, val description: String, val hashtags: List<String>, val pinnedComment: String) {
+    data class Caption(
+        val hookLine: String,
+        val description: String,
+        val tiktokHashtags: List<String>,
+        val instagramHashtags: List<String>,
+        val pinnedComment: String,
+    ) {
+        val hashtags get() = (tiktokHashtags + instagramHashtags).distinct()
+        fun tiktokText() = "$description\n\n${tiktokHashtags.joinToString(" ")}"
+        fun instagramText() = "$description\n\n${instagramHashtags.joinToString(" ")}"
         fun render() = buildString {
-            append(hookLine).append("\n\n").append(description).append("\n\n")
-            append(hashtags.joinToString(" ")).append("\n\n")
+            append(hookLine).append("\n\n")
+            append("— TikTok —\n").append(tiktokText()).append("\n\n")
+            append("— Instagram —\n").append(instagramText()).append("\n\n")
             append("📌 تعليق مثبّت:\n").append(pinnedComment).append('\n')
         }
     }
 
-    fun caption(s: Scenario): Caption {
-        val hook = s.scenes.filterIsInstance<Scene.HookPredict>().firstOrNull()
+    fun normalizeTag(t: String): String? {
+        val core = t.trim().removePrefix("#").replace(Regex("\\s+"), "_").replace("#", "").trim('_')
+        return if (core.length < 2) null else "#" + core.take(30)
+    }
+
+    /** Local fallback kit (used when the scenario has no AI-written `meta.publish`). */
+    fun localKit(s: Scenario): PublishKit {
         val key = s.scenes.filterIsInstance<Scene.KeySentence>().firstOrNull()?.text
+        val ep = s.meta.series.episode?.let { "الحلقة $it: " } ?: ""
+        val concept = s.meta.lesson.concept.replace(Regex("[^\\p{L}\\p{N}_]"), "_")
+        val lang = s.cast.firstOrNull { it.role == "teacher" }?.let { it.language ?: it.id } ?: "python"
+        val langTag = "#" + lang.replace("+", "p").replace("#", "sharp").lowercase()
+        val tiktok = listOf("#تعلم_البرمجة", langTag, "#برمجة_للمبتدئين", "#LearnOnTikTok", "#coding").distinct()
+        val insta = listOf("#تعلم_البرمجة", langTag, "#programming", "#codinglife", "#${concept}_$lang").distinct()
         val teaser = s.scenes.filterIsInstance<Scene.Teaser>().firstOrNull()
         val challenge = s.scenes.filterIsInstance<Scene.Chat>().lastOrNull { it.challenge }?.text ?: teaser?.challenge
-        val langs = s.cast.filter { it.role == "teacher" }.mapNotNull { it.language ?: it.id }
+        return PublishKit(
+            description = ("$ep${s.meta.title} في 90 ثانية مع أحمد 👀 " + (key?.let { "| $it " } ?: "") + "توقّع الناتج قبل التشغيل واكتبه في التعليقات!").take(220),
+            tiktokHashtags = (tiktok + listOf("#برمجة", "#tech")).distinct().take(5),
+            instagramHashtags = (insta + listOf("#برمجة", "#developer")).distinct().take(5),
+            pinnedComment = (challenge ?: "ما ناتج الكود في بداية الفيديو؟ اكتب توقّعك 👇").take(200),
+        )
+    }
+
+    fun caption(s: Scenario): Caption {
+        val hook = s.scenes.filterIsInstance<Scene.HookPredict>().firstOrNull()
+        val kit = s.meta.publish ?: localKit(s)
+        val local = localKit(s)
+        fun five(list: List<String>, fallback: List<String>) = (list.mapNotNull { normalizeTag(it) } + fallback).distinct().take(5)
         val hookLine = "توقّع قبل أن أشغّل 👀 " + (hook?.code?.lines()?.firstOrNull()?.let { "«$it» … ماذا سيحدث؟" } ?: "")
-        val ep = s.meta.series.episode?.let { "الحلقة $it: " } ?: ""
-        val description = "$ep${s.meta.title} — درس قصير وهادئ مع أحمد.\n" + (key?.let { "جملة اليوم: $it" } ?: "")
-        val tags = LinkedHashSet<String>()
-        tags += "#تعلم_البرمجة"; tags += "#برمجة"; tags += "#للمبتدئين"
-        langs.forEach { l -> tags += "#" + l.replace("+", "p").replace("#", "sharp").lowercase() }
-        tags += "#" + s.meta.lesson.concept.replace(Regex("[^\\p{L}\\p{N}_]"), "_")
-        tags += "#coding"; tags += "#learntocode"
-        val pinned = (challenge ?: "ما ناتج الكود في بداية الفيديو؟ اكتب توقّعك 👇") + "\n" + (teaser?.text ?: "")
-        return Caption(hookLine.trim(), description.trim(), tags.toList(), pinned.trim())
+        return Caption(
+            hookLine.trim(), kit.description.trim(),
+            five(kit.tiktokHashtags, local.tiktokHashtags), five(kit.instagramHashtags, local.instagramHashtags),
+            (kit.pinnedComment ?: local.pinnedComment ?: "").trim(),
+        )
     }
 
     /**

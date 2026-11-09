@@ -39,8 +39,8 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         val c = Canvas(bmp)
         c.drawColor(s.waWall)
         val r = Rng(20_24)
-        val glyphs = listOf("{ }", "</>", "( )", "#", "=", ":", "[ ]", "▶", "★", "♥", "✓", "π", ">>>")
-        val tp = text.paint(TextKit.Face.MONO_BOLD, 34f, s.waDoodle)
+        val glyphs = listOf("{ }", "</>", "( )", "#", "=", "[ ]", ">>>", "def", "if", "+=")
+        val tp = text.paint(TextKit.Face.MONO, 28f, s.waDoodle)
         var y = 40f
         var row = 0
         while (y < h + 40) {
@@ -56,11 +56,46 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         return bmp
     }
 
-    fun draw(canvas: Canvas, chat: ChatView) {
+    fun draw(canvas: Canvas, chat: ChatView, engage: studio.pyreels.core.timeline.EngageChipView? = null) {
         canvas.drawBitmap(wallpaper, 0f, 0f, null)
         drawMessages(canvas, chat)
         drawHeader(canvas, chat)
         drawInput(canvas, chat)
+        engage?.let { if (it.appear > 0.01f) drawEngageBar(canvas, it.actions, it.appear, it.heartPulse) }
+    }
+
+    /** The like / follow / share bar slides up and temporarily takes the place of the input bar. */
+    private fun drawEngageBar(canvas: Canvas, actions: List<String>, appear: Float, heart: Float) {
+        val top = h - inputH + (1f - appear) * inputH
+        canvas.save()
+        canvas.clipRect(0f, h - inputH, w, h)
+        g.fill.color = s.waBar
+        canvas.drawRect(0f, top, w, h, g.fill)
+        val n = actions.size
+        val gapX = 12f
+        val bw = (w - 28f - gapX * (n - 1)) / n
+        val cy = top + inputH / 2 - 4f
+        actions.forEachIndexed { i, a ->
+            val x1 = w - 14f - i * (bw + gapX) // RTL order: first action on the right
+            val x0 = x1 - bw
+            g.rect.set(x0, cy - 38f, x1, cy + 38f)
+            g.fill.color = if (i == 0) g.alpha(g.c(g.p.focus), 0.22f) else s.waInput
+            canvas.drawRoundRect(g.rect, 38f, 38f, g.fill)
+            val label = when (a) { "like" -> "إعجاب"; "follow" -> "متابعة"; else -> "مشاركة" }
+            val p = text.paint(TextKit.Face.SEMI, 30f, s.waText)
+            val lw = p.measureText(label)
+            val iconSize = 40f
+            val total = lw + iconSize + 14f
+            val start = (x0 + x1) / 2 + total / 2 // RTL: icon on the right of the label
+            val ix = start - iconSize / 2
+            when (a) {
+                "like" -> g.drawHeart(canvas, ix, cy, 17f * (1f + 0.15f * heart))
+                "follow" -> { canvas.save(); canvas.translate(ix, cy); canvas.scale(0.75f, 0.75f); g.drawFollow(canvas, 0f, 0f, s.waTick); canvas.restore() }
+                else -> { canvas.save(); canvas.translate(ix, cy); canvas.scale(0.75f, 0.75f); g.drawShare(canvas, 0f, 0f, s.waFab); canvas.restore() }
+            }
+            canvas.drawText(label, start - total, cy + 10f, p)
+        }
+        canvas.restore()
     }
 
     // ------------------------------------------------------------ header
@@ -195,6 +230,7 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
             val newest = layoutOf(msgs[lastK], grouped(lastK))
             val shift = (1f - chat.scroll) * (newest.totalH + (if (grouped(lastK)) 6f else gap))
             var firstTop = y
+            var reachedFirst = false
             for (k in msgs.indices.reversed()) {
                 val m = msgs[k]
                 val gr = grouped(k)
@@ -215,41 +251,64 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
                     }
                 } else drawMessage(canvas, m, l, top, gr)
                 firstTop = top
+                if (k == 0) reachedFirst = true
                 y = y - l.totalH - (if (gr) 6f else gap)
             }
             // date pill + encryption notice above the first message when there is room
-            if (firstTop - 236f > listTop) drawPills(canvas, firstTop - 226f)
-        } else drawPills(canvas, listTop + 24f)
+            if (reachedFirst) drawSystem(canvas, firstTop - 22f - sysHeight)
+        } else drawSystem(canvas, listTop + 24f)
         canvas.restore()
     }
 
-    /** A centred pill with one line of text; returns its bottom. Text is measured exactly and centred on both axes. */
-    private fun pill(canvas: Canvas, label: String, top: Float, bg: Int, fg: Int, size: Float, lock: Boolean = false): Float {
-        val tp = text.paint(TextKit.Face.SEMI, size, fg)
-        val fm = tp.fontMetrics
-        val textW = tp.measureText(label)
-        val iconW = if (lock) size * 0.9f else 0f
-        val padX = 26f
-        val hgt = (fm.descent - fm.ascent) * 0.82f + 22f
-        val pw = textW + iconW + padX * 2
-        val x0 = w / 2 - pw / 2
-        g.rect.set(x0, top, x0 + pw, top + hgt)
-        g.fill.color = g.alpha(0xFF000000.toInt(), if (s.dark) 0.18f else 0.06f)
-        canvas.drawRoundRect(x0, top + 3f, x0 + pw, top + hgt + 3f, 16f, 16f, g.fill)
-        g.fill.color = bg; canvas.drawRoundRect(g.rect, 16f, 16f, g.fill)
-        val baseline = top + hgt / 2 - (fm.ascent + fm.descent) / 2
-        // RTL: the lock icon sits at the right, the text to its left
-        if (lock) g.iconLock(canvas, x0 + pw - padX - iconW / 2, top + hgt / 2, size * 0.8f, fg)
-        canvas.drawText(label, x0 + padX, baseline, tp)
-        return top + hgt
+    // ------------------------------------------------------------ system messages (start of the chat)
+
+    private class SysItem(val layout: StaticLayout, val bg: Int, val fg: Int, val lock: Boolean, val pillW: Float, val pillH: Float)
+
+    private val sysItems: List<SysItem> by lazy {
+        val teachers = scenario.cast.filter { it.role == "teacher" }
+        val creator = teachers.firstOrNull()?.let { g.nameOf(it.id) } ?: "المعلّم"
+        val group = scenario.meta.groupName ?: "مجموعة ${scenario.meta.title}"
+        val items = ArrayList<SysItem>()
+        fun add(t: String, bg: Int, fg: Int, size: Float, lock: Boolean = false, maxW: Float = w - 140f) {
+            val iconW = if (lock) size + 10f else 0f
+            val l = text.layout(t, (maxW - iconW).toInt(), size, fg, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_CENTER, 1, spacing = 0.95f)
+            val pw = text.maxLineWidth(l) + iconW + 44f
+            items += SysItem(l, bg, fg, lock, pw, l.height + 22f)
+        }
+        add("اليوم", s.waPill, s.waTime, 26f)
+        add("الرسائل والمكالمات مشفّرة تمامًا بين الطرفين. لا يمكن لأحد خارج هذه الدردشة قراءتها أو الاستماع إليها.", s.waNotice, s.waNoticeText, 24f, lock = true, maxW = w - 120f)
+        add("أنشأ $creator المجموعة «$group»", s.waPill, s.waTime, 24f)
+        add("أضاف $creator أحمد", s.waPill, s.waTime, 24f)
+        teachers.drop(1).forEach { add("أضاف $creator ${g.nameOf(it.id)}", s.waPill, s.waTime, 24f) }
+        items
     }
 
-    /** The beginning of the conversation: date + system messages, like a real group chat. */
-    private fun drawPills(canvas: Canvas, y: Float) {
-        val teacher = scenario.cast.firstOrNull { it.role == "teacher" }?.let { g.nameOf(it.id) } ?: "المعلّم"
-        var yy = pill(canvas, "اليوم", y, s.waPill, s.waTime, 26f) + 16f
-        yy = pill(canvas, "أنشأ $teacher هذه المجموعة", yy, s.waNotice, s.waNoticeText, 24f, lock = true) + 10f
-        pill(canvas, "أضاف $teacher أحمد", yy, s.waNotice, s.waNoticeText, 24f)
+    private val sysGap = 12f
+    private val sysHeight: Float by lazy { sysItems.sumOf { (it.pillH + sysGap).toDouble() }.toFloat() }
+
+    /** Draws the system messages from [top]; they are a normal part of the list, so nothing overlaps them. */
+    private fun drawSystem(canvas: Canvas, top: Float) {
+        var y = top
+        for (it in sysItems) {
+            val x0 = w / 2 - it.pillW / 2
+            g.fill.color = g.alpha(0xFF000000.toInt(), if (s.dark) 0.18f else 0.06f)
+            canvas.drawRoundRect(x0, y + 2f, x0 + it.pillW, y + it.pillH + 2f, 14f, 14f, g.fill)
+            g.rect.set(x0, y, x0 + it.pillW, y + it.pillH)
+            g.fill.color = it.bg; canvas.drawRoundRect(g.rect, 14f, 14f, g.fill)
+            val textW = text.maxLineWidth(it.layout)
+            val iconW = if (it.lock) 34f else 0f
+            // the layout is centred inside its own width; shift so that [icon + text] is centred in the pill
+            val textCenter = w / 2 - iconW / 2
+            g.drawAt(canvas, it.layout, textCenter - it.layout.width / 2f, y + 11f)
+            if (it.lock) {
+                val firstLineW = it.layout.getLineWidth(0)
+                val lx = textCenter + firstLineW / 2 + 18f
+                val ly = y + 11f + (it.layout.getLineTop(0) + it.layout.getLineBottom(0)) / 2f
+                g.iconLock(canvas, lx, ly, 22f, it.fg)
+            }
+            @Suppress("UNUSED_VARIABLE") val unused = textW
+            y += it.pillH + sysGap
+        }
     }
 
     private fun bubble(canvas: Canvas, x0: Float, y0: Float, x1: Float, y1: Float, outgoing: Boolean, color: Int, tail: Boolean = true) {

@@ -65,6 +65,9 @@ class RenderSnapshotsTest {
                 val key = tl.scenes.first { it.scene is studio.pyreels.core.model.Scene.KeySentence }
                 at("anim-card", key.startMs + 550)
                 at("anim-hook", 420)
+                val eng = tl.scenes.first { it.scene is studio.pyreels.core.model.Scene.EngageMoment }
+                at("anim-engage", eng.startMs + 2_600)
+                at("start-chat", tl.scenes[2].startMs + tl.scenes[2].durationMs - 200)
             }
         }
         assertTrue(count > 10)

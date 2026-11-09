@@ -110,9 +110,8 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
             val s = 0.94f + 0.06f * layer.alpha
             canvas.scale(s, s, sw / 2, sh / 2)
             canvas.translate(0f, layer.offsetY)
-            layer.chat?.let { chat.draw(canvas, it) }
+            layer.chat?.let { chat.draw(canvas, it, frame.engageChip) }
             layer.code?.let { editor.draw(canvas, it) }
-            if (layer.stage == Stage.CHAT) frame.engageChip?.let { engageChip(canvas, it.actions, it.appear, it.heartPulse) }
             frame.caption?.let { cap ->
                 if (cap.appear > 0.01f) {
                     val l = text.layout(cap.words.joinToString(" "), (sw - 80).toInt(), 40f, palette.text.toInt(), TextKit.Face.SEMI, Layout.Alignment.ALIGN_CENTER, 1, cap.activeWord, palette.focus.toInt(), spacing = 0.95f)
@@ -163,10 +162,7 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
         g.fill.color = g.alpha(palette.surface.toInt(), 0.92f); canvas.drawRoundRect(g.rect, 30f, 30f, g.fill)
         g.fill.color = palette.focus.toInt(); canvas.drawCircle(cx + tw / 2 - 26f, y + 30f, 7f, g.fill)
         g.drawAt(canvas, l, cx - l.width / 2f - 8f, y + 30f - l.height / 2f)
-        if (f.watermark) {
-            val wm = text.layout("PyReels · ${scenario.meta.series.name ?: "تعلّم مع أحمد"}", 700, 26f, g.alpha(palette.textMuted.toInt(), 0.7f), TextKit.Face.REGULAR, Layout.Alignment.ALIGN_CENTER, 1, maxLines = 1)
-            g.drawAt(canvas, wm, cx - 350f, safeBottom + 12f)
-        }
+
     }
 
     private fun safeZones(canvas: Canvas) {

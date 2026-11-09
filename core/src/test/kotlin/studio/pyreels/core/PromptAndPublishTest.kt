@@ -19,10 +19,10 @@ class PromptAndPublishTest {
     @Test
     fun promptHasAllSectionsInOrder() {
         val p = PromptBuilder.build(PromptBuilder.Input(brief))
-        val heads = (1..12).map { p.indexOf("\n## $it. ") }
+        val heads = (1..14).map { p.indexOf("\n## $it. ") }
         assertTrue(heads.all { it > 0 }, heads.toString())
         assertEquals(heads.sorted(), heads)
-        listOf("hook_predict", "engage_moment", "\"\$schema\"", "return JSON only", "Self-check", "جافا", "name-undefined", "key_tap").forEach {
+        listOf("tiktokHashtags", "Viral publishing kit", "hook_predict", "engage_moment", "\"\$schema\"", "return JSON only", "Self-check", "جافا", "name-undefined", "key_tap").forEach {
             assertTrue(p.contains(it, ignoreCase = true), "missing $it")
         }
     }
@@ -79,6 +79,9 @@ class PromptAndPublishTest {
         val s = ScenarioValidator.parse(Resources.text("samples/02-variables.pyreels.json")).scenarios.single()
         val c = PublishPack.caption(s)
         assertTrue(c.hashtags.contains("#python"))
+        assertEquals(5, c.tiktokHashtags.size)
+        assertEquals(5, c.instagramHashtags.size)
+        assertEquals(s.meta.publish!!.description, c.description)
         assertTrue(c.pinnedComment.isNotBlank())
         val window = PublishPack.teaserWindow(Timeline.build(s))
         val len = window.sumOf { it.last - it.first + 1 }

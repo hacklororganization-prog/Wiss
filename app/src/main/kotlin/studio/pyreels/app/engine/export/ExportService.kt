@@ -190,7 +190,7 @@ class ExportService : Service() {
         val n = NotificationCompat.Builder(this, PyReelsApp.EXPORT_CHANNEL)
             .setSmallIcon(android.R.drawable.stat_sys_upload_done)
             .setContentTitle("اكتمل: $title")
-            .setContentText("محفوظ في Movies/${Storage.FOLDER}")
+            .setContentText("محفوظ في DCIM/${Storage.FOLDER}")
             .setContentIntent(pi)
             .setAutoCancel(true)
             .build()

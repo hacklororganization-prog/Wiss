@@ -967,6 +967,47 @@
             "groupName": {
               "type": "string",
               "maxLength": 30
+            },
+            "publish": {
+              "type": "object",
+              "description": "Viral publishing kit: short description, exactly 5 TikTok and 5 Instagram hashtags, pinned comment.",
+              "required": [
+                "description",
+                "tiktokHashtags",
+                "instagramHashtags"
+              ],
+              "properties": {
+                "description": {
+                  "type": "string",
+                  "minLength": 20,
+                  "maxLength": 220
+                },
+                "tiktokHashtags": {
+                  "type": "array",
+                  "minItems": 5,
+                  "maxItems": 5,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^#[^\\s#]{2,30}$"
+                  }
+                },
+                "instagramHashtags": {
+                  "type": "array",
+                  "minItems": 5,
+                  "maxItems": 5,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^#[^\\s#]{2,30}$"
+                  }
+                },
+                "pinnedComment": {
+                  "type": "string",
+                  "maxLength": 200
+                }
+              },
+              "additionalProperties": false
             }
           },
           "additionalProperties": false

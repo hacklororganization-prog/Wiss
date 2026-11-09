@@ -70,6 +70,16 @@ object AutoRepair {
                 val c = v.toInt().coerceIn(30, 180)
                 if (c.toDouble() != v || mm["targetSeconds"].toString().contains('"')) { mm["targetSeconds"] = JsonPrimitive(c); applied += "المدة المستهدفة ضُبطت إلى $c ثانية." }
             }
+            (mm["publish"] as? JsonObject)?.let { pub ->
+                val pm = pub.toMutableMap()
+                for (k in listOf("tiktokHashtags", "instagramHashtags")) {
+                    val arr = pm[k] as? JsonArray ?: continue
+                    val tags = arr.mapNotNull { (it as? JsonPrimitive)?.content?.let { t -> studio.pyreels.core.publish.PublishPack.normalizeTag(t) } }.distinct().take(5)
+                    if (tags != arr.map { (it as? JsonPrimitive)?.content }) applied += "نُسّقت الهاشتاغات في $k."
+                    pm[k] = JsonArray(tags.map { JsonPrimitive(it) })
+                }
+                mm["publish"] = JsonObject(pm)
+            }
             m["meta"] = JsonObject(mm)
         }
         (m["cast"] as? JsonArray)?.let { cast ->

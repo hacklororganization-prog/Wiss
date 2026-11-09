@@ -75,7 +75,7 @@ object Templates {
         if (b.includeChallenge) scenes += Scene.Chat("ahmed", "تحدٍّ لكم: غيّروا القيمة في الكود، ماذا سيُطبع؟ اكتبوا في التعليقات 👇", challenge = true)
         scenes += Scene.Teaser(teaserText.take(118), challenge = null, say = say)
 
-        return Scenario(
+        val draftScenario = Scenario(
             meta = Meta(
                 title = lesson.title.take(58), language = if (b.languageStyle == "english") "en" else "ar",
                 lesson = Lesson(lesson.id, lesson.concept, b.level), targetSeconds = b.targetSeconds, theme = b.theme,
@@ -84,6 +84,7 @@ object Templates {
             cast = cast(teachers),
             scenes = scenes,
         )
+        return draftScenario.copy(meta = draftScenario.meta.copy(publish = studio.pyreels.core.publish.PublishPack.localKit(draftScenario)))
     }
 
     private fun comparisonLine(teacher: String, lesson: CurriculumLesson): String = when (teacher) {

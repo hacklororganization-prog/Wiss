@@ -37,6 +37,16 @@ data class Meta(
     val ambient: String = "calm_pad",
     val watermark: Boolean = true,
     val groupName: String? = null,
+    /** Publishing kit written by the AI: description, 5 TikTok + 5 Instagram hashtags, pinned comment. */
+    val publish: PublishKit? = null,
+)
+
+@Serializable
+data class PublishKit(
+    val description: String,
+    val tiktokHashtags: List<String> = emptyList(),
+    val instagramHashtags: List<String> = emptyList(),
+    val pinnedComment: String? = null,
 )
 
 @Serializable

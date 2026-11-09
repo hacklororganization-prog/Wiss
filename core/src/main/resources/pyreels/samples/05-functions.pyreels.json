@@ -16,6 +16,24 @@
       "episode": 25,
       "previousRecap": "تعلّمنا أن set تحذف التكرار تلقائيًا.",
       "nextTeaser": "في الحلقة القادمة: المعاملات… مكوّنات الوصفة!"
+    },
+    "publish": {
+      "description": "الدالة وصفة تكتبها مرة وتطبخها متى شئت 🍳 كم مرة ستظهر «مرحبا»؟ توقّع!",
+      "tiktokHashtags": [
+        "#LearnOnTikTok",
+        "#تعلم_البرمجة",
+        "#python",
+        "#python_functions",
+        "#برمجة_للمبتدئين"
+      ],
+      "instagramHashtags": [
+        "#تعلم_البرمجة",
+        "#programming",
+        "#python",
+        "#الدوال",
+        "#developer"
+      ],
+      "pinnedComment": "اكتب دالة تطبع اسمك ثلاث مرات 👇"
     }
   },
   "cast": [

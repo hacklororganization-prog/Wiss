@@ -16,6 +16,24 @@
       "episode": 17,
       "previousRecap": "تعلّمنا أن while تكرّر حتى يصبح الشرط خطأ.",
       "nextTeaser": "في الحلقة القادمة: range… مسطرة تبدأ من الصفر!"
+    },
+    "publish": {
+      "description": "اكتب السطر مرة واحدة ودع الحلقة تكرّره 🔁 كم مرة سيُطبع؟ توقّع قبل التشغيل!",
+      "tiktokHashtags": [
+        "#LearnOnTikTok",
+        "#تعلم_البرمجة",
+        "#python",
+        "#python_for_loop",
+        "#برمجة_للمبتدئين"
+      ],
+      "instagramHashtags": [
+        "#تعلم_البرمجة",
+        "#programming",
+        "#python",
+        "#الحلقات",
+        "#codinglife"
+      ],
+      "pinnedComment": "كم مرة يُطبع السطر في range(5)؟ 👇"
     }
   },
   "cast": [

@@ -16,6 +16,24 @@
       "episode": 3,
       "previousRecap": "تعلّمنا أن print تُظهر ما بين القوسين.",
       "nextTeaser": "في الحلقة القادمة: كيف نسمّي المتغيرات بذكاء؟"
+    },
+    "publish": {
+      "description": "المتغير مجرد صندوق عليه اسم 📦 لكن ماذا يحدث عندما نغيّر ما بداخله؟ توقّع الناتج قبل التشغيل!",
+      "tiktokHashtags": [
+        "#LearnOnTikTok",
+        "#تعلم_البرمجة",
+        "#python",
+        "#python_variables",
+        "#برمجة_للمبتدئين"
+      ],
+      "instagramHashtags": [
+        "#تعلم_البرمجة",
+        "#programming",
+        "#python",
+        "#المتغيرات",
+        "#codinglife"
+      ],
+      "pinnedComment": "لو كتبنا x = x * 2 بعد السطر الثاني… كم تصبح x؟ 👇"
     }
   },
   "cast": [

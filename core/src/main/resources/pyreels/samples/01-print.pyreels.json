@@ -16,6 +16,24 @@
       "episode": 1,
       "previousRecap": "أهلًا بك في أول حلقة! اليوم نبدأ رحلتنا مع بايثون.",
       "nextTeaser": "في الحلقة القادمة: التعليقات… سطور لا يراها بايثون!"
+    },
+    "publish": {
+      "description": "أول سطر برمجة لك في 90 ثانية 👀 هل يطبع بايثون «5 + 2» أم 7؟ توقّع قبل التشغيل واكتب جوابك!",
+      "tiktokHashtags": [
+        "#LearnOnTikTok",
+        "#تعلم_البرمجة",
+        "#python",
+        "#python_print",
+        "#برمجة_للمبتدئين"
+      ],
+      "instagramHashtags": [
+        "#تعلم_البرمجة",
+        "#programming",
+        "#python",
+        "#بايثون",
+        "#codinglife"
+      ],
+      "pinnedComment": "تحدّي: ماذا يطبع print(\"2\" + \"2\")؟ اكتب توقّعك 👇"
     }
   },
   "cast": [

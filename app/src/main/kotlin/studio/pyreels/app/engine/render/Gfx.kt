@@ -28,7 +28,7 @@ class Skin(val p: Palette) {
     val waHeaderSub = if (dark) 0xFF8D9AA3.toInt() else 0xFFD4E6E0.toInt()
     val waTyping = if (dark) 0xFF4CC9A4.toInt() else 0xFFE4F7EE.toInt()
     val waWall = if (dark) 0xFF111B21.toInt() else 0xFFEDE6DA.toInt()
-    val waDoodle = if (dark) 0x0FFFFFFF else 0x14000000
+    val waDoodle = if (dark) 0x0BFFFFFF else 0x0F000000
     val waIn = if (dark) 0xFF202C33.toInt() else 0xFFFFFFFF.toInt()
     val waOut = if (dark) 0xFF1F5247.toInt() else 0xFFD7F2CF.toInt()
     val waText = if (dark) 0xFFE9EDEF.toInt() else 0xFF1B2328.toInt()

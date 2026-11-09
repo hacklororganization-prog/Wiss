@@ -67,6 +67,7 @@ Common optional fields on every scene: `say` (boolean, read aloud by TTS), `sfx`
 - **Allowed SFX ids:** ${SfxIds.ALL.joinToString(", ") { "`$it`" }}. Default sounds are automatic; only set `sfx` to override.
 - **Ambient moods (meta.ambient):** ${AmbientMoods.ALL.joinToString(", ") { "`$it`" }}.
 - **Themes (meta.theme):** `calm-dark`, `calm-light`. Use `${b.theme}`.
+- **Publishing kit (meta.publish, REQUIRED in your answer):** `description` (20–220 chars), `tiktokHashtags` (exactly 5), `instagramHashtags` (exactly 5), `pinnedComment` (≤ 200 chars). See section 13.
 - **Cast ids:** `ahmed` (role `learner`, always present) + teacher ids: ${b.teachers.joinToString(", ") { "`$it`" }} (role `teacher`, field `language` = same id).
 - **Code languages:** python, java, cpp, javascript, kotlin, csharp, go, rust, php, typescript, swift, c.
 - Python `run` scenes may use `"exec": "real"` (executed in a sandbox; the trace is derived from real execution). Every other language MUST use `"exec": "simulated"` with a correct `output` and `trace`.
@@ -129,6 +130,20 @@ Common optional fields on every scene: `say` (boolean, read aloud by TTS), `sfx`
 | ≈45–55 s | `engage_moment` (exactly one) | right after the first small win (first correct output): a warm message, then `bridge` back to the lesson |
 | 65–78 s | `reveal` + `common_mistake` | answer to the hook + one common beginner error shown calmly with its fix |
 | 78–90 s | `key_sentence` + `teaser` (LAST scene) | sentence of the day + teaser of the next lesson; a final challenge for the comments |
+
+**Seconds budget (plan it like this, then adjust):**
+
+| block | scenes | ≈ seconds | running total |
+|---|---|---|---|
+| hook | hook_predict | 3 | 3 |
+| recap | recap | 5 | 8 |
+| question + explanation | 5–7 chat + 1 analogy | 27–32 | ≈ 38 |
+| code | code_type + run | 12–15 | ≈ 52 |
+| engagement | 1 chat ("it works!") + engage_moment | 9–10 | ≈ 61 *(engage starts ≈ 48–52 s)* |
+| answer + mistake | reveal + 1 chat + common_mistake | 17–19 | ≈ 79 |
+| ending | 1 chat + key_sentence + challenge chat + teaser | 11–13 | ≈ 90 |
+
+A chat bubble of 6–8 words ≈ 3.5 s; 10–14 words ≈ 5 s. Ahmed types his own messages letter by letter, so keep his messages short (≤ 10 words).
 
 Approximate durations the engine uses: chat message ≈ 2.5–5 s (typing indicator + reading), analogy ≈ 4–6 s, code_type ≈ 0.05 s per character + 1.4 s, run ≈ 1.25 s per trace step + output, engage_moment ≈ 7 s, reveal ≈ 4–6 s, common_mistake ≈ 9–12 s, key_sentence ≈ 4.5 s, teaser ≈ 5–7 s.
 Place `engage_moment` so that the scenes before it sum to ≈ 45–50 s.
@@ -214,6 +229,7 @@ Place `engage_moment` so that the scenes before it sum to ≈ 45–50 s.
 - [ ] Every `from` id exists in `cast`; every `sfx` id is in the allowed list; every trace `line` exists in the code.
 - [ ] `run.output` is exactly what the code prints; errors are copied from the errors library.
 - [ ] `key_sentence` ≤ 10 words; a challenge for the comments exists.
+- [ ] `meta.publish` present: description ≤ 220 chars without spoilers, exactly 5 TikTok + 5 Instagram hashtags, all valid and unique.
 """,
         )
 
@@ -251,6 +267,32 @@ Place `engage_moment` so that the scenes before it sum to ≈ 45–50 s.
             """When `say` is true, the app reads the scene's text with TTS after converting code to natural Arabic speech using built-in rules, for example:
 `x = 5` → «إكس يساوي خمسة»، `x == 5` → «إكس يطابق خمسة»، `print(...)` → «دالة الطباعة»، `for i in range(3)` → «لكل آي في المدى من صفر إلى ثلاثة».
 Set `"speakCode": true` on scenes whose text contains code. Write a `spoken` override **only** when these default reading rules would be wrong. Pick error texts from the errors library above; never invent interpreter messages.
+""",
+        )
+
+        // 13
+        h(13, "Viral publishing kit (meta.publish)")
+        sb.append(
+            """Fill `meta.publish` for maximum professional reach on TikTok and Instagram Reels:
+- `description`: one or two short lines (≤ 220 chars) in the video's language: open with a curiosity hook tied to the "predict before I run" question (without giving the answer), state the single benefit, end with a soft call to comment the prediction. At most 2 emojis. No clickbait lies, no "follow for follow".
+- `tiktokHashtags`: **exactly 5**, ordered by priority: 1 broad high-volume learning tag (e.g. `#LearnOnTikTok`), 1 Arabic broad tag (e.g. `#تعلم_البرمجة`), 1 language tag (e.g. `#python`), 1 specific topic tag for today's concept (e.g. `#python_variables` or `#المتغيرات`), 1 audience tag (e.g. `#برمجة_للمبتدئين`).
+- `instagramHashtags`: **exactly 5**, a different mix tuned for Reels discovery: 1 Arabic broad, 1 English broad (`#programming`, `#coding`), 1 language, 1 topic, 1 community tag (`#codinglife`, `#developer`).
+- Hashtag format: starts with `#`, no spaces (use `_`), 2–30 characters, no punctuation, no duplicates, nothing banned or unrelated, no brand names of other apps.
+- `pinnedComment`: the comment the creator pins: today's challenge question + a nudge to answer (≤ 200 chars).
+""",
+        )
+
+        // 14
+        h(14, "Common failure modes to avoid")
+        sb.append(
+            """- Invalid JSON: trailing commas, unescaped double quotes inside strings (write `\"`), raw line breaks inside strings (write `\n`), comments, or markdown fences.
+- Revealing the hook's answer before the `reveal` scene (also not in the description).
+- More than one concept, or re-explaining what Ahmed learned in earlier episodes.
+- Long bubbles (> 4 lines), long code lines (> 38 chars), more than 12 code lines.
+- `run.output` that does not match what the code really prints; trace `line` numbers that do not exist; variables listed before the line that creates them.
+- Invented error messages; use the errors library text exactly.
+- Teachers mocking Ahmed; harsh words; pressure in the engagement moment.
+- Missing `meta.publish`, or not exactly 5 + 5 hashtags.
 """,
         )
         return sb.toString()

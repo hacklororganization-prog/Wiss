@@ -20,8 +20,9 @@ object Storage {
         val resolver = context.contentResolver
         if (Build.VERSION.SDK_INT >= 29) {
             val (collection, dir) = when (kind) {
-                Kind.VIDEO -> MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY) to Environment.DIRECTORY_MOVIES
-                Kind.IMAGE -> MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY) to Environment.DIRECTORY_PICTURES
+                // DCIM: videos and covers appear directly in the phone's gallery
+                Kind.VIDEO -> MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY) to Environment.DIRECTORY_DCIM
+                Kind.IMAGE -> MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY) to Environment.DIRECTORY_DCIM
                 else -> MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY) to Environment.DIRECTORY_DOWNLOADS
             }
             val values = ContentValues().apply {
@@ -39,7 +40,7 @@ object Storage {
         // API 26–28: public directory (WRITE_EXTERNAL_STORAGE, maxSdkVersion 28) + media scan.
         return try {
             val base = when (kind) {
-                Kind.VIDEO -> Environment.DIRECTORY_MOVIES; Kind.IMAGE -> Environment.DIRECTORY_PICTURES; else -> Environment.DIRECTORY_DOWNLOADS
+                Kind.VIDEO, Kind.IMAGE -> Environment.DIRECTORY_DCIM; else -> Environment.DIRECTORY_DOWNLOADS
             }
             @Suppress("DEPRECATION")
             val dir = File(Environment.getExternalStoragePublicDirectory(base), FOLDER).apply { mkdirs() }

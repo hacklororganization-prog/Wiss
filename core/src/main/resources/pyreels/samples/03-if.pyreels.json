@@ -16,6 +16,24 @@
       "episode": 13,
       "previousRecap": "تعلّمنا أن == تسأل: هل القيمتان متساويتان؟",
       "nextTeaser": "في الحلقة القادمة: else… الخطة البديلة!"
+    },
+    "publish": {
+      "description": "كيف يتخذ البرنامج قرارًا؟ 🤔 شرط واحد يحدد كل شيء. توقّع ماذا سيُطبع قبل أن نشغّل!",
+      "tiktokHashtags": [
+        "#LearnOnTikTok",
+        "#تعلم_البرمجة",
+        "#python",
+        "#python_if",
+        "#برمجة_للمبتدئين"
+      ],
+      "instagramHashtags": [
+        "#تعلم_البرمجة",
+        "#programming",
+        "#python",
+        "#الشرط_if",
+        "#developer"
+      ],
+      "pinnedComment": "لو كان العمر 18 بالضبط، ماذا يُطبع؟ 👇"
     }
   },
   "cast": [

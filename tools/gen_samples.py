@@ -14,9 +14,29 @@ def mistake(eid, frm="python", say=False):
     if e.get("fixOutput"): d["fixOutput"] = e["fixOutput"]
     if say: d["say"] = True
     return d
+KITS = {
+ "py-print": ("أول سطر برمجة لك في 90 ثانية 👀 هل يطبع بايثون «5 + 2» أم 7؟ توقّع قبل التشغيل واكتب جوابك!",
+   ["#LearnOnTikTok", "#تعلم_البرمجة", "#python", "#python_print", "#برمجة_للمبتدئين"],
+   ["#تعلم_البرمجة", "#programming", "#python", "#بايثون", "#codinglife"], "تحدّي: ماذا يطبع print(\"2\" + \"2\")؟ اكتب توقّعك 👇"),
+ "py-variables": ("المتغير مجرد صندوق عليه اسم 📦 لكن ماذا يحدث عندما نغيّر ما بداخله؟ توقّع الناتج قبل التشغيل!",
+   ["#LearnOnTikTok", "#تعلم_البرمجة", "#python", "#python_variables", "#برمجة_للمبتدئين"],
+   ["#تعلم_البرمجة", "#programming", "#python", "#المتغيرات", "#codinglife"], "لو كتبنا x = x * 2 بعد السطر الثاني… كم تصبح x؟ 👇"),
+ "py-if": ("كيف يتخذ البرنامج قرارًا؟ 🤔 شرط واحد يحدد كل شيء. توقّع ماذا سيُطبع قبل أن نشغّل!",
+   ["#LearnOnTikTok", "#تعلم_البرمجة", "#python", "#python_if", "#برمجة_للمبتدئين"],
+   ["#تعلم_البرمجة", "#programming", "#python", "#الشرط_if", "#developer"], "لو كان العمر 18 بالضبط، ماذا يُطبع؟ 👇"),
+ "py-for": ("اكتب السطر مرة واحدة ودع الحلقة تكرّره 🔁 كم مرة سيُطبع؟ توقّع قبل التشغيل!",
+   ["#LearnOnTikTok", "#تعلم_البرمجة", "#python", "#python_for_loop", "#برمجة_للمبتدئين"],
+   ["#تعلم_البرمجة", "#programming", "#python", "#الحلقات", "#codinglife"], "كم مرة يُطبع السطر في range(5)؟ 👇"),
+ "py-functions": ("الدالة وصفة تكتبها مرة وتطبخها متى شئت 🍳 كم مرة ستظهر «مرحبا»؟ توقّع!",
+   ["#LearnOnTikTok", "#تعلم_البرمجة", "#python", "#python_functions", "#برمجة_للمبتدئين"],
+   ["#تعلم_البرمجة", "#programming", "#python", "#الدوال", "#developer"], "اكتب دالة تطبع اسمك ثلاث مرات 👇"),
+}
+
 def scenario(title, lid, concept, ep, recap, teaser, castl, scenes, theme="calm-dark", ambient="calm_pad"):
+    d, tt, ig, pin = KITS[lid]
     return {"schema": "pyreels/1", "meta": {"title": title, "language": "ar", "lesson": {"id": lid, "concept": concept, "level": "beginner"},
-        "targetSeconds": 90, "theme": theme, "ambient": ambient, "series": {"name": "بايثون مع أحمد", "episode": ep, "previousRecap": recap, "nextTeaser": teaser}},
+        "targetSeconds": 90, "theme": theme, "ambient": ambient, "series": {"name": "بايثون مع أحمد", "episode": ep, "previousRecap": recap, "nextTeaser": teaser},
+        "publish": {"description": d, "tiktokHashtags": tt, "instagramHashtags": ig, "pinnedComment": pin}},
         "cast": castl, "scenes": scenes}
 
 S = {}
