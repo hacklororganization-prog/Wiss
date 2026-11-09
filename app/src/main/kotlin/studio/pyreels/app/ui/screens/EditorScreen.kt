@@ -343,13 +343,8 @@ private fun VideoSettings(s: Scenario, edit: ((studio.pyreels.core.model.Meta) -
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             CHAT_COLORS.forEach { (k, v) -> FilterChip(selected = m.chatColor == k, onClick = { edit { it.copy(chatColor = k) } }, label = { Text(if (ui.english) k else v) }) }
         }
-        Text(ui.t("الخلفية الصوتية", "Ambient sound"), style = MaterialTheme.typography.titleSmall)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf("calm_pad" to ui.t("وسادة هادئة", "Calm pad"), "soft_rain" to ui.t("مطر خفيف", "Soft rain"), "warm_keys" to ui.t("نغمات دافئة", "Warm keys"), "none" to ui.t("بلا", "None")).forEach { (k, v) ->
-                FilterChip(selected = m.ambient == k, onClick = { edit { it.copy(ambient = k) } }, label = { Text(v) })
-            }
-        }
         ToggleRow(ui.t("ملصق احتفال عند أول نجاح 🎉", "Celebration sticker 🎉"), m.celebrate) { v -> edit { it.copy(celebrate = v) } }
+        ProfilePicturesCard()
         Spacer(Modifier.height(24.dp))
     }
 }

@@ -41,8 +41,8 @@ object Easing {
     fun lerp(a: Float, b: Float, x: Float) = a + (b - a) * x
 
     /** Standard motion durations (ms), all within the calm 280–450 ms range. */
-    const val ENTER_MS = 380L
-    const val EXIT_MS = 320L
-    const val STAGE_MS = 450L
+    const val ENTER_MS = 480L
+    const val EXIT_MS = 400L
+    const val STAGE_MS = 640L
     const val RISE_PX = 8f
 }

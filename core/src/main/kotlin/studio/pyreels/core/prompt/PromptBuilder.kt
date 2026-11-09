@@ -6,7 +6,6 @@ import studio.pyreels.core.brief.EpisodeRecord
 import studio.pyreels.core.brief.SeriesMemory
 import studio.pyreels.core.content.ContentRepository
 import studio.pyreels.core.content.CurriculumLesson
-import studio.pyreels.core.model.AmbientMoods
 import studio.pyreels.core.model.Limits
 import studio.pyreels.core.model.Personas
 import studio.pyreels.core.model.SfxIds
@@ -65,7 +64,7 @@ The viewer must feel: "my questions are normal, I'm learning with Ahmed, and I w
 Common optional fields on every scene: `say` (boolean, read aloud by TTS), `sfx` (one SFX id), `spoken` (explicit spoken text), `speakCode` (boolean), `transition` (`fade` | `slide` | `zoom`), `durationMs` (normally omit; the engine computes durations).
 
 - **Allowed SFX ids:** ${SfxIds.ALL.joinToString(", ") { "`$it`" }}. Default sounds are automatic; only set `sfx` to override.
-- **Ambient moods (meta.ambient):** ${AmbientMoods.ALL.joinToString(", ") { "`$it`" }}.
+- **Background audio:** none. Always set `meta.ambient` to `"none"`; the video uses only context sound effects (and the optional voice).
 - **Themes (meta.theme):** `calm-dark`, `calm-light`. Use `${b.theme}`. **Frame (meta.frame):** `${b.frame}`. **Chat colour (meta.chatColor):** `${b.chatColor}`. **Celebration (meta.celebrate):** `${b.celebrate}` (the app adds a 🎉 sticker after Ahmed's first message following the first run; use `sticker` sparingly elsewhere, at most once more).
 - **Screenshots:** a chat message with `code` and `"codeStyle": "screenshot"` is shown as a photo of the editor (great when Ahmed shares his attempt).
 - **Publishing kit (meta.publish, REQUIRED in your answer):** `description` (20–220 chars), `tiktokHashtags` (exactly 5), `instagramHashtags` (exactly 5), `pinnedComment` (≤ 200 chars). See section 13.
@@ -79,7 +78,7 @@ Common optional fields on every scene: `say` (boolean, read aloud by TTS), `sfx`
 - Code: max ${Limits.MAX_CODE_LINES} lines, max ${Limits.MAX_CODE_LINE_CHARS} characters per line; `trace` max 16 steps, max 6 variables per step; output max ${Limits.MAX_OUTPUT_LINES} lines.
 - Sentence of the day (`key_sentence`): ≤ ${Limits.MAX_KEY_SENTENCE_WORDS} words.
 - Scene durations: ${Limits.MIN_SCENE_MS / 1000.0}–${Limits.MAX_SCENE_MS / 1000} s each; the hook is exactly 3 s. No static scene longer than 6 s.
-- Total duration target ${b.targetSeconds} s (± 10 %), warning above ${Limits.WARN_SECONDS} s, impossible above ${Limits.HARD_CAP_SECONDS} s. Typical size: 22–32 scenes.
+- Total duration target ${b.targetSeconds} s (± 10 %), warning above ${Limits.WARN_SECONDS} s, impossible above ${Limits.HARD_CAP_SECONDS} s. Typical size: 18–26 scenes. The renderer keeps a calm, readable pace (slow typing, slow message arrival) and may run up to 35 % over the target rather than rush — so prefer fewer, shorter messages over many.
 - Cast: Ahmed + 1–4 teachers. Scenes: 6–60.
 
 **Impossible (never request):** images, photos, video clips, external audio, music, links, GIFs, emojis inside code, new scene types, new SFX ids, games, flashing or shaking effects.

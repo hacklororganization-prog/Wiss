@@ -18,3 +18,11 @@ Each ambiguous point was decided for the calmer, clearer, cheaper-to-render opti
 14. **Offline draft generator** (`Templates.draft`) creates a complete valid video from any roadmap lesson without an AI, so the app is useful on day one; the AI prompt is the premium path.
 15. **Extra libraries:** none beyond the brief's stack (Compose, Hilt, Room, Kotlin Serialization, Coroutines, Chaquopy). Navigation is a small state machine (no navigation library) to keep the APK small.
 16. **Python 3.11** is bundled with Chaquopy; the errors library records the version it was verified with and the test compares messages exactly with the same version.
+
+## Calm pace, no background bed, centred frame (revision)
+
+- **No continuous background audio.** The mixer plays only context sound effects and the optional voice; `meta.ambient` is kept in the schema for compatibility and ignored.
+- **Calm pace first.** Typing, message arrival, trace steps and transitions are slower, and reading time is budgeted at 2 words/s. When the comfortable durations exceed the target, the video may run up to 35 % longer (`Limits.CALM_STRETCH`) before any scene is compressed.
+- **Centred composition.** The phone and the cards have equal left and right margins; the safe-zone overlay still shows the platform UI areas.
+- **Profile pictures.** Gallery pictures (group, Ahmed, each language) are copied to private storage by `AvatarStore` and drawn by the same renderer in preview and export.
+- **Crash report.** `CrashLog` stores the last failure locally and shows it on the next launch with a copy button; an export that dies twice is not retried again.

@@ -8,6 +8,12 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -54,7 +60,7 @@ class MainActivity : ComponentActivity() {
         handleIntent(intent)
         // Resume exports interrupted by process death.
         lifecycleScope.launch {
-            val pending = withContext(Dispatchers.IO) { db.jobs().unfinished() }
+            val pending = runCatching { withContext(Dispatchers.IO) { db.jobs().unfinished() } }.getOrDefault(emptyList())
             if (pending.isNotEmpty()) ExportService.start(this@MainActivity)
         }
         setContent {
@@ -99,6 +105,7 @@ fun AppRoot(prefs: Prefs, incoming: String?, consumed: () -> Unit) {
     }
     BackHandler(enabled = nav.stack.size > 1) { nav.back() }
     val safeZones by prefs.safeZones.collectAsState()
+    CrashReportDialog()
     val mod = Modifier.fillMaxSize().safeDrawingPadding()
     when (val r = nav.current) {
         Route.Home -> HomeScreen(nav, mod)
@@ -111,4 +118,36 @@ fun AppRoot(prefs: Prefs, incoming: String?, consumed: () -> Unit) {
         Route.Series -> SeriesScreen(nav, mod)
         Route.Settings -> SettingsScreen(nav, prefs, mod)
     }
+}
+
+/** Shows the report of the previous failure (if any) once, with a copy button. */
+@Composable
+private fun CrashReportDialog() {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val ui = studio.pyreels.app.ui.theme.LocalUi.current
+    var report by remember { mutableStateOf(CrashLog.read(context)) }
+    val text = report ?: return
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = { CrashLog.clear(context); report = null },
+        title = { androidx.compose.material3.Text(ui.t("حدث خطأ في المرة السابقة", "Something failed last time")) },
+        text = {
+            androidx.compose.foundation.layout.Column {
+                androidx.compose.material3.Text(ui.t("انسخ التقرير وأرسله ليُصلَح الخطأ بدقة.", "Copy the report and send it so the problem can be fixed precisely."))
+                androidx.compose.material3.Text(
+                    text.take(700),
+                    style = androidx.compose.material3.MaterialTheme.typography.bodySmall.copy(textDirection = androidx.compose.ui.text.style.TextDirection.Ltr),
+                    modifier = Modifier.padding(top = 8.dp).heightIn(max = 220.dp).verticalScroll(rememberScrollState()),
+                )
+            }
+        },
+        confirmButton = {
+            androidx.compose.material3.TextButton(onClick = {
+                studio.pyreels.app.ui.screens.copyText(context, text)
+                CrashLog.clear(context); report = null
+            }) { androidx.compose.material3.Text(ui.t("نسخ التقرير", "Copy report")) }
+        },
+        dismissButton = {
+            androidx.compose.material3.TextButton(onClick = { CrashLog.clear(context); report = null }) { androidx.compose.material3.Text(ui.t("إغلاق", "Close")) }
+        },
+    )
 }

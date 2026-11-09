@@ -25,7 +25,7 @@ Unknown fields are ignored with a **warning** (forward compatibility); the impor
 | `targetSeconds` | 30–180 | 90 | the engine fits durations to it (± 10 %) |
 | `theme` | `calm-dark` \| `calm-light` | `calm-dark` | |
 | `series` | `{name, episode, previousRecap, nextTeaser}` | | series memory |
-| `ambient` | `calm_pad` \| `soft_rain` \| `warm_keys` \| `none` | `calm_pad` | very quiet generated bed, ducked under voice |
+| `ambient` | `none` | `none` | kept for compatibility; the renderer plays no background bed, only sound effects and voice |
 | `watermark` | boolean | `true` | small series watermark |
 | `groupName` | string ≤ 30 | `مجموعة <title>` | chat group header |
 

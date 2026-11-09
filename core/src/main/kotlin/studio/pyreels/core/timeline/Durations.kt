@@ -19,10 +19,10 @@ object DurationEstimator {
     fun readMs(text: String): Long {
         val w = words(text)
         if (w == 0) return 0
-        return ((w / Limits.WORDS_PER_SECOND) * 1000).roundToLong() + 500
+        return ((w / Limits.WORDS_PER_SECOND) * 1000).roundToLong() + 800
     }
 
-    fun typingIndicatorMs(text: String): Long = (450 + text.length * 9L).coerceIn(550, 1100)
+    fun typingIndicatorMs(text: String): Long = (800 + text.length * 14L).coerceIn(1000, 1900)
 
     /** Minimum on-screen time so the text is read at most at [Limits.WORDS_PER_SECOND]. */
     fun minReadMs(text: String): Long = ((words(text) / Limits.WORDS_PER_SECOND) * 1000).roundToLong() + 250
@@ -32,49 +32,49 @@ object DurationEstimator {
         min(if (outgoing) composeMs(text) else typingIndicatorMs(text), max(350L, d - minReadMs(text)))
 
     /** Ahmed types his own messages letter by letter in the input bar. */
-    fun composeMs(text: String): Long = (400 + text.length * 38L).coerceIn(900, 2600)
+    fun composeMs(text: String): Long = (600 + text.length * 55L).coerceIn(1300, 3600)
 
     /** Average typing time of code (natural typing ≈ 55 ms per char plus line pauses). */
-    fun codeTypingMs(code: String): Long = code.length * 52L + code.count { it == '\n' } * 160L + 400
+    fun codeTypingMs(code: String): Long = code.length * 72L + code.count { it == '\n' } * 240L + 600
 
     fun bounds(scene: Scene, voiceMs: Long? = null): SceneBounds {
         scene.durationMs?.let { val d = it.coerceIn(500, 20_000); return SceneBounds(d, d, d) }
         val voiceMin = voiceMs?.let { it + 600 } ?: 0L
         val b = when (scene) {
             is Scene.HookPredict -> return SceneBounds(Limits.HOOK_MS, Limits.HOOK_MS, Limits.HOOK_MS)
-            is Scene.Recap -> SceneBounds(4_000, 5_000, 7_000)
+            is Scene.Recap -> SceneBounds(4_500, 5_800, 8_000)
             is Scene.Chat -> {
-                val ideal = (if (scene.from == "ahmed") composeMs(scene.text) else typingIndicatorMs(scene.text)) + Easing.ENTER_MS + max(readMs(scene.text), 1_400) +
+                val ideal = (if (scene.from == "ahmed") composeMs(scene.text) else typingIndicatorMs(scene.text)) + Easing.ENTER_MS + max(readMs(scene.text), 2_000) +
                     (if (scene.code != null) 1_500 else 0) + (if (scene.reactions.isNotEmpty()) 600 else 0)
-                val typingMin = if (scene.from == "ahmed") composeMs(scene.text) * 3 / 4 else 450L
-                val minMs = max(1_800L, typingMin + max(minReadMs(scene.text), 1_000)) + (if (scene.code != null) 1_000 else 0)
+                val typingMin = if (scene.from == "ahmed") composeMs(scene.text) * 3 / 4 else 800L
+                val minMs = max(2_400L, typingMin + max(minReadMs(scene.text), 1_400)) + (if (scene.code != null) 1_000 else 0)
                 SceneBounds(minMs, max(ideal, minMs), (ideal * 1.4).roundToLong())
             }
             is Scene.Analogy -> {
-                val ideal = 900 + readMs(scene.title) + scene.items.size * 900L + readMs(scene.text ?: "")
+                val ideal = 1_200 + readMs(scene.title) + scene.items.size * 1_300L + readMs(scene.text ?: "")
                 SceneBounds((ideal * 0.8).roundToLong(), ideal, (ideal * 1.4).roundToLong())
             }
             is Scene.CodeType -> {
                 val typing = if (scene.typing == "instant") 400 else codeTypingMs(scene.code) + (if (scene.typo) 900 else 0)
-                val ideal = typing + 1_400 + readMs(scene.caption ?: "")
+                val ideal = typing + 1_800 + readMs(scene.caption ?: "")
                 SceneBounds(max(2_500, (typing * 0.55).roundToLong() + 1_000), ideal, min(Limits.MAX_SCENE_MS, ideal * 3 / 2))
             }
             is Scene.Run -> {
                 val steps = scene.trace.size
-                val ideal = 900 + steps * 1_250L + 600 + scene.output.length * 25L + 1_200
-                SceneBounds(max(2_500, 900 + steps * 750L + 1_200), ideal, min(Limits.MAX_SCENE_MS, ideal * 3 / 2))
+                val ideal = 1_000 + steps * 1_700L + 700 + scene.output.length * 30L + 1_600
+                SceneBounds(max(3_000, 1_000 + steps * 1_100L + 1_400), ideal, min(Limits.MAX_SCENE_MS, ideal * 3 / 2))
             }
             is Scene.EngageMoment -> SceneBounds(6_000, 7_000, 8_500)
             is Scene.Reveal -> {
-                val ideal = 1_000 + max(readMs(scene.text), 2_000) + 1_200
-                SceneBounds(3_500, ideal, ideal + 2_500)
+                val ideal = 1_200 + max(readMs(scene.text), 2_400) + 1_600
+                SceneBounds(4_200, ideal, ideal + 2_500)
             }
             is Scene.CommonMistake -> {
                 val ideal = 1_200 + 1_500 + readMs(scene.explain) + 600 + codeTypingMs(scene.fix) / 2 + 1_600
                 SceneBounds(max(7_000, ideal * 3 / 4), ideal, min(Limits.MAX_SCENE_MS, ideal * 3 / 2))
             }
-            is Scene.KeySentence -> SceneBounds(3_500, max(4_200, readMs(scene.text) + 1_500), 6_500)
-            is Scene.Teaser -> SceneBounds(4_000, 5_200L + (if (scene.challenge != null) 1_500 else 0), 9_000)
+            is Scene.KeySentence -> SceneBounds(4_200, max(5_000, readMs(scene.text) + 2_000), 7_500)
+            is Scene.Teaser -> SceneBounds(4_500, 6_000L + (if (scene.challenge != null) 1_800 else 0), 10_000)
         }
         if (voiceMin <= 0) return b
         val minMs = max(b.minMs, voiceMin)
@@ -89,6 +89,16 @@ object DurationEstimator {
 object DurationFitter {
 
     data class Fit(val durations: LongArray, val totalMs: Long, val targetMs: Long, val reachable: Boolean)
+
+    /**
+     * Calm pacing first: when the comfortable (ideal) durations run longer than the target, the
+     * video is allowed to run up to [Limits.CALM_STRETCH] × target before any scene is compressed.
+     */
+    fun calmTarget(bounds: List<SceneBounds>, targetMs: Long): Long {
+        val ideal = bounds.sumOf { it.idealMs }
+        val cap = minOf((targetMs * Limits.CALM_STRETCH).roundToLong(), Limits.HARD_CAP_SECONDS * 1000L - 2_000)
+        return ideal.coerceIn(minOf(targetMs, cap), maxOf(targetMs, cap))
+    }
 
     fun fit(bounds: List<SceneBounds>, targetMs: Long): Fit {
         val d = LongArray(bounds.size) { bounds[it].idealMs }

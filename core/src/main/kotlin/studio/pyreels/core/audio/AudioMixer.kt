@@ -15,7 +15,8 @@ data class MixSettings(
     val voiceGain: Float = 1.0f,
     val sfxGain: Float = 0.8f,
     val ambientGain: Float = 0.55f,
-    val ambientMood: String = "calm_pad",
+    /** No continuous background bed: only context sound effects and the voice. */
+    val ambientMood: String = "none",
     /** Ambient level reduction while a voice is speaking (0..1). */
     val duckDepth: Float = 0.65f,
     val targetLufs: Double = -16.0,

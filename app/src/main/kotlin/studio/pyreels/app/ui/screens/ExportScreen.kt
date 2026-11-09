@@ -76,6 +76,7 @@ class ExportViewModel @Inject constructor(
     val video = MutableStateFlow<PreparedVideo?>(null)
     val report = MutableStateFlow<QualityReport?>(null)
     val jobId = MutableStateFlow<Long?>(null)
+    val loadError = MutableStateFlow<String?>(null)
     @OptIn(ExperimentalCoroutinesApi::class)
     val job = jobId.flatMapLatest { id -> if (id == null) flowOf(null) else db.jobs().observe(id) }
     private var pid = -1L
@@ -84,14 +85,17 @@ class ExportViewModel @Inject constructor(
         if (pid == id) return
         pid = id
         viewModelScope.launch {
-            val s = projects.get(id)?.scenario() ?: return@launch
-            val v = engine.quick(s)
-            video.value = v
-            report.value = QualityChecker.check(s, v.timeline)
+            runCatching {
+                val s = projects.get(id)?.scenario() ?: return@launch
+                val v = engine.quick(s)
+                video.value = v
+                report.value = QualityChecker.check(s, v.timeline)
+            }.onFailure { loadError.value = it.message ?: it.javaClass.simpleName }
         }
     }
 
     fun start(context: android.content.Context, platform: String, quality: String, pack: Boolean, tree: Uri?, coverMs: Long?) = viewModelScope.launch {
+        if (pid < 0) return@launch
         val id = db.jobs().insert(ExportJobEntity(projectId = pid, platform = platform, quality = quality, publishPack = pack, packTreeUri = tree?.toString(), coverTimeMs = coverMs, state = ExportJobEntity.QUEUED, createdAt = System.currentTimeMillis()))
         jobId.value = id
         ExportService.start(context)
@@ -123,7 +127,7 @@ fun ExportScreen(nav: Navigator, projectId: Long, modifier: Modifier, vm: Export
     }
     val saveScenario = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
         val json = vm.scenarioJson()
-        if (uri != null && json != null) context.contentResolver.openOutputStream(uri, "wt")?.use { it.write(json.toByteArray()) }
+        if (uri != null && json != null) runCatching { context.contentResolver.openOutputStream(uri, "wt")?.use { it.write(json.toByteArray()) } }
     }
     val saveVideoAs = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("video/mp4")) { uri ->
         val src = job?.outputUri?.let { Uri.parse(it) }
@@ -137,6 +141,8 @@ fun ExportScreen(nav: Navigator, projectId: Long, modifier: Modifier, vm: Export
     Column(modifier) {
         CalmTopBar(ui.t("تصدير ونشر", "Export & publish"), { nav.back() })
         Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            val loadError by vm.loadError.collectAsState()
+            loadError?.let { Text(ui.t("تعذّر فتح المشروع: $it", "Could not open the project: $it"), color = MaterialTheme.colorScheme.error) }
             report?.let { r ->
                 CalmCard {
                     Text(ui.t("درجة الجودة قبل التصدير: ${r.score}/100", "Pre-export quality score: ${r.score}/100"), style = MaterialTheme.typography.titleMedium)
@@ -166,12 +172,17 @@ fun ExportScreen(nav: Navigator, projectId: Long, modifier: Modifier, vm: Export
                 CalmCard {
                     SectionTitle(ui.t("إطار الغلاف", "Cover frame"))
                     Text(ui.t("حرّك المؤشر لاختيار إطار الغلاف، أو اتركه للغلاف التلقائي.", "Scrub to pick the cover frame, or leave the automatic cover."), color = Muted, style = MaterialTheme.typography.bodySmall)
-                    Row {
-                        VideoPreview(v, Modifier.width(150.dp), safeZones = false, onSafeZones = {}, startAtMs = 0, onTime = { cover = it })
-                        Spacer(Modifier.width(12.dp))
-                        Column {
-                            Text(if (cover < 0) ui.t("غلاف تلقائي بعنوان الدرس", "Automatic title cover") else ui.t("الإطار عند ${cover / 1000.0} ث", "Frame at ${cover / 1000.0} s"))
-                            TextButton(onClick = { cover = -1 }) { Text(ui.t("استخدم الغلاف التلقائي", "Use automatic cover")) }
+                    Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                        VideoPreview(v, Modifier.width(132.dp), safeZones = false, onSafeZones = {}, controls = false, startAtMs = cover.coerceAtLeast(0))
+                        Spacer(Modifier.width(14.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(if (cover < 0) ui.t("غلاف تلقائي بعنوان الدرس", "Automatic title cover") else ui.t("الإطار عند ${"%.1f".format(cover / 1000.0)} ث", "Frame at ${"%.1f".format(cover / 1000.0)} s"))
+                            val totalMs = v.timeline.totalMs.coerceAtLeast(1)
+                            androidx.compose.material3.Slider(
+                                value = (cover.coerceAtLeast(0).toFloat() / totalMs).coerceIn(0f, 1f),
+                                onValueChange = { cover = (it * totalMs).toLong() },
+                            )
+                            TextButton(onClick = { cover = -1 }, enabled = cover >= 0) { Text(ui.t("استخدم الغلاف التلقائي", "Use automatic cover")) }
                         }
                     }
                 }
@@ -181,7 +192,7 @@ fun ExportScreen(nav: Navigator, projectId: Long, modifier: Modifier, vm: Export
                 onClick = {
                     if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) notifPerm.launch(Manifest.permission.POST_NOTIFICATIONS)
                     if (Build.VERSION.SDK_INT < 29 && tree == null && ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) storagePerm.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    vm.start(context, platform, quality, pack, tree, cover.takeIf { it >= 0 })
+                    runCatching { vm.start(context.applicationContext, platform, quality, pack, tree, cover.takeIf { it >= 0 }) }
                 },
                 enabled = report?.canExport == true && !running,
                 modifier = Modifier.fillMaxWidth(),

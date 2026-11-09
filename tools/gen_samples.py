@@ -32,7 +32,7 @@ KITS = {
    ["#تعلم_البرمجة", "#programming", "#python", "#الدوال", "#developer"], "اكتب دالة تطبع اسمك ثلاث مرات 👇"),
 }
 
-def scenario(title, lid, concept, ep, recap, teaser, castl, scenes, theme="calm-dark", ambient="calm_pad"):
+def scenario(title, lid, concept, ep, recap, teaser, castl, scenes, theme="calm-dark", ambient="none"):
     d, tt, ig, pin = KITS[lid]
     return {"schema": "pyreels/1", "meta": {"title": title, "language": "ar", "lesson": {"id": lid, "concept": concept, "level": "beginner"},
         "targetSeconds": 90, "theme": theme, "ambient": ambient, "series": {"name": "بايثون مع أحمد", "episode": ep, "previousRecap": recap, "nextTeaser": teaser},
@@ -110,7 +110,7 @@ S["03-if"] = scenario("الشرط if", "py-if", "if", 13, "تعلّمنا أن =
   dict(type="key_sentence", text="if تسأل أولًا ثم تنفّذ.", say=True),
   chat("ahmed", "تحدٍّ: لو كان العمر 18 بالضبط، ماذا يُطبع؟ 👇", challenge=True),
   dict(type="teaser", text="في الحلقة القادمة: else… الخطة البديلة!"),
-], theme="calm-light", ambient="warm_keys")
+], theme="calm-light")
 
 S["04-for-loop"] = scenario("الحلقة for", "py-for", "for", 17, "تعلّمنا أن while تكرّر حتى يصبح الشرط خطأ.", "في الحلقة القادمة: range… مسطرة تبدأ من الصفر!", cast("python", "java", "cpp"), [
   dict(type="hook_predict", language="python", code="for i in range(3):\n    print(i)"),
@@ -133,7 +133,7 @@ S["04-for-loop"] = scenario("الحلقة for", "py-for", "for", 17, "تعلّم
   dict(type="key_sentence", text="for تمرّ على كل عنصر مرة.", say=True),
   chat("ahmed", "تحدٍّ: كم مرة يُطبع السطر في `range(5)`؟ 👇", challenge=True),
   dict(type="teaser", text="في الحلقة القادمة: range… مسطرة تبدأ من الصفر!"),
-], ambient="soft_rain")
+])
 
 S["05-functions"] = scenario("الدوال", "py-functions", "function", 25, "تعلّمنا أن set تحذف التكرار تلقائيًا.", "في الحلقة القادمة: المعاملات… مكوّنات الوصفة!", cast("python", "java", "cpp", "javascript"), [
   dict(type="hook_predict", language="python", code='def greet():\n    print("مرحبا")\n\ngreet()\ngreet()'),

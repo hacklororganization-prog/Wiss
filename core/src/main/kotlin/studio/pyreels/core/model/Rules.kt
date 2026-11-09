@@ -3,7 +3,9 @@ package studio.pyreels.core.model
 /** Hard and soft limits of the renderer. Shared by the validator, the quality checker and the prompt builder. */
 object Limits {
     const val TARGET_SECONDS = 90
-    const val WARN_SECONDS = 100
+    const val WARN_SECONDS = 130
+    /** A calm pace may run this much over the target instead of rushing the reader. */
+    const val CALM_STRETCH = 1.35
     const val HARD_CAP_SECONDS = 180
     const val MIN_TARGET_SECONDS = 30
     const val TARGET_TOLERANCE = 0.10
@@ -20,14 +22,14 @@ object Limits {
     const val MAX_OUTPUT_LINES = 6
 
     /** Beginner-friendly reading speed ceiling (Arabic words per second). */
-    const val WORDS_PER_SECOND = 2.5
+    const val WORDS_PER_SECOND = 2.0
     const val MIN_SCENE_MS = 1200L
     const val MAX_SCENE_MS = 15_000L
-    const val MAX_STATIC_MS = 6_000L
+    const val MAX_STATIC_MS = 8_000L
     const val MAX_SILENT_GAP_MS = 2_000L
     const val HOOK_MS = 3_000L
-    const val ENGAGE_WINDOW_START_MS = 45_000L
-    const val ENGAGE_WINDOW_END_MS = 55_000L
+    const val ENGAGE_WINDOW_START_MS = 40_000L
+    const val ENGAGE_WINDOW_END_MS = 75_000L
     const val MAX_SIMULTANEOUS_MOVERS = 3
 
     // Safe zones (fractions of the 1080x1920 frame) reserved for platform UI.

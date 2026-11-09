@@ -69,6 +69,15 @@ class RenderSnapshotsTest {
                 val eng = tl.scenes.first { it.scene is studio.pyreels.core.model.Scene.EngageMoment }
                 at("anim-engage", eng.startMs + 2_600)
                 at("start-chat", tl.scenes[2].startMs + tl.scenes[2].durationMs - 200)
+                // full-resolution crops of the messenger header and input bar (icon review)
+                val big = Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
+                r.draw(Canvas(big), tl.frameAt(tl.scenes[2].startMs + tl.scenes[2].durationMs - 200))
+                for ((n, y0, y1) in listOf(Triple("icons-top", 130, 430), Triple("icons-bottom", 1360, 1560))) {
+                    val crop = Bitmap.createBitmap(big, 0, y0, 1080, y1 - y0)
+                    File(dir, "a-$n.jpg").outputStream().use { crop.compress(Bitmap.CompressFormat.JPEG, 85, it) }
+                    count++
+                }
+                big.recycle()
                 val win = tl.scenes[Timeline.celebrationIndex(s)]
                 at("sticker", win.endMs - 500)
                 // large frame + blue chat colour variant

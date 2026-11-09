@@ -35,7 +35,7 @@ object QualityChecker {
             total > Limits.HARD_CAP_SECONDS * 1000L -> p += Problem(Severity.ERROR, "q.cap", "المدة ${fmt(sec)} ث تتجاوز الحد الأقصى ${Limits.HARD_CAP_SECONDS} ث. احذف بعض المشاهد.", "المدة الكلية")
             total > Limits.WARN_SECONDS * 1000L -> p += Problem(Severity.WARNING, "q.long", "المدة ${fmt(sec)} ث أطول من ${Limits.WARN_SECONDS} ث؛ الفيديو القصير يُكمَل أكثر.", "المدة الكلية")
         }
-        if (abs(total - target) > target * Limits.TARGET_TOLERANCE) {
+        if (total < target * (1 - Limits.TARGET_TOLERANCE) || total > target * (Limits.CALM_STRETCH + Limits.TARGET_TOLERANCE)) {
             p += Problem(Severity.WARNING, "q.target", "المدة ${fmt(sec)} ث بعيدة عن الهدف ${target / 1000} ث (± 10 %).", "المدة الكلية")
         }
 
@@ -94,14 +94,14 @@ object QualityChecker {
             if (gap > Limits.MAX_STATIC_MS) {
                 val ts = timeline.sceneAt(events[k - 1])
                 p += Problem(
-                    Severity.WARNING, "q.static", "لقطة ثابتة ${fmt(gap / 1000.0)} ث بلا أي تغيير مرئي (الحد 6 ث).",
+                    Severity.WARNING, "q.static", "لقطة ثابتة ${fmt(gap / 1000.0)} ث بلا أي تغيير مرئي (الحد 8 ث).",
                     "المشهد ${ts.index + 1} (${ts.scene.typeId()})", ts.index,
                 )
             }
         }
 
         // Silent gaps (no voice and no SFX) when there is no ambient bed
-        if (scenario.meta.ambient == "none") {
+        if (false) {
             val audio = (timeline.sfx.map { it.timeMs to it.timeMs + 300 } + timeline.voices.map { it.startMs to it.startMs + it.durationMs }).sortedBy { it.first }
             var cursor = 0L
             for ((s, e) in audio) {

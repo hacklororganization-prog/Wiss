@@ -34,7 +34,7 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
     private val palette: Palette = Tokens.palette(scenario.meta.theme)
     private val skin = Skin(palette, scenario.meta.chatColor)
     private val text = TextKit(Fonts.get(context))
-    private val g = Gfx(text, skin, scenario)
+    private val g = Gfx(text, skin, scenario, context.applicationContext)
 
     private val W = Limits.WIDTH.toFloat()
     private val H = Limits.HEIGHT.toFloat()
@@ -45,8 +45,12 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
 
     // phone geometry (inside the safe area); "large" lets the app screen fill the safe area
     private val large = scenario.meta.frame == "large"
-    private val px0 = if (large) safeLeft + 4f else 66f
-    private val px1 = safeRight - 4f
+    // The phone and the cards are centred on the frame (equal left and right margins).
+    private val phoneW = if (large) 960f else 850f
+    private val px0 = (W - phoneW) / 2
+    private val px1 = (W + phoneW) / 2
+    private val cardLeft = (W - 860f) / 2
+    private val cardRight = (W + 860f) / 2
     private val py0 = if (large) safeTop - 8f else safeTop + 6f
     private val py1 = if (large) safeBottom + 8f else safeBottom - 6f
     private val bezel = if (large) 4f else 13f
@@ -185,7 +189,7 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
         for (b in chapterStarts) if (b > 0) { val x = W - W * (b / total); canvas.drawRect(x - 3f, 0f, x + 3f, 8f, g.fill) }
         // lesson chip above the phone
         val title = (f.episode?.let { "الحلقة $it · " } ?: "") + f.title
-        val l = text.layout(title, (safeRight - safeLeft - 40).toInt(), 32f, palette.text.toInt(), TextKit.Face.SEMI, Layout.Alignment.ALIGN_CENTER, 1, maxLines = 1)
+        val l = text.layout(title, (px1 - px0 - 80).toInt(), 32f, palette.text.toInt(), TextKit.Face.SEMI, Layout.Alignment.ALIGN_CENTER, 1, maxLines = 1)
         val tw = text.maxLineWidth(l) + 56f
         val cx = (px0 + px1) / 2
         val y = safeTop - 74f
@@ -275,8 +279,8 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
     }
 
     private fun drawHook(canvas: Canvas, hook: HookView) {
-        val x0 = safeLeft + 20f
-        val x1 = safeRight - 10f
+        val x0 = cardLeft
+        val x1 = cardRight
         canvas.save()
         canvas.translate(0f, (1f - hook.enter) * 10f)
         // signature badge
@@ -317,10 +321,10 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
     private fun drawCard(canvas: Canvas, card: CardView) {
         g.withAlpha(canvas, card.appear, W, H) {
             val s = 1f + 0.025f * card.zoom
-            val cx = (safeLeft + safeRight) / 2
+            val cx = W / 2
             canvas.save(); canvas.scale(s, s, cx, H * 0.45f)
-            val x0 = safeLeft + 20f
-            val x1 = safeRight - 10f
+            val x0 = cardLeft
+            val x1 = cardRight
             val iw = (x1 - x0 - 100f).toInt()
             val accent = when (card.kind) { CardKind.RECAP -> palette.tickRead.toInt(); CardKind.KEY_SENTENCE -> palette.focus.toInt(); CardKind.TEASER -> palette.terminalOk.toInt() }
             val icon = when (card.kind) { CardKind.RECAP -> "↺"; CardKind.KEY_SENTENCE -> "★"; CardKind.TEASER -> "▶" }
@@ -382,8 +386,8 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
     fun drawCover(canvas: Canvas) {
         background(canvas)
         val m = scenario.meta
-        val x0 = safeLeft + 20f
-        val x1 = safeRight - 10f
+        val x0 = cardLeft
+        val x1 = cardRight
         var y = safeTop + 40f
         m.series.episode?.let {
             val chip = text.layout("الحلقة $it", 600, 44f, skin.kbBg, TextKit.Face.BOLD, Layout.Alignment.ALIGN_CENTER, 1, maxLines = 1)

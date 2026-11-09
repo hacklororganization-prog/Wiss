@@ -16,12 +16,14 @@ import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.CropFree
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,6 +38,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
+import studio.pyreels.app.data.AvatarStore
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDirection
@@ -61,13 +66,16 @@ fun VideoPreview(
 ) {
     val ui = LocalUi.current
     val context = LocalContext.current
-    val renderer = remember(video) { FrameRenderer(context, video.scenario).apply { setChapters(video.timeline) } }
+    val pictures by AvatarStore.version.collectAsState()
+    val renderer = remember(video, pictures) { FrameRenderer(context, video.scenario).apply { setChapters(video.timeline) } }
     val player = remember { PreviewPlayer() }
     var playing by remember(video) { mutableStateOf(autoPlay) }
     var time by remember(video) { mutableLongStateOf(startAtMs.coerceIn(0, video.timeline.totalMs)) }
     val total = video.timeline.totalMs
 
     DisposableEffect(player) { onDispose { player.stop() } }
+    // Without its own controls the preview follows the time given by the caller (cover picker).
+    LaunchedEffect(startAtMs, controls) { if (!controls) time = startAtMs.coerceIn(0, total) }
     LaunchedEffect(playing, video) {
         if (playing) {
             if (time >= total - 50) time = 0
@@ -106,19 +114,23 @@ fun VideoPreview(
             }
         }
         if (controls) {
-            Row(Modifier.fillMaxWidth().padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                IconButton(onClick = { playing = !playing }) {
-                    Icon(if (playing) Icons.Filled.Pause else Icons.Filled.PlayArrow, contentDescription = if (playing) ui.t("إيقاف مؤقت", "Pause") else ui.t("تشغيل", "Play"))
-                }
-                Slider(
-                    value = if (total > 0) time.toFloat() / total else 0f,
-                    onValueChange = { v -> playing = false; time = (v * total).toLong(); onTime(time) },
-                    modifier = Modifier.weight(1f),
-                )
-                Text(fmt(time) + " / " + fmt(total), style = MaterialTheme.typography.labelSmall.copy(textDirection = TextDirection.Ltr))
-                IconToggleButton(checked = safeZones, onCheckedChange = onSafeZones) {
-                    Icon(Icons.Outlined.CropFree, contentDescription = ui.t("إظهار المناطق الآمنة", "Show safe zones"),
-                        modifier = Modifier.background(if (safeZones) MaterialTheme.colorScheme.primary.copy(alpha = 0.25f) else MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp)))
+            // Player controls always read left-to-right (time grows to the right), like every video player.
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                Row(Modifier.fillMaxWidth().padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    FilledIconButton(onClick = { playing = !playing }) {
+                        Icon(if (playing) Icons.Filled.Pause else Icons.Filled.PlayArrow, contentDescription = if (playing) ui.t("إيقاف مؤقت", "Pause") else ui.t("تشغيل", "Play"))
+                    }
+                    Text(fmt(time), style = MaterialTheme.typography.labelMedium)
+                    Slider(
+                        value = if (total > 0) (time.toFloat() / total).coerceIn(0f, 1f) else 0f,
+                        onValueChange = { v -> playing = false; time = (v * total).toLong(); onTime(time) },
+                        modifier = Modifier.weight(1f),
+                    )
+                    Text(fmt(total), style = MaterialTheme.typography.labelMedium)
+                    IconToggleButton(checked = safeZones, onCheckedChange = onSafeZones) {
+                        Icon(Icons.Outlined.CropFree, contentDescription = ui.t("إظهار المناطق الآمنة", "Show safe zones"),
+                            tint = if (safeZones) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                 }
             }
         }

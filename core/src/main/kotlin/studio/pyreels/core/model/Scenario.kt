@@ -34,7 +34,7 @@ data class Meta(
     val targetSeconds: Int = 90,
     val theme: String = "calm-dark",
     val series: Series = Series(),
-    val ambient: String = "calm_pad",
+    val ambient: String = "none",
     val watermark: Boolean = true,
     val groupName: String? = null,
     /** Publishing kit written by the AI: description, 5 TikTok + 5 Instagram hashtags, pinned comment. */

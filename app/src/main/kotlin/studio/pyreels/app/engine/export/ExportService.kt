@@ -23,7 +23,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import studio.pyreels.app.MainActivity
 import studio.pyreels.app.PyReelsApp
 import studio.pyreels.app.R
@@ -67,7 +69,8 @@ class ExportService : Service() {
             current?.cancel(CancellationException("cancelled"))
             return START_NOT_STICKY
         }
-        startInForeground(notification(getString(R.string.export_channel), 0, indeterminate = true))
+        // If the system refuses the foreground promotion the export still runs while the app is open.
+        runCatching { startInForeground(notification(getString(R.string.export_channel), 0, indeterminate = true)) }
         if (current?.isActive == true) return START_STICKY
         current = scope.launch { runQueue() }
         return START_STICKY
@@ -76,14 +79,27 @@ class ExportService : Service() {
     private suspend fun runQueue() {
         acquireWakeLock()
         try {
+            val attempts = getSharedPreferences("export_attempts", MODE_PRIVATE)
             while (true) {
                 val job = db.jobs().unfinished().firstOrNull() ?: break
                 currentJobId = job.id
+                // A job that already started twice and never finished took the process down with
+                // it: stop retrying instead of crashing on every launch.
+                val key = "job_${job.id}"
+                val tries = attempts.getInt(key, 0)
+                if (tries >= 2) {
+                    db.jobs().update(job.copy(state = ExportJobEntity.FAILED, message = "توقّف التصدير مرتين بشكل غير متوقع. جرّب الجودة القياسية أو أعد تشغيل الهاتف."))
+                    continue
+                }
+                attempts.edit().putInt(key, tries + 1).commit()
                 runJob(job)
+                attempts.edit().remove(key).apply()
             }
+        } catch (t: Throwable) {
+            studio.pyreels.app.CrashLog.record(this, t, "export-queue")
         } finally {
             releaseWakeLock()
-            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+            runCatching { ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE) }
             stopSelf()
         }
     }
@@ -108,7 +124,7 @@ class ExportService : Service() {
                 if (pct != lastPct) {
                     lastPct = pct
                     notify(notification("تصدير «${scenario.meta.title}»", pct, false))
-                    scope.launch { db.jobs().update(job.copy(progress = pct / 100f, message = "يرسم الإطارات… $pct٪")) }
+                    scope.launch { runCatching { db.jobs().update(job.copy(progress = pct / 100f, message = "يرسم الإطارات… $pct٪")) } }
                 }
             }
             if (!verification.ok) error("فشل التحقق من الملف: ${verification.problems.joinToString()}")
@@ -127,9 +143,11 @@ class ExportService : Service() {
             notifyDone(scenario.meta.title, videoUri)
             out.delete()
         } catch (e: CancellationException) {
-            db.jobs().update(job.copy(state = ExportJobEntity.CANCELLED, message = "أُلغي التصدير"))
+            // the coroutine is already cancelled: the state must still be written
+            withContext(NonCancellable) { runCatching { db.jobs().update(job.copy(state = ExportJobEntity.CANCELLED, message = "أُلغي التصدير")) } }
         } catch (t: Throwable) {
-            db.jobs().update(job.copy(state = ExportJobEntity.FAILED, message = t.message ?: t.javaClass.simpleName))
+            studio.pyreels.app.CrashLog.record(this, t, "export")
+            runCatching { db.jobs().update(job.copy(state = ExportJobEntity.FAILED, message = "تعذّر التصدير: " + (t.message ?: t.javaClass.simpleName))) }
         }
     }
 
@@ -181,7 +199,7 @@ class ExportService : Service() {
     }
 
     private fun notify(n: Notification) {
-        getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, n)
+        runCatching { getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, n) }
     }
 
     private fun notifyDone(title: String, uri: Uri) {
@@ -194,7 +212,7 @@ class ExportService : Service() {
             .setContentIntent(pi)
             .setAutoCancel(true)
             .build()
-        getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID + 1, n)
+        runCatching { getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID + 1, n) }
     }
 
     private fun acquireWakeLock() {
@@ -215,11 +233,18 @@ class ExportService : Service() {
         private const val NOTIFICATION_ID = 4107
 
         fun start(context: Context) {
-            ContextCompat.startForegroundService(context, Intent(context, ExportService::class.java))
+            val intent = Intent(context, ExportService::class.java)
+            // Some systems refuse a foreground-service start (battery saver, background launch):
+            // fall back to a plain start, and never let the refusal crash the caller.
+            try {
+                ContextCompat.startForegroundService(context, intent)
+            } catch (t: Throwable) {
+                runCatching { context.startService(intent) }.onFailure { studio.pyreels.app.CrashLog.record(context, it, "export-start") }
+            }
         }
 
         fun cancel(context: Context) {
-            context.startService(Intent(context, ExportService::class.java).setAction(ACTION_CANCEL))
+            runCatching { context.startService(Intent(context, ExportService::class.java).setAction(ACTION_CANCEL)) }
         }
     }
 }

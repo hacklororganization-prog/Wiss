@@ -37,20 +37,25 @@ class PreviewPlayer {
             track = t
             writtenFrames = 0
             worker = thread(name = "preview-audio", isDaemon = true) {
-                val mixer = AudioMixer(video.timeline, video.voicePcm)
-                mixer.prepare()
-                mixer.seek(fromMs * rate / 1000)
-                val f = FloatArray(2048)
-                val s = ShortArray(2048)
-                t.play()
-                startNanos = System.nanoTime()
-                while (running) {
-                    val n = mixer.read(f)
-                    if (n <= 0) break
-                    for (i in 0 until n) s[i] = (f[i] * 32767).toInt().coerceIn(-32768, 32767).toShort()
-                    val w = t.write(s, 0, n)
-                    if (w < 0) break
-                    writtenFrames += w
+                // Everything here may race with stop() (the track can already be released): a
+                // failure only silences the preview, it must never take the app down.
+                try {
+                    val mixer = AudioMixer(video.timeline, video.voicePcm)
+                    mixer.prepare()
+                    mixer.seek(fromMs * rate / 1000)
+                    val f = FloatArray(2048)
+                    val s = ShortArray(2048)
+                    if (!running || track !== t) return@thread
+                    t.play()
+                    while (running && track === t) {
+                        val n = mixer.read(f)
+                        if (n <= 0) break
+                        for (i in 0 until n) s[i] = (f[i] * 32767).toInt().coerceIn(-32768, 32767).toShort()
+                        val w = t.write(s, 0, n)
+                        if (w < 0) break
+                        writtenFrames += w
+                    }
+                } catch (_: Throwable) {
                 }
             }
         } catch (_: Throwable) {
@@ -61,18 +66,31 @@ class PreviewPlayer {
     /** Current preview time: from the audio head position when audio plays, else the system clock. */
     fun positionMs(): Long {
         val t = track
-        if (t != null && t.playState == AudioTrack.PLAYSTATE_PLAYING) {
-            val head = t.playbackHeadPosition.toLong() and 0xFFFFFFFFL
-            if (head > 0) return startMs + head * 1000 / 48_000
+        if (t != null) {
+            try {
+                if (t.playState == AudioTrack.PLAYSTATE_PLAYING) {
+                    val head = t.playbackHeadPosition.toLong() and 0xFFFFFFFFL
+                    if (head > 0) {
+                        // remember the clock offset so a later fallback continues from here
+                        val ms = startMs + head * 1000 / 48_000
+                        startNanos = System.nanoTime() - (ms - startMs) * 1_000_000
+                        return ms
+                    }
+                }
+            } catch (_: Throwable) {
+            }
         }
         return startMs + (System.nanoTime() - startNanos) / 1_000_000
     }
 
     fun stop() {
         running = false
-        worker?.let { runCatching { it.join(300) } }
-        worker = null
-        track?.let { runCatching { it.pause(); it.flush(); it.release() } }
+        val t = track
         track = null
+        runCatching { t?.pause() }
+        worker?.let { runCatching { it.join(250) } }
+        worker = null
+        runCatching { t?.flush() }
+        runCatching { t?.release() }
     }
 }

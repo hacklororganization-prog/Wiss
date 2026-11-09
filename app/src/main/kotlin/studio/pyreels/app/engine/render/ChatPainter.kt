@@ -109,16 +109,15 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         // group avatar: two members side by side inside one circle
         val ax = w - 104f
         // one clean group avatar: a circle with two people (no overlapping mini avatars)
-        g.fill.color = g.blend(s.waHeader, 0xFFFFFFFF.toInt(), if (s.dark) 0.16f else 0.28f)
-        canvas.drawCircle(ax, cy, 38f, g.fill)
-        val person = g.alpha(s.waHeaderText, 0.9f)
-        val back = g.alpha(s.waHeaderText, 0.5f)
-        g.fill.color = back
-        canvas.drawCircle(ax + 11f, cy - 9f, 8f, g.fill)
-        g.rect.set(ax - 2f, cy + 1f, ax + 24f, cy + 22f); canvas.drawArc(g.rect, 180f, 180f, true, g.fill)
-        g.fill.color = person
-        canvas.drawCircle(ax - 6f, cy - 6f, 10f, g.fill)
-        g.rect.set(ax - 22f, cy + 6f, ax + 10f, cy + 32f); canvas.drawArc(g.rect, 180f, 180f, true, g.fill)
+        if (!g.picture(canvas, studio.pyreels.app.data.AvatarStore.GROUP, ax, cy, 38f)) {
+            g.fill.color = g.blend(s.waHeader, 0xFFFFFFFF.toInt(), if (s.dark) 0.16f else 0.28f)
+            canvas.drawCircle(ax, cy, 38f, g.fill)
+            if (!g.icon(canvas, "group", ax, cy - 1f, 50f, g.alpha(s.waHeaderText, 0.9f))) {
+                g.fill.color = g.alpha(s.waHeaderText, 0.9f)
+                canvas.drawCircle(ax, cy - 8f, 11f, g.fill)
+                g.rect.set(ax - 18f, cy + 6f, ax + 18f, cy + 34f); canvas.drawArc(g.rect, 180f, 180f, true, g.fill)
+            }
+        }
         val tw = (w - 360f).toInt()
         val name = text.layout(chat.groupName, tw, 36f, s.waHeaderText, TextKit.Face.BOLD, Layout.Alignment.ALIGN_NORMAL, 1, spacing = 0.95f, maxLines = 1)
         val typing = chat.typingFrom?.takeIf { it != "ahmed" }

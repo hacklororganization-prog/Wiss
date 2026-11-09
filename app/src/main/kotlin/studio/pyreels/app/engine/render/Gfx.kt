@@ -1,9 +1,17 @@
 package studio.pyreels.app.engine.render
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapShader
 import android.graphics.Canvas
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
+import android.graphics.Shader
+import androidx.compose.ui.graphics.asAndroidPath
+import androidx.compose.ui.graphics.vector.PathParser
+import studio.pyreels.app.data.AvatarStore
 import android.text.StaticLayout
 import studio.pyreels.core.model.Palette
 import studio.pyreels.core.model.Personas
@@ -66,7 +74,7 @@ class Skin(val p: Palette, chatColor: String = "green") {
 }
 
 /** Shared paints, paths and helpers. One instance per renderer; nothing allocated per frame. */
-class Gfx(val text: TextKit, val skin: Skin, private val scenario: Scenario) {
+class Gfx(val text: TextKit, val skin: Skin, private val scenario: Scenario, private val context: Context? = null) {
     val p = skin.p
     val fill = Paint(Paint.ANTI_ALIAS_FLAG)
     val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeCap = Paint.Cap.ROUND; strokeJoin = Paint.Join.ROUND }
@@ -101,6 +109,11 @@ class Gfx(val text: TextKit, val skin: Skin, private val scenario: Scenario) {
     fun avatar(canvas: Canvas, castId: String, cx: Float, cy: Float, r: Float, ring: Int? = null) {
         val persona = persona(castId)
         val accent = accent(castId)
+        if (picture(canvas, persona.id, cx, cy, r)) {
+            stroke.color = ring ?: alpha(accent, 0.95f); stroke.strokeWidth = r * 0.09f
+            canvas.drawCircle(cx, cy, r - stroke.strokeWidth / 2, stroke)
+            return
+        }
         fill.color = if (skin.dark) blend(0xFF1B242C.toInt(), accent, 0.30f) else blend(0xFFFFFFFF.toInt(), accent, 0.28f)
         canvas.drawCircle(cx, cy, r, fill)
         stroke.color = ring ?: alpha(accent, 0.95f); stroke.strokeWidth = r * 0.09f
@@ -112,6 +125,51 @@ class Gfx(val text: TextKit, val skin: Skin, private val scenario: Scenario) {
         val fm = tp.fontMetrics
         canvas.drawText(mono, cx, cy - (fm.ascent + fm.descent) / 2, tp)
         tp.textAlign = Paint.Align.LEFT
+    }
+
+    // ---------------------------------------------------------------- gallery pictures
+
+    private val pictures = HashMap<String, BitmapShader?>()
+    private val pictureSizes = HashMap<String, Int>()
+    private val picturePaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+    private val pictureMatrix = Matrix()
+
+    /** Draws the gallery picture saved for [key] as a circle. False when there is none. */
+    fun picture(canvas: Canvas, key: String, cx: Float, cy: Float, r: Float): Boolean {
+        val ctx = context ?: return false
+        if (!pictures.containsKey(key)) {
+            val bmp: Bitmap? = AvatarStore.load(ctx, key)
+            pictures[key] = bmp?.let { pictureSizes[key] = it.width; BitmapShader(it, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP) }
+        }
+        val shader = pictures[key] ?: return false
+        val size = pictureSizes[key] ?: return false
+        val k = 2f * r / size
+        pictureMatrix.setScale(k, k)
+        pictureMatrix.postTranslate(cx - r, cy - r)
+        shader.setLocalMatrix(pictureMatrix)
+        picturePaint.shader = shader
+        canvas.drawCircle(cx, cy, r, picturePaint)
+        return true
+    }
+
+    // ---------------------------------------------------------------- vector icons (24×24 path data)
+
+    private val iconPaths = HashMap<String, Path?>()
+
+    /** Draws a filled icon centred at (cx, cy) with the given size. False if the path is unavailable. */
+    fun icon(canvas: Canvas, name: String, cx: Float, cy: Float, size: Float, color: Int, mirror: Boolean = false): Boolean {
+        if (!iconPaths.containsKey(name)) {
+            iconPaths[name] = ICONS[name]?.let { d -> runCatching { Path(PathParser().parsePathString(d).toPath().asAndroidPath()) }.getOrNull() }
+        }
+        val path = iconPaths[name] ?: return false
+        fill.color = color
+        canvas.save()
+        canvas.translate(cx - size / 2, cy - size / 2)
+        canvas.scale(size / 24f, size / 24f)
+        if (mirror) canvas.scale(-1f, 1f, 12f, 12f)
+        canvas.drawPath(path, fill)
+        canvas.restore()
+        return true
     }
 
     fun blend(a: Int, b: Int, t: Float): Int {
@@ -131,6 +189,7 @@ class Gfx(val text: TextKit, val skin: Skin, private val scenario: Scenario) {
     }
 
     fun iconVideo(canvas: Canvas, cx: Float, cy: Float, s: Float, color: Int) {
+        if (icon(canvas, "videocam", cx, cy, s * 1.05f, color)) return
         stroke.color = color; stroke.strokeWidth = s * 0.1f
         rect.set(cx - s * 0.5f, cy - s * 0.3f, cx + s * 0.18f, cy + s * 0.3f); canvas.drawRoundRect(rect, s * 0.1f, s * 0.1f, stroke)
         path.reset(); path.moveTo(cx + s * 0.22f, cy - s * 0.08f); path.lineTo(cx + s * 0.5f, cy - s * 0.26f); path.lineTo(cx + s * 0.5f, cy + s * 0.26f); path.lineTo(cx + s * 0.22f, cy + s * 0.08f)
@@ -138,6 +197,7 @@ class Gfx(val text: TextKit, val skin: Skin, private val scenario: Scenario) {
     }
 
     fun iconPhone(canvas: Canvas, cx: Float, cy: Float, s: Float, color: Int) {
+        if (icon(canvas, "call", cx, cy, s * 0.95f, color)) return
         stroke.color = color; stroke.strokeWidth = s * 0.11f
         path.reset()
         path.moveTo(cx - s * 0.38f, cy - s * 0.36f)
@@ -159,6 +219,7 @@ class Gfx(val text: TextKit, val skin: Skin, private val scenario: Scenario) {
     }
 
     fun iconSmile(canvas: Canvas, cx: Float, cy: Float, s: Float, color: Int) {
+        if (icon(canvas, "mood", cx, cy, s * 1.0f, color)) return
         stroke.color = color; stroke.strokeWidth = s * 0.09f
         canvas.drawCircle(cx, cy, s * 0.42f, stroke)
         fill.color = color
@@ -168,6 +229,10 @@ class Gfx(val text: TextKit, val skin: Skin, private val scenario: Scenario) {
     }
 
     fun iconClip(canvas: Canvas, cx: Float, cy: Float, s: Float, color: Int) {
+        canvas.save(); canvas.rotate(45f, cx, cy)
+        val ok = icon(canvas, "attach", cx, cy, s * 1.0f, color)
+        canvas.restore()
+        if (ok) return
         stroke.color = color; stroke.strokeWidth = s * 0.09f
         canvas.save(); canvas.rotate(-40f, cx, cy)
         rect.set(cx - s * 0.14f, cy - s * 0.44f, cx + s * 0.14f, cy + s * 0.36f); canvas.drawRoundRect(rect, s * 0.14f, s * 0.14f, stroke)
@@ -175,12 +240,14 @@ class Gfx(val text: TextKit, val skin: Skin, private val scenario: Scenario) {
     }
 
     fun iconCamera(canvas: Canvas, cx: Float, cy: Float, s: Float, color: Int) {
+        if (icon(canvas, "camera", cx, cy, s * 1.0f, color)) return
         stroke.color = color; stroke.strokeWidth = s * 0.09f
         rect.set(cx - s * 0.45f, cy - s * 0.28f, cx + s * 0.45f, cy + s * 0.34f); canvas.drawRoundRect(rect, s * 0.1f, s * 0.1f, stroke)
         canvas.drawCircle(cx, cy + s * 0.03f, s * 0.15f, stroke)
     }
 
     fun iconMic(canvas: Canvas, cx: Float, cy: Float, s: Float, color: Int) {
+        if (icon(canvas, "mic", cx, cy, s * 0.95f, color)) return
         fill.color = color; stroke.color = color; stroke.strokeWidth = s * 0.08f
         rect.set(cx - s * 0.13f, cy - s * 0.38f, cx + s * 0.13f, cy + s * 0.08f); canvas.drawRoundRect(rect, s * 0.13f, s * 0.13f, fill)
         rect.set(cx - s * 0.25f, cy - s * 0.2f, cx + s * 0.25f, cy + s * 0.2f); canvas.drawArc(rect, 0f, 180f, false, stroke)
@@ -188,6 +255,7 @@ class Gfx(val text: TextKit, val skin: Skin, private val scenario: Scenario) {
     }
 
     fun iconSend(canvas: Canvas, cx: Float, cy: Float, s: Float, color: Int) {
+        if (icon(canvas, "send", cx, cy, s * 0.95f, color, mirror = true)) return
         fill.color = color
         // points left (RTL send)
         path.reset()
@@ -202,6 +270,7 @@ class Gfx(val text: TextKit, val skin: Skin, private val scenario: Scenario) {
     }
 
     fun iconLock(canvas: Canvas, cx: Float, cy: Float, s: Float, color: Int) {
+        if (icon(canvas, "lock", cx, cy, s * 1.15f, color)) return
         fill.color = color; stroke.color = color; stroke.strokeWidth = s * 0.1f
         rect.set(cx - s * 0.3f, cy - s * 0.05f, cx + s * 0.3f, cy + s * 0.4f); canvas.drawRoundRect(rect, s * 0.06f, s * 0.06f, fill)
         rect.set(cx - s * 0.2f, cy - s * 0.38f, cx + s * 0.2f, cy + s * 0.05f); canvas.drawArc(rect, 180f, 180f, false, stroke)
@@ -245,5 +314,20 @@ class Gfx(val text: TextKit, val skin: Skin, private val scenario: Scenario) {
         // wifi arcs
         stroke.strokeWidth = 3f
         for (i in 0..2) { val r = 6f + i * 6f; rect.set(150f - r, 34f - r, 150f + r, 34f + r); canvas.drawArc(rect, 225f, 90f, false, stroke) }
+    }
+
+    companion object {
+        /** Standard 24×24 filled icon outlines. */
+        private val ICONS = mapOf(
+            "call" to "M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z",
+            "videocam" to "M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z",
+            "attach" to "M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z",
+            "camera" to "M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zM8.8 12a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0-6.4 0z",
+            "mic" to "M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z",
+            "send" to "M2.01 21L23 12 2.01 3 2 10l15 2-15 2z",
+            "lock" to "M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z",
+            "group" to "M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z",
+            "mood" to "M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z",
+        )
     }
 }

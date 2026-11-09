@@ -78,7 +78,7 @@ class ContentTest {
                 val r = ScenarioValidator.parse(ScenarioValidator.encode(s))
                 assertTrue(r.ok, "${l.id}: " + r.errors.joinToString { it.render() })
                 val tl = Timeline.build(s)
-                assertTrue(tl.totalMs in 60_000..120_000, "${l.id} ${tl.totalMs}")
+                assertTrue(tl.totalMs in 60_000..126_000, "${l.id} ${tl.totalMs}")
             }
         }
     }

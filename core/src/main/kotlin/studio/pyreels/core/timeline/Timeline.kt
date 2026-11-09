@@ -116,7 +116,7 @@ class Timeline private constructor(
                     texts += TextCue(appear, s + d, sc.from, sc.text)
                     val sticker = sc.sticker ?: if (i == celebrationIndex(scenario)) "party" else null
                     if (sticker != null) {
-                        val at = appear + 750
+                        val at = appear + 1_000
                         messages += PlannedMessage(msgId++, i, sc.from, MessageKind.STICKER, "", null, at, at, emptyList(), false, sticker = sticker)
                         sfx += SfxCue(at, SfxIds.SUCCESS_CHIME, 0.4f, i + 900)
                     }
@@ -270,12 +270,12 @@ class Timeline private constructor(
                 t += 150
             }
             val base = when {
-                mode == "steady" || fast -> 38L
+                mode == "steady" || fast -> 50L
                 c == ' ' && k > 0 && code[k - 1] == ' ' -> 14L // indentation is fast
-                else -> 44L + rnd.nextInt(30)
+                else -> 62L + rnd.nextInt(36)
             }
             t += base
-            if (k > 0 && code[k - 1] == '\n') t += if (fast) 60 else 170
+            if (k > 0 && code[k - 1] == '\n') t += if (fast) 90 else 240
             if (!fast && mode == "natural" && rnd.nextInt(100) < 4) t += 260 + rnd.nextInt(200)
             sb.append(c)
             times += t; texts += sb.toString()
@@ -348,7 +348,7 @@ class Timeline private constructor(
         val ringStart = ts.durationMs - hold
         return HookView(
             sc.code, sc.language, sc.question,
-            enter = Easing.window(l, 0, 500),
+            enter = Easing.window(l, 0, 650),
             pulse = Easing.pulse(l, 450, 900),
             questionAppear = Easing.window(l, 650, Easing.ENTER_MS),
             ring = 1f - Easing.linear(l, ringStart, hold),
@@ -463,7 +463,7 @@ class Timeline private constructor(
                 return CodeView(
                     p.language, fileName(p.language), p.code, cursorVisible = false, cursorIndex = -1,
                     activeLine = if (finished && p.stepTimes.isNotEmpty()) -1 else active,
-                    activeLineMix = if (step >= 0) Easing.window(t, stepStart, 300) else 0f,
+                    activeLineMix = if (step >= 0) Easing.window(t, stepStart, 420) else 0f,
                     focusLines = emptyList(), dim = if (active > 0 && !finished) 0.5f else 0f, zoom = 0f,
                     terminal = term.takeLast(Limits.MAX_OUTPUT_LINES + 1), terminalVisible = Easing.window(l, 0, Easing.ENTER_MS),
                     vars = vars, iteration = if (step >= 0) p.steps[step].iteration else null,
@@ -529,7 +529,7 @@ class Timeline private constructor(
             if (k == step) previous.putAll(current)
             steps[k].vars.forEach { (n, v) -> current[n] = render(v) }
         }
-        val change = Easing.window(sinceStep, 0, 400)
+        val change = Easing.window(sinceStep, 0, 600)
         return current.map { (n, v) -> VarView(n, v, previous[n]?.takeIf { it != v }, if (previous[n] != v) change else 1f) }
     }
 
@@ -637,7 +637,7 @@ class Timeline private constructor(
                 // a sticker needs ~1.4 s of screen time after its message
                 if ((s is Scene.Chat && s.sticker != null) || i == celebrate) SceneBounds(b.minMs + 1_400, b.idealMs + 1_400, b.maxMs + 1_400) else b
             }
-            val fit = DurationFitter.fit(bounds, targetMs)
+            val fit = DurationFitter.fit(bounds, DurationFitter.calmTarget(bounds, targetMs))
             var start = 0L
             val timed = scenario.scenes.mapIndexed { i, s ->
                 TimedScene(i, s, start, fit.durations[i], stageOf(s)).also { start += fit.durations[i] }

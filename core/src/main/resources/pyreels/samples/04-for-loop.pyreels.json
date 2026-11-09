@@ -10,7 +10,7 @@
     },
     "targetSeconds": 90,
     "theme": "calm-dark",
-    "ambient": "soft_rain",
+    "ambient": "none",
     "series": {
       "name": "بايثون مع أحمد",
       "episode": 17,
