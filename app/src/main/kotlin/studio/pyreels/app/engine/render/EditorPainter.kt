@@ -84,7 +84,10 @@ class EditorPainter(private val g: Gfx, private val w: Float, private val h: Flo
         canvas.clipRect(0f, barBottom, w, editorBottom)
         if (code.zoom > 0f && code.activeLine > 0) canvas.scale(1f + code.zoom, 1f + code.zoom, w / 2, top + (code.activeLine - 0.5f) * lh)
         if (code.activeLine in 1..lines.size) {
-            g.rect.set(gutterW, top + (code.activeLine - 1) * lh, w, top + code.activeLine * lh)
+            // the execution band glides from the previous line to the current one
+            val from = if (code.previousLine in 1..lines.size) code.previousLine else code.activeLine
+            val bandTop = top + ((from - 1) + (code.activeLine - from) * code.activeLineMix) * lh
+            g.rect.set(gutterW, bandTop, w, bandTop + lh)
             g.fill.color = g.alpha(g.c(g.p.highlight), 0.35f + 0.65f * code.activeLineMix); canvas.drawRect(g.rect, g.fill)
             g.fill.color = g.alpha(g.c(g.p.focus), code.activeLineMix); canvas.drawRect(gutterW - 6f, g.rect.top, gutterW, g.rect.bottom, g.fill)
         }

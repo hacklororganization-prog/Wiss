@@ -210,7 +210,7 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
 
     // ------------------------------------------------------------------ hook
 
-    private fun codeCard(canvas: Canvas, code: String, language: String, x0: Float, y0: Float, x1: Float, maxSize: Float, glow: Float): Float {
+    private fun codeCard(canvas: Canvas, code: String, language: String, x0: Float, y0: Float, x1: Float, maxSize: Float, glow: Float, reveal: Float = 1f): Float {
         val lines = code.split('\n')
         val mp = text.paint(TextKit.Face.MONO, 40f, palette.codeText.toInt())
         val charW = mp.measureText("M") / 40f
@@ -232,11 +232,16 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
         val fn = studio.pyreels.core.timeline.Timeline.fileName(language)
         canvas.drawText(fn, x1 - 36f - fp.measureText(fn), y0 + 43f, fp)
         for ((i, line) in lines.withIndex()) {
+            // lines appear one after another
+            val a = (reveal * lines.size - i).coerceIn(0f, 1f)
+            if (a <= 0f) continue
             var x = x0 + 50f
-            val base = y0 + barH + 18f + i * lh + lh * 0.72f
+            val base = y0 + barH + 18f + i * lh + lh * 0.72f + (1f - a) * 10f
             for (tok in SyntaxHighlighter.tokens(line, language)) {
                 val p = text.paint(if (tok.kind == SyntaxHighlighter.Kind.KEYWORD) TextKit.Face.MONO_BOLD else TextKit.Face.MONO, size, SyntaxHighlighter.color(tok.kind, palette))
+                if (a < 1f) p.alpha = (a * 255).toInt()
                 canvas.drawText(tok.text, x, base, p); x += p.measureText(tok.text)
+                p.alpha = 255
             }
         }
         return y1
@@ -258,7 +263,7 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
         y += 130f
         val s = 1f + 0.012f * hook.pulse
         canvas.save(); canvas.scale(s, s, cx, y + 200f)
-        val bottom = codeCard(canvas, hook.code, hook.language, x0, y, x1, 54f, hook.pulse)
+        val bottom = codeCard(canvas, hook.code, hook.language, x0, y, x1, 54f, hook.pulse, hook.lineReveal)
         canvas.restore()
         y = bottom + 80f
         val q = text.layout(hook.question, (x1 - x0).toInt(), 70f, palette.text.toInt(), TextKit.Face.BOLD, Layout.Alignment.ALIGN_CENTER, 1, spacing = 0.95f)
@@ -319,11 +324,26 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
                 val ly = y + body.getLineBottom(lastLine) - 26f
                 canvas.drawRoundRect(cx - lw / 2 - 12f, ly - 22f, cx + lw / 2 + 12f, ly + 6f, 12f, 12f, g.fill)
             }
-            g.drawAt(canvas, body, x0 + 50f, y); y += body.height + 50f
+            // body lines arrive one by one after the label
+            for (li in 0 until body.lineCount) {
+                val a = (card.reveal * (body.lineCount + 1) - li).coerceIn(0f, 1f)
+                if (a <= 0f) continue
+                g.withAlpha(canvas, a, W, H) {
+                    canvas.save()
+                    canvas.clipRect(x0, y + body.getLineTop(li), x1, y + body.getLineBottom(li))
+                    canvas.translate(x0 + 50f, y + (1f - a) * 10f)
+                    body.draw(canvas)
+                    canvas.restore()
+                }
+            }
+            y += body.height + 50f
+            val subA = ((card.reveal - 0.75f) / 0.25f).coerceIn(0f, 1f)
             sub?.let {
-                g.rect.set(x0 + 50f, y, x1 - 50f, y + it.height + 50f)
-                g.fill.color = g.alpha(accent, 0.14f); canvas.drawRoundRect(g.rect, 30f, 30f, g.fill)
-                g.drawAt(canvas, it, x0 + 70f, y + 25f)
+                g.withAlpha(canvas, subA, W, H) {
+                    g.rect.set(x0 + 50f, y, x1 - 50f, y + it.height + 50f)
+                    g.fill.color = g.alpha(accent, 0.14f); canvas.drawRoundRect(g.rect, 30f, 30f, g.fill)
+                    g.drawAt(canvas, it, x0 + 70f, y + 25f)
+                }
             }
             canvas.restore()
         }

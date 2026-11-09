@@ -344,6 +344,7 @@ class Timeline private constructor(
             pulse = Easing.pulse(l, 450, 900),
             questionAppear = Easing.window(l, 650, Easing.ENTER_MS),
             ring = 1f - Easing.linear(l, ringStart, hold),
+            lineReveal = Easing.linear(l, 80, 700),
         )
     }
 
@@ -354,10 +355,10 @@ class Timeline private constructor(
         val alpha = appear * (1f - Easing.window(l, exitStart, Easing.EXIT_MS))
         val zoom = Easing.linear(l, 0, ts.durationMs)
         return when (val sc = ts.scene) {
-            is Scene.Recap -> CardView(CardKind.RECAP, "تذكير من الحلقة السابقة", sc.text, null, alpha, zoom)
-            is Scene.KeySentence -> CardView(CardKind.KEY_SENTENCE, "جملة اليوم", sc.text, null, alpha, zoom)
-            is Scene.Teaser -> CardView(CardKind.TEASER, "في الحلقة القادمة", sc.text, sc.challenge, alpha, zoom)
-            else -> CardView(CardKind.RECAP, "", sc.readableText(), null, alpha, zoom)
+            is Scene.Recap -> CardView(CardKind.RECAP, "تذكير من الحلقة السابقة", sc.text, null, alpha, zoom, Easing.linear(l, 200, 900))
+            is Scene.KeySentence -> CardView(CardKind.KEY_SENTENCE, "جملة اليوم", sc.text, null, alpha, zoom, Easing.linear(l, 200, 900))
+            is Scene.Teaser -> CardView(CardKind.TEASER, "في الحلقة القادمة", sc.text, sc.challenge, alpha, zoom, Easing.linear(l, 200, 900))
+            else -> CardView(CardKind.RECAP, "", sc.readableText(), null, alpha, zoom, Easing.linear(l, 200, 900))
         }
     }
 
@@ -458,6 +459,7 @@ class Timeline private constructor(
                     terminal = term.takeLast(Limits.MAX_OUTPUT_LINES + 1), terminalVisible = Easing.window(l, 0, Easing.ENTER_MS),
                     vars = vars, iteration = if (step >= 0) p.steps[step].iteration else null,
                     stack = if (step >= 0) p.steps[step].stack else emptyList(),
+                    previousLine = if (step > 0) p.steps[step - 1].line else -1,
                     note = teacherNote(sc.caption, ts.startMs + 300, voice), running = !finished,
                     runPress = Easing.pulse(t, ts.startMs + 80, 520),
                     errorLine = if (p.errorAt != null && t >= p.errorAt) p.steps.lastOrNull()?.line ?: 1 else -1,

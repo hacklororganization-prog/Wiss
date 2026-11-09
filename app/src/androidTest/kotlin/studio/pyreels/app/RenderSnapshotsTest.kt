@@ -55,6 +55,16 @@ class RenderSnapshotsTest {
                 val ahmed = tl.scenes.first { it.scene is studio.pyreels.core.model.Scene.Chat && (it.scene as studio.pyreels.core.model.Scene.Chat).from == "ahmed" && it.index > 3 }
                 c.save(); c.scale(0.5f, 0.5f); r.draw(c, tl.frameAt(ahmed.startMs + 600)); c.restore(); save("compose")
                 c.save(); c.scale(0.5f, 0.5f); r.drawCover(c); c.restore(); save("cover")
+                // animation midpoints: bubble entrance, gliding run band, card reveal, hook line stagger
+                fun at(name: String, t: Long) { c.save(); c.scale(0.5f, 0.5f); r.draw(c, tl.frameAt(t)); c.restore(); save(name) }
+                val firstTeacher = tl.scenes.first { it.scene is studio.pyreels.core.model.Scene.Chat && (it.scene as studio.pyreels.core.model.Scene.Chat).from != "ahmed" }
+                val appearAt = tl.sfx.first { it.timeMs >= firstTeacher.startMs && it.id == "msg_recv" }.timeMs
+                at("anim-bubble", appearAt + 150)
+                val run = tl.scenes.first { it.scene is studio.pyreels.core.model.Scene.Run }
+                at("anim-run", run.startMs + run.durationMs / 3)
+                val key = tl.scenes.first { it.scene is studio.pyreels.core.model.Scene.KeySentence }
+                at("anim-card", key.startMs + 550)
+                at("anim-hook", 420)
             }
         }
         assertTrue(count > 10)

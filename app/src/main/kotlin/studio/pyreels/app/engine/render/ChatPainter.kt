@@ -105,7 +105,10 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         val composing = chat.composeText != null
         g.fill.color = s.waFab
         canvas.drawCircle(52f, cy, 40f, g.fill)
-        if (composing) g.iconSend(canvas, 50f, cy, 40f, 0xFFFFFFFF.toInt()) else g.iconMic(canvas, 52f, cy, 46f, 0xFFFFFFFF.toInt())
+        // the mic shrinks away and the send arrow grows in as the first letters are typed
+        val morph = if (composing) (chat.composeChars / 2f).coerceIn(0f, 1f) else 0f
+        if (morph < 1f) { canvas.save(); canvas.scale(1f - morph, 1f - morph, 52f, cy); g.iconMic(canvas, 52f, cy, 46f, 0xFFFFFFFF.toInt()); canvas.restore() }
+        if (morph > 0f) { canvas.save(); canvas.rotate(-30f * (1f - morph), 52f, cy); canvas.scale(morph, morph, 52f, cy); g.iconSend(canvas, 50f, cy, 40f, 0xFFFFFFFF.toInt()); canvas.restore() }
         // field
         val fx0 = 104f; val fx1 = w - 14f
         g.rect.set(fx0, cy - 38f, fx1, cy + 38f)
@@ -143,14 +146,15 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
     private fun codeLayout(code: String, width: Int, size: Float = 32f) =
         text.layout(code, width, size, g.c(g.p.codeText), TextKit.Face.MONO, Layout.Alignment.ALIGN_NORMAL, 0, spacing = 1.1f)
 
-    private fun layoutOf(m: ChatMessageView): Laid {
-        laid[m.id]?.let { if (m.karaokeWord < 0) return it }
+    private fun layoutOf(m: ChatMessageView, grouped: Boolean = false): Laid {
+        val key = if (grouped) -m.id - 1 else m.id
+        laid[key]?.let { if (m.karaokeWord < 0) return it }
         val inner = (bubbleMax - 44f).toInt()
         val body = if (m.text.isBlank()) null else text.layout(
             m.text.replace("`", ""), inner, bodySize, s.waText, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_NORMAL, 1,
             m.karaokeWord, g.c(g.p.focus), spacing = 0.92f,
         )
-        val name = if (m.outgoing) null else text.layout(g.nameOf(m.from), inner, 30f, g.accent(m.from), TextKit.Face.BOLD, Layout.Alignment.ALIGN_NORMAL, 1, spacing = 0.9f, maxLines = 1)
+        val name = if (m.outgoing || grouped) null else text.layout(g.nameOf(m.from), inner, 30f, g.accent(m.from), TextKit.Face.BOLD, Layout.Alignment.ALIGN_NORMAL, 1, spacing = 0.9f, maxLines = 1)
         val code = m.code?.let { codeLayout(it, inner - 30) }
         var contentW = max(body?.let { text.maxLineWidth(it) } ?: 0f, name?.let { text.maxLineWidth(it) } ?: 0f)
         code?.let { contentW = max(contentW, text.maxLineWidth(it) + 30f) }
@@ -170,7 +174,7 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         hh += 34f // time row
         val bw = min(bubbleMax, max(contentW + 44f, if (m.outgoing) 200f else 170f))
         val total = hh + (if (m.reactions.isNotEmpty()) 30f else 0f)
-        return Laid(body, name, code, bw, hh, total).also { laid[m.id] = it }
+        return Laid(body, name, code, bw, hh, total).also { laid[key] = it }
     }
 
     private fun drawMessages(canvas: Canvas, chat: ChatView) {
@@ -185,48 +189,75 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         }
         val msgs = chat.messages
         if (msgs.isNotEmpty()) {
-            val newest = layoutOf(msgs.last())
-            val shift = (1f - chat.scroll) * (newest.totalH + gap)
+            // consecutive messages from the same sender are grouped (no repeated name/avatar/tail)
+            fun grouped(k: Int) = k > 0 && msgs[k - 1].from == msgs[k].from && msgs[k - 1].reactions.isEmpty() && msgs[k].kind == MessageKind.TEXT
+            val lastK = msgs.lastIndex
+            val newest = layoutOf(msgs[lastK], grouped(lastK))
+            val shift = (1f - chat.scroll) * (newest.totalH + (if (grouped(lastK)) 6f else gap))
             var firstTop = y
             for (k in msgs.indices.reversed()) {
                 val m = msgs[k]
-                val l = layoutOf(m)
-                val isNewest = k == msgs.lastIndex
+                val gr = grouped(k)
+                val l = layoutOf(m, gr)
+                val isNewest = k == lastK
                 val top = y - l.totalH + (if (isNewest) 0f else shift)
                 if (top + l.totalH < listTop) break
-                if (isNewest) {
+                if (isNewest && m.appear < 1f) {
+                    // soft entrance: fade, small rise and a gentle grow from the bubble's tail corner
                     g.withAlpha(canvas, m.appear, w, h) {
-                        canvas.save(); canvas.translate(0f, (1f - m.appear) * 8f); drawMessage(canvas, m, l, top); canvas.restore()
+                        canvas.save()
+                        val sc = 0.9f + 0.1f * m.appear
+                        val pivotX = if (m.outgoing) 30f else w - 2 * avatarR - 30f
+                        canvas.translate(0f, (1f - m.appear) * 8f)
+                        canvas.scale(sc, sc, pivotX, top + l.bubbleH)
+                        drawMessage(canvas, m, l, top, gr)
+                        canvas.restore()
                     }
-                } else drawMessage(canvas, m, l, top)
+                } else drawMessage(canvas, m, l, top, gr)
                 firstTop = top
-                y = y - l.totalH - gap
+                y = y - l.totalH - (if (gr) 6f else gap)
             }
             // date pill + encryption notice above the first message when there is room
-            if (firstTop - 170f > listTop) drawPills(canvas, firstTop - 160f)
+            if (firstTop - 200f > listTop) drawPills(canvas, firstTop - 190f)
         } else drawPills(canvas, listTop + 24f)
         canvas.restore()
     }
 
-    private fun drawPills(canvas: Canvas, y: Float) {
-        val date = text.layout("اليوم", 300, 26f, s.waTime, TextKit.Face.SEMI, Layout.Alignment.ALIGN_CENTER, 1, maxLines = 1)
-        val dw = text.maxLineWidth(date) + 40f
-        g.rect.set(w / 2 - dw / 2, y, w / 2 + dw / 2, y + 48f)
-        g.fill.color = s.waPill; canvas.drawRoundRect(g.rect, 14f, 14f, g.fill)
-        g.drawAt(canvas, date, w / 2 - 150f, y + 8f)
-        val notice = text.layout("الرسائل في هذه المجموعة محفوظة على جهازك فقط.", (w - 220).toInt(), 24f, s.waNoticeText, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_CENTER, 1, spacing = 0.95f)
-        val nw = text.maxLineWidth(notice) + 70f
-        g.rect.set(w / 2 - nw / 2, y + 66f, w / 2 + nw / 2, y + 66f + notice.height + 24f)
-        g.fill.color = s.waNotice; canvas.drawRoundRect(g.rect, 14f, 14f, g.fill)
-        g.iconLock(canvas, w / 2 + nw / 2 - 26f, y + 66f + 12f + notice.height / 2f, 22f, s.waNoticeText)
-        g.drawAt(canvas, notice, w / 2 - (w - 220) / 2f - 10f, y + 78f)
+    /** A centred pill with one line of text; returns its bottom. Text is measured exactly and centred on both axes. */
+    private fun pill(canvas: Canvas, label: String, top: Float, bg: Int, fg: Int, size: Float, lock: Boolean = false): Float {
+        val tp = text.paint(TextKit.Face.SEMI, size, fg)
+        val fm = tp.fontMetrics
+        val textW = tp.measureText(label)
+        val iconW = if (lock) size * 0.9f else 0f
+        val padX = 26f
+        val hgt = (fm.descent - fm.ascent) * 0.82f + 22f
+        val pw = textW + iconW + padX * 2
+        val x0 = w / 2 - pw / 2
+        g.rect.set(x0, top, x0 + pw, top + hgt)
+        g.fill.color = g.alpha(0xFF000000.toInt(), if (s.dark) 0.18f else 0.06f)
+        canvas.drawRoundRect(x0, top + 3f, x0 + pw, top + hgt + 3f, 16f, 16f, g.fill)
+        g.fill.color = bg; canvas.drawRoundRect(g.rect, 16f, 16f, g.fill)
+        val baseline = top + hgt / 2 - (fm.ascent + fm.descent) / 2
+        // RTL: the lock icon sits at the right, the text to its left
+        if (lock) g.iconLock(canvas, x0 + pw - padX - iconW / 2, top + hgt / 2, size * 0.8f, fg)
+        canvas.drawText(label, x0 + padX, baseline, tp)
+        return top + hgt
     }
 
-    private fun bubble(canvas: Canvas, x0: Float, y0: Float, x1: Float, y1: Float, outgoing: Boolean, color: Int) {
+    /** The beginning of the conversation: date + system messages, like a real group chat. */
+    private fun drawPills(canvas: Canvas, y: Float) {
+        val teacher = scenario.cast.firstOrNull { it.role == "teacher" }?.let { g.nameOf(it.id) } ?: "المعلّم"
+        var yy = pill(canvas, "اليوم", y, s.waPill, s.waTime, 26f) + 16f
+        yy = pill(canvas, "أنشأ $teacher هذه المجموعة", yy, s.waNotice, s.waNoticeText, 24f, lock = true) + 10f
+        pill(canvas, "أضاف $teacher أحمد", yy, s.waNotice, s.waNoticeText, 24f)
+    }
+
+    private fun bubble(canvas: Canvas, x0: Float, y0: Float, x1: Float, y1: Float, outgoing: Boolean, color: Int, tail: Boolean = true) {
         val r = 24f
         g.fill.color = color
         g.rect.set(x0, y0, x1, y1)
         canvas.drawRoundRect(g.rect, r, r, g.fill)
+        if (!tail) return
         // tail at the top outer corner
         g.path.reset()
         if (outgoing) {
@@ -240,14 +271,14 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         canvas.drawPath(g.path, g.fill)
     }
 
-    private fun drawMessage(canvas: Canvas, m: ChatMessageView, l: Laid, top: Float) {
+    private fun drawMessage(canvas: Canvas, m: ChatMessageView, l: Laid, top: Float, grouped: Boolean = false) {
         val x0 = if (m.outgoing) 30f else w - 2 * avatarR - 30f - l.bubbleW
         val x1 = x0 + l.bubbleW
         val y1 = top + l.bubbleH
         val color = if (m.outgoing) s.waOut else s.waIn
-        bubble(canvas, x0, top, x1, y1, m.outgoing, color)
+        bubble(canvas, x0, top, x1, y1, m.outgoing, color, tail = !grouped)
         if (m.challenge) { g.stroke.color = g.alpha(g.c(g.p.focus), 0.8f); g.stroke.strokeWidth = 3f; g.rect.set(x0, top, x1, y1); canvas.drawRoundRect(g.rect, 24f, 24f, g.stroke) }
-        if (!m.outgoing) g.avatar(canvas, m.from, w - avatarR - 12f, top + avatarR + 2f, avatarR)
+        if (!m.outgoing && !grouped) g.avatar(canvas, m.from, w - avatarR - 12f, top + avatarR + 2f, avatarR)
         val ix = x0 + 22f
         val iw = l.bubbleW - 44f
         var y = top + 12f
@@ -275,7 +306,7 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         if (m.outgoing) { drawTicks(canvas, tx, y1 - 30f, m.ticksRead); tx += 36f }
         canvas.drawText(m.timeLabel, tx, y1 - 12f, tp)
         if (m.reactions.isNotEmpty()) {
-            val sc = 1f + 0.12f * m.reactionPulse
+            val sc = 1f + 0.18f * m.reactionPulse
             val emoji = m.reactions.joinToString("") { reactionEmoji(it) }
             val ep = text.paint(TextKit.Face.REGULAR, 26f * sc, s.waText)
             val pw = ep.measureText(emoji) + 26f

@@ -110,6 +110,8 @@ class CodeView(
     /** Soft press pulse of the ▶ run button. */
     val runPress: Float = 0f,
     val modified: Boolean = false,
+    /** Line executed before [activeLine]: the highlight band glides from it. */
+    val previousLine: Int = -1,
 )
 
 // ---------------- Hook / cards ----------------
@@ -123,6 +125,8 @@ class HookView(
     val questionAppear: Float,
     /** Gentle countdown ring 0..1 (1 = full). */
     val ring: Float,
+    /** 0..1 staggered reveal of the code lines. */
+    val lineReveal: Float = 1f,
 )
 
 enum class CardKind { RECAP, KEY_SENTENCE, TEASER }
@@ -134,6 +138,8 @@ class CardView(
     val sub: String?,
     val appear: Float,
     val zoom: Float,
+    /** 0..1 reveal of the body after the label (line by line). */
+    val reveal: Float = 1f,
 )
 
 class EngageChipView(val actions: List<String>, val appear: Float, val heartPulse: Float)
