@@ -89,7 +89,7 @@ func watcher_at(p: Vector3) -> void:
 			guard += 1
 			await frame()
 	watcher.global_position = p
-	var look := player.global_position
+	var look: Vector3 = player.global_position
 	look.y = p.y
 	if look.distance_to(p) > 0.1:
 		watcher.look_at(look, Vector3.UP, true)
