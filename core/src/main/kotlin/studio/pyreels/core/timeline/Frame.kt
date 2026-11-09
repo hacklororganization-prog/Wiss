@@ -68,6 +68,9 @@ class ChatView(
     val typingPhase: Float,
     /** 0..1 eased scroll of the newest message (renderer lifts the list by its height × (1-scroll)). */
     val scroll: Float,
+    /** Ahmed's message being typed in the input bar (null when the bar is empty). */
+    val composeText: String? = null,
+    val composeChars: Int = 0,
 )
 
 // ---------------- Code ----------------
@@ -100,6 +103,13 @@ class CodeView(
     val note: NoteView?,
     val running: Boolean,
     val errorLine: Int = -1,
+    /** On-screen keyboard slide (0 hidden … 1 shown). */
+    val keyboard: Float = 0f,
+    /** Key pressed right now (for the keyboard highlight), '\b' = backspace. */
+    val pressedKey: Char? = null,
+    /** Soft press pulse of the ▶ run button. */
+    val runPress: Float = 0f,
+    val modified: Boolean = false,
 )
 
 // ---------------- Hook / cards ----------------

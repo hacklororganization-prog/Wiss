@@ -105,7 +105,7 @@ class Timeline private constructor(
                     if (sc is Scene.Teaser && !sc.challenge.isNullOrBlank()) texts += TextCue(s + 1800, s + d - 200, null, sc.challenge)
                 }
                 is Scene.Chat -> {
-                    val typingMs = DurationEstimator.chatTypingMs(sc.text, d)
+                    val typingMs = DurationEstimator.chatTypingMs(sc.text, d, sc.from == "ahmed")
                     val appear = s + typingMs
                     val outgoing = sc.from == "ahmed"
                     sfx += SfxCue(appear, sc.sfx ?: if (outgoing) SfxIds.MSG_SEND else SfxIds.MSG_RECV, 0.8f, i)
@@ -217,7 +217,7 @@ class Timeline private constructor(
         val display = sc.readableText().ifBlank { return null }
         val speech = sc.spoken ?: if (sc.speakCode) SpeakCode.toSpeech(display) else SpeakCode.cleanForSpeech(display)
         val start = when (sc) {
-            is Scene.Chat -> ts.startMs + DurationEstimator.chatTypingMs(sc.text, ts.durationMs)
+            is Scene.Chat -> ts.startMs + DurationEstimator.chatTypingMs(sc.text, ts.durationMs, sc.from == "ahmed")
             is Scene.EngageMoment, is Scene.Analogy, is Scene.Reveal -> ts.startMs + 700
             is Scene.CommonMistake -> ts.startMs + 1_200 + 500 + 900
             is Scene.HookPredict -> ts.startMs + 700
@@ -366,6 +366,8 @@ class Timeline private constructor(
         var typingFrom: String? = null
         var typingPhase = 0f
         var scroll = 1f
+        var composeText: String? = null
+        var composeChars = 0
         // Binary search the last message that has started typing.
         var last = -1
         var lo = 0; var hi = messages.size - 1
@@ -379,6 +381,10 @@ class Timeline private constructor(
             if (m.appearAt > t) {
                 typingFrom = m.from
                 typingPhase = ((t - m.typingStart) % 1200L) / 1200f
+                if (m.from == "ahmed") {
+                    composeText = m.text
+                    composeChars = (m.text.length * Easing.linear(t, m.typingStart + 150, m.appearAt - m.typingStart - 250)).toInt()
+                }
                 continue
             }
             val since = t - m.appearAt
@@ -396,7 +402,7 @@ class Timeline private constructor(
             )
         }
         val members = scenario.cast.map { it.name }
-        return ChatView(scenario.meta.groupName ?: "مجموعة ${scenario.meta.title}", members, visible, typingFrom, typingPhase, scroll)
+        return ChatView(scenario.meta.groupName ?: "مجموعة ${scenario.meta.title}", members, visible, typingFrom, typingPhase, scroll, composeText, composeChars)
     }
 
     private fun clockLabel(id: Int): String {
@@ -416,6 +422,8 @@ class Timeline private constructor(
                 val p = typing.getValue(ts.index)
                 val (text, idx) = snapshot(p, t)
                 val done = t >= p.end
+                val kb = Easing.window(t, ts.startMs, 380) * (1f - Easing.window(t, p.end + 250, 420))
+                val pressed = pressedKey(p, idx, t)
                 val focusMix = if (done) Easing.window(t, p.end + 200, 450) else 0f
                 val voice = voices.firstOrNull { it.sceneIndex == ts.index }
                 return CodeView(
@@ -426,7 +434,8 @@ class Timeline private constructor(
                     zoom = if (p.focus.isNotEmpty()) 0.06f * focusMix else 0f,
                     terminal = emptyList(), terminalVisible = 0f, vars = emptyList(), iteration = null, stack = emptyList(),
                     note = teacherNote(sc.caption, ts.startMs + 300, voice), running = false,
-                ).also { if (idx < 0) Unit }
+                    keyboard = kb, pressedKey = pressed, modified = !done,
+                )
             }
             is Scene.Run -> {
                 val p = runs.getValue(ts.index)
@@ -450,6 +459,7 @@ class Timeline private constructor(
                     vars = vars, iteration = if (step >= 0) p.steps[step].iteration else null,
                     stack = if (step >= 0) p.steps[step].stack else emptyList(),
                     note = teacherNote(sc.caption, ts.startMs + 300, voice), running = !finished,
+                    runPress = Easing.pulse(t, ts.startMs + 80, 520),
                     errorLine = if (p.errorAt != null && t >= p.errorAt) p.steps.lastOrNull()?.line ?: 1 else -1,
                 )
             }
@@ -473,10 +483,21 @@ class Timeline private constructor(
                     note = NoteView(p.from, p.explain, Easing.window(t, p.noteAt, Easing.ENTER_MS), p.voice?.let { wordIndex(it, t) } ?: -1)
                         .takeIf { t >= p.noteAt },
                     running = false, errorLine = if (t >= p.errorAt && !fixing) 1 else -1,
+                    keyboard = if (fixing) Easing.window(t, p.fixTyping.start - 400, 380) * (1f - Easing.window(t, p.fixTyping.end + 200, 400)) else 0f,
+                    pressedKey = if (fixing) pressedKey(p.fixTyping, snapshot(p.fixTyping, t).second, t) else null,
+                    runPress = maxOf(Easing.pulse(t, p.codeEnd - 200, 520), Easing.pulse(t, p.okAt - 250, 520)),
+                    modified = fixing && t < p.fixTyping.end,
                 )
             }
             else -> error("not a code scene")
         }
+    }
+
+    private fun pressedKey(p: TypingPlan, idx: Int, t: Long): Char? {
+        if (idx < 0 || t - p.times[idx] > 110) return null
+        val cur = p.texts[idx]
+        val prev = if (idx > 0) p.texts[idx - 1] else ""
+        return if (cur.length < prev.length) '\b' else cur.lastOrNull()
     }
 
     private fun snapshot(p: TypingPlan, t: Long): Pair<String, Int> {

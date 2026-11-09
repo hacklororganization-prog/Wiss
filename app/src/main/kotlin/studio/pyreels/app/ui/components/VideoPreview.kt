@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import studio.pyreels.app.engine.PreparedVideo
 import studio.pyreels.app.engine.render.FrameRenderer
@@ -110,7 +111,7 @@ fun VideoPreview(
                     onValueChange = { v -> playing = false; time = (v * total).toLong(); onTime(time) },
                     modifier = Modifier.weight(1f),
                 )
-                Text(fmt(time) + " / " + fmt(total), style = MaterialTheme.typography.labelSmall)
+                Text(fmt(time) + " / " + fmt(total), style = MaterialTheme.typography.labelSmall.copy(textDirection = TextDirection.Ltr))
                 IconToggleButton(checked = safeZones, onCheckedChange = onSafeZones) {
                     Icon(Icons.Outlined.CropFree, contentDescription = ui.t("إظهار المناطق الآمنة", "Show safe zones"),
                         modifier = Modifier.background(if (safeZones) MaterialTheme.colorScheme.primary.copy(alpha = 0.25f) else MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp)))

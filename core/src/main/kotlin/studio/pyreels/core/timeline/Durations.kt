@@ -28,7 +28,11 @@ object DurationEstimator {
     fun minReadMs(text: String): Long = ((words(text) / Limits.WORDS_PER_SECOND) * 1000).roundToLong() + 250
 
     /** Typing-indicator length actually used for a chat scene of duration [d]: never steals reading time. */
-    fun chatTypingMs(text: String, d: Long): Long = min(typingIndicatorMs(text), max(350L, d - minReadMs(text)))
+    fun chatTypingMs(text: String, d: Long, outgoing: Boolean = false): Long =
+        min(if (outgoing) composeMs(text) else typingIndicatorMs(text), max(350L, d - minReadMs(text)))
+
+    /** Ahmed types his own messages letter by letter in the input bar. */
+    fun composeMs(text: String): Long = (400 + text.length * 38L).coerceIn(900, 2600)
 
     /** Average typing time of code (natural typing ≈ 55 ms per char plus line pauses). */
     fun codeTypingMs(code: String): Long = code.length * 52L + code.count { it == '\n' } * 160L + 400
@@ -40,7 +44,7 @@ object DurationEstimator {
             is Scene.HookPredict -> return SceneBounds(Limits.HOOK_MS, Limits.HOOK_MS, Limits.HOOK_MS)
             is Scene.Recap -> SceneBounds(4_000, 5_000, 7_000)
             is Scene.Chat -> {
-                val ideal = typingIndicatorMs(scene.text) + Easing.ENTER_MS + max(readMs(scene.text), 1_400) +
+                val ideal = (if (scene.from == "ahmed") composeMs(scene.text) else typingIndicatorMs(scene.text)) + Easing.ENTER_MS + max(readMs(scene.text), 1_400) +
                     (if (scene.code != null) 1_500 else 0) + (if (scene.reactions.isNotEmpty()) 600 else 0)
                 val minMs = max(1_800L, 450 + max(minReadMs(scene.text), 1_000)) + (if (scene.code != null) 1_000 else 0)
                 SceneBounds(minMs, max(ideal, minMs), (ideal * 1.4).roundToLong())

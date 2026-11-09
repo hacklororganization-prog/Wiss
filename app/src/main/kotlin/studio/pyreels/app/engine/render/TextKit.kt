@@ -38,6 +38,7 @@ class TextKit(private val fonts: Fonts) {
     private data class Key(
         val text: CharSequence, val width: Int, val size: Float, val color: Int, val face: Face,
         val align: Layout.Alignment, val rtl: Int, val highlightWord: Int, val highlightColor: Int, val spacing: Float,
+        val maxLines: Int,
     )
 
     private val cache = object : LinkedHashMap<Key, StaticLayout>(256, 0.75f, true) {
@@ -63,9 +64,9 @@ class TextKit(private val fonts: Fonts) {
     fun layout(
         text: CharSequence, width: Int, size: Float, color: Int, face: Face = Face.REGULAR,
         align: Layout.Alignment = Layout.Alignment.ALIGN_NORMAL, rtl: Int = 1,
-        highlightWord: Int = -1, highlightColor: Int = 0, spacing: Float = 1.12f,
+        highlightWord: Int = -1, highlightColor: Int = 0, spacing: Float = 1.0f, maxLines: Int = Int.MAX_VALUE,
     ): StaticLayout {
-        val key = Key(text, width.coerceAtLeast(1), size, color, face, align, rtl, highlightWord, highlightColor, spacing)
+        val key = Key(text, width.coerceAtLeast(1), size, color, face, align, rtl, highlightWord, highlightColor, spacing, maxLines)
         cache[key]?.let { return it }
         val content: CharSequence = if (highlightWord >= 0) karaoke(text.toString(), highlightWord, highlightColor) else text
         val dir: TextDirectionHeuristic = when (rtl) {
@@ -79,6 +80,7 @@ class TextKit(private val fonts: Fonts) {
             .setLineSpacing(0f, spacing)
             .setIncludePad(false)
             .setBreakStrategy(Layout.BREAK_STRATEGY_HIGH_QUALITY)
+            .apply { if (maxLines != Int.MAX_VALUE) { setMaxLines(maxLines); setEllipsize(android.text.TextUtils.TruncateAt.END) } }
             .build()
         cache[key] = l
         return l

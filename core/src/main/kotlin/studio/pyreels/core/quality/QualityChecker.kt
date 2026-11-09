@@ -68,7 +68,7 @@ object QualityChecker {
             } ?: continue
             val words = DurationEstimator.words(text)
             val visible = when (sc) {
-                is Scene.Chat -> ts.durationMs - DurationEstimator.chatTypingMs(sc.text, ts.durationMs)
+                is Scene.Chat -> ts.durationMs - DurationEstimator.chatTypingMs(sc.text, ts.durationMs, sc.from == "ahmed")
                 is Scene.CommonMistake -> ts.durationMs * 6 / 10
                 else -> ts.durationMs - 600
             }.coerceAtLeast(1)
