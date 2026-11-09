@@ -531,7 +531,8 @@ class Timeline private constructor(
         val sc = ts.scene as? Scene.EngageMoment ?: return null
         val l = t - ts.startMs
         val start = 1_300L
-        val dur = 4_000L
+        // the chip leaves before the bridge line starts typing (bridge typing starts at d - 1900)
+        val dur = minOf(4_000L, ts.durationMs - 1_900L - start - 150L).coerceAtLeast(1_500L)
         if (l < start || l > start + dur) return null
         val appear = Easing.window(l, start, 450) * (1f - Easing.window(l, start + dur - 450, 450))
         return EngageChipView(sc.actions, appear, Easing.pulse(l, start + 200, 1_000))
