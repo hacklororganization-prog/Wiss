@@ -2429,6 +2429,7 @@ const VSC=(()=>{
   #__hl .er.bk{animation:__bk .3s steps(2) 4}
   @keyframes __bk{50%{background:#8a2222}}
   #__hl .sl{background:var(--s-sel)}
+  #__hl .bm{background:rgba(77,163,255,.28);color:#bfe0ff!important;border-radius:3px;box-shadow:0 0 0 1px rgba(77,163,255,.7),0 0 8px rgba(77,163,255,.4);font-weight:700}
   #__hl .cw{display:inline-block;width:0;position:relative}
   #__hl .cr{position:absolute;left:-1px;top:2px;width:2px;height:17px;background:var(--s-cr);animation:__cr 1s steps(1) infinite}
   @keyframes __cr{50%{opacity:0}}
@@ -2525,12 +2526,19 @@ const VSC=(()=>{
     const t=S.text, n=t.length, L=LANGS[S.lang]||LANGS.python, cls=new Array(n+1);
     let off=0; t.split('\n').forEach(line=>{ const c=classify(line,L); for(let i=0;i<line.length;i++) cls[off+i]=c[i]; cls[off+line.length]='o'; off+=line.length+1; });
     const caret='<span class="cw">\u200b<i class="cr"></i></span>';
+    /* \u062a\u0645\u064a\u064a\u0632 \u0627\u0644\u0623\u0642\u0648\u0627\u0633 \u0627\u0644\u0645\u062a\u0637\u0627\u0628\u0642\u0629 \u062d\u0648\u0644 \u0627\u0644\u0645\u0624\u0634\u0651\u0631 (\u064a\u062a\u062c\u0627\u0647\u0644 \u0627\u0644\u0623\u0642\u0648\u0627\u0633 \u062f\u0627\u062e\u0644 \u0627\u0644\u0646\u0635\u0648\u0635 \u0648\u0627\u0644\u062a\u0639\u0644\u064a\u0642\u0627\u062a) */
+    const bm=(()=>{ const op='([{', clp=')]}', skip=i=>cls[i]==='s'||cls[i]==='c';
+      const scan=(i,dir,same,match)=>{ let depth=1; for(let j=i+dir;j>=0&&j<n;j+=dir){ if(skip(j))continue; if(t[j]===same)depth++; else if(t[j]===match){ depth--; if(depth===0)return j; } } return -1; };
+      const at=i=>{ if(i<0||i>=n||skip(i))return null; const c=t[i],o=op.indexOf(c),x=clp.indexOf(c);
+        if(o>=0){ const m=scan(i,1,op[o],clp[o]); return m>=0?[i,m]:null; }
+        if(x>=0){ const m=scan(i,-1,clp[x],op[x]); return m>=0?[m,i]:null; } return null; };
+      const r=at(S.p-1)||at(S.p); return r?new Set(r):null; })();
     let out='', run='', key='';
-    const flush=()=>{ if(!run) return; const [c,e,s2]=key.split('|'); out+=`<span class="${c}${e?' er'+(S.bk?' bk':''):''}${s2?' sl':''}">${esc(run)}</span>`; run=''; };
+    const flush=()=>{ if(!run) return; const p=key.split('|'); out+=`<span class="${p[0]}${p[1]?' er'+(S.bk?' bk':''):''}${p[2]?' sl':''}${p[3]?' bm':''}">${esc(run)}</span>`; run=''; };
     for(let i=0;i<=n;i++){
       if(i===S.p){ flush(); out+=caret; }
       if(i===n) break;
-      const e=S.err&&i>=S.err.a&&i<S.err.b, s2=S.sel&&i>=S.sel.a&&i<S.sel.b, k=(cls[i]||'o')+'|'+(e?'1':'')+'|'+(s2?'1':'');
+      const e=S.err&&i>=S.err.a&&i<S.err.b, s2=S.sel&&i>=S.sel.a&&i<S.sel.b, bmf=bm&&bm.has(i), k=(cls[i]||'o')+'|'+(e?'1':'')+'|'+(s2?'1':'')+'|'+(bmf?'1':'');
       if(k!==key){ flush(); key=k; }
       run+=t[i];
     }
