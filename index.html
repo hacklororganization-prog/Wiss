@@ -1008,9 +1008,10 @@ button:disabled{pointer-events:none}
   <div class="card" id="scnCard">
     <h3><svg class="ic"><use href="#i-files"/></svg>السيناريو</h3>
     <div class="scnInfo"><b id="scnName">…</b><span class="pill" id="scnSrc" data-src="builtin">…</span><span class="cnt" id="scnCount"></span></div>
+    <button id="scnEditBig" type="button"><svg class="ic"><use href="#i-code"/></svg>محرّر السيناريو</button>
     <div class="btnRow">
       <button class="btn2" id="scnImport"><svg class="ic"><use href="#i-folder"/></svg>استيراد JSON</button>
-      <button class="btn2" id="scnEdit"><svg class="ic"><use href="#i-code"/></svg>تحرير</button>
+      <button class="btn2" id="scnEdit"><svg class="ic"><use href="#i-code"/></svg>تحرير سريع</button>
     </div>
     <div class="btnRow">
       <button class="btn2" id="scnExport"><svg class="ic"><use href="#i-arrow"/></svg>تصدير</button>
@@ -1177,6 +1178,21 @@ button:disabled{pointer-events:none}
   <div class="gh"><button id="scnClose" aria-label="إغلاق"><svg class="ic"><use href="#i-x"/></svg></button><span>تحرير السيناريو</span><span class="sp"></span>
     <button class="btn2" id="scnFmt" type="button">تنسيق</button><button class="ok" id="scnSave" type="button">حفظ</button></div>
   <div class="body">
+    <div id="scnTools">
+      <button type="button" class="st ai" data-ai="1"><svg class="ic"><use href="#i-code"/></svg> مولّد AI</button>
+      <button type="button" class="st" data-ins='{"a":"lang","t":"نص الرسالة"}'>رسالة لغة</button>
+      <button type="button" class="st" data-ins='{"a":"me","t":"نص الرسالة"}'>رسالة متعلّم</button>
+      <button type="button" class="st" data-ins='{"a":"editor"}'>فتح المحرّر</button>
+      <button type="button" class="st" data-ins='{"a":"type","t":"print(\"Hello\")\n"}'>كتابة كود</button>
+      <button type="button" class="st" data-ins='{"a":"error","line":1,"text":"الجزء الخاطئ","hold":1.2}'>خطأ</button>
+      <button type="button" class="st" data-ins='{"a":"fix","line":1,"from":"القديم","to":"الجديد"}'>إصلاح</button>
+      <button type="button" class="st" data-ins='{"a":"run"}'>تشغيل</button>
+      <button type="button" class="st" data-ins='{"a":"out","t":"الناتج","k":"ok"}'>مخرجات</button>
+      <button type="button" class="st" data-ins='{"a":"wa","go":"vs"}'>↔ المحرّر</button>
+      <button type="button" class="st" data-ins='{"a":"wa","go":"chat"}'>↔ الدردشة</button>
+      <button type="button" class="st" data-ins='{"a":"zoom","find":"نص","hold":1.5}'>تكبير</button>
+      <button type="button" class="st" data-ins='{"a":"wait","s":1}'>انتظار</button>
+    </div>
     <textarea id="scnTa" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="scenario.json"></textarea>
     <div id="scnStat" class="good"></div>
     <details id="scnRefBox"><summary>مرجع الأوامر</summary><div id="scnRef"></div></details>
@@ -2717,12 +2733,32 @@ const WA=(()=>{
   const avatarHtml=()=>logoHtml();
   const picHtml=h=>'<span class="pic">'+h+'</span>';
 
+  /* تحسينات واتساب: ألوان وفقاعات أقرب للأصل + ظلال ناعمة + طرفية أنظف (تُحقن داخل إطار الدردشة فتغلب CSS الأساسي) */
+  const WA_ENHANCE=`
+  .wrap .bg{opacity:.055!important}
+  .in .msg{background:#202c33}
+  .out .msg{background:#005c4b}
+  .msg{box-shadow:0 1px .5px rgba(11,20,26,.18);border-radius:8px}
+  .in.first .msg,.out.first .msg{border-radius:8px}
+  .in.first .msg{border-top-right-radius:0}
+  .out.first .msg{border-top-left-radius:0}
+  .out .meta{color:rgba(233,237,239,.6)}
+  .in .meta{color:rgba(134,150,160,.9)}
+  .tk.read{color:#53bdeb}
+  .head{box-shadow:0 1px 0 rgba(0,0,0,.25);background:linear-gradient(180deg,#202c33,#1d272e)}
+  .q{border-inline-start-width:4px}
+  .cb{background:#0b1014;border:1px solid rgba(255,255,255,.05);border-radius:9px}
+  .msg{animation:waIn .22s cubic-bezier(.2,.8,.25,1)}
+  @keyframes waIn{0%{opacity:0;transform:translateY(7px) scale(.985)}100%{opacity:1;transform:none}}
+  .typing-b .msg{background:#202c33}
+  .field{border-radius:24px}
+  ::-webkit-scrollbar{width:0}`;
   /* ---------------------------------------------------- ربط الواجهتين ---- */
   function attach(){
     HD=Screens.F.home.doc; CD=Screens.F.chat.doc; if(!HD||!CD) return false;
     const L=isLight();
     Screens.inject('home',CSS_COMMON+CSS_HOME+(L?CSS_LIGHT_COMMON+CSS_LIGHT_HOME:''));
-    Screens.inject('chat',CSS_COMMON+CSS_CHAT+(L?CSS_LIGHT_COMMON+CSS_LIGHT_CHAT:''));
+    Screens.inject('chat',CSS_COMMON+CSS_CHAT+(L?CSS_LIGHT_COMMON+CSS_LIGHT_CHAT:'')+(L?'':WA_ENHANCE));
     const bg=(typeof Setup!=='undefined'&&Setup.chatBg)?Setup.chatBg():null;
     if(bg){ const a=Math.max(0,Math.min(.8,bg.dim/100));
       Screens.inject('chat',`.wrap .bg{background-image:url("${bg.img}")!important;background-size:cover!important;background-position:center!important;filter:none!important;opacity:1!important}
@@ -5039,13 +5075,38 @@ const Scn=(()=>{
   /* ---------- المحرر ---------- */
   const ref=`<b>المحرر:</b> editor · type{t,speed} · erase{n} · goto{line,col} · lines{set} · suggest{word,items} · error{line,text} · blink · fix{line,from,to} · run · term{cmd} · input{prompt,t} · out{t | lines,k}
 <b>واتساب:</b> notify{t,tap} · wa{go: home|chat|back|vs} · lang{t,code,react} · me{t,react} · voice · image · video · sticker{e} · react{to,e} · sys{t} · status{t}
-<b>عام:</b> wait{s} · clock{v} · sfx{k} · fx{k: shake|punch|red|green|blue|dark} · call{type} · clip{k | file,start,end,fit,vol,speed,anim} · sound{k | file,start,end,vol,speed,loop,for,fadeIn,fade,delay,wait} · music · chrome{q} · lock`;
+<b>عام:</b> wait{s} · clock{v} · sfx{k: send|recv|notif|pop|buzz|unlock|whoosh|ok|soft|back} · fx{k: shake|punch|red|green|blue} · zoom{find|target,hold} · quiz{q,options,correct} · call{type} · lock`;
   let ed=null;
   function openEditor(){
     ed=ed||document.getElementById('scnEd'); const ta=document.getElementById('scnTa');
     ta.value=SC_TEXT; ed.classList.add('on'); validate(); setTimeout(()=>{ ta.focus(); ta.setSelectionRange(0,0); ta.scrollTop=0; },50);
   }
   const closeEditor=()=>{ ed&&ed.classList.remove('on'); };
+  /* إدراج أمر: إن كان JSON صالحًا نُضيف الأمر إلى نهاية script تلقائيًا (بلا أي خطأ)،
+     وإلا نُدرجه عند المؤشر مع فاصلة صحيحة. يجعل كتابة السيناريو بسيطة وسلسة */
+  function insertSnippet(ta,snip){
+    if(!ta||!snip) return;
+    let obj; try{ obj=JSON.parse(snip); }catch(e){ obj=null; }
+    try{
+      const data=JSON.parse(ta.value);
+      if(obj && data && Array.isArray(data.script)){
+        data.script.push(obj);
+        ta.value=JSON.stringify(data,null,2);
+        // ضع المؤشر عند آخر أمر مُدرَج
+        const needle=JSON.stringify(obj.a);
+        const idx=ta.value.lastIndexOf('"a": '+needle);
+        ta.focus(); if(idx>=0) ta.setSelectionRange(idx,idx), ta.blur(), ta.focus();
+        validate(); toast('أُضيف الأمر إلى نهاية السيناريو'); return;
+      }
+    }catch(e){}
+    // تراجُع: إدراج عند المؤشر
+    const s=ta.selectionStart, v=ta.value, before=v.slice(0,s), after=v.slice(s);
+    const prev=before.replace(/\s+$/,'').slice(-1);
+    const text=(prev==='}'||prev===']') ? ',\n    '+snip : '\n    '+snip;
+    ta.value=before+text+after;
+    const pos=s+text.length; ta.focus(); ta.setSelectionRange(pos,pos);
+    validate();
+  }
   function validate(){
     const ta=document.getElementById('scnTa'), st=document.getElementById('scnStat'), ok=document.getElementById('scnSave');
     const c=check(ta.value);
@@ -5101,6 +5162,14 @@ const Scn=(()=>{
     if(!document.getElementById('scnCard')) return;
     document.getElementById('scnRef').innerHTML=ref;
     document.getElementById('scnEdit').onclick=openEditor;
+    { const big=document.getElementById('scnEditBig'); if(big) big.onclick=openEditor; }
+    /* شريط الإدراج السريع: يبسّط كتابة السيناريو دون حفظ أوامر JSON */
+    document.querySelectorAll('#scnTools .st').forEach(b=>{
+      b.onclick=()=>{
+        if(b.dataset.ai){ const ab=document.getElementById('mrgAiBtn'); if(ab){ closeEditor(); ab.click(); } return; }
+        insertSnippet(document.getElementById('scnTa'), b.dataset.ins);
+      };
+    });
     document.getElementById('scnClose').onclick=closeEditor;
     document.getElementById('scnTa').addEventListener('input',validate);
     document.getElementById('scnFmt').onclick=()=>{ const ta=document.getElementById('scnTa'); try{ ta.value=JSON.stringify(JSON.parse(ta.value),null,2); validate(); }catch(e){} };
@@ -5501,7 +5570,10 @@ async function startRecording(){
 $('#startBtn').onclick=startRecording;
 addEventListener('keydown',e=>{ if(!$('#setup').classList.contains('hide')&&!$('#gal').classList.contains('on')&&(e.key==='r'||e.key==='R')&&document.activeElement.tagName!=='INPUT') startRecording(); });
 
-Scn.init(); loadScenario();
+Scn.init(); loadScenario().then(()=>{
+  /* إظهار محرّر السيناريو في البداية (مرة واحدة عند فتح التطبيق) */
+  try{ setTimeout(()=>{ const b=document.getElementById('scnEditBig'); if(b && !document.getElementById('setup').classList.contains('hide')) b.click(); }, 450); }catch(e){}
+});
 
 </script>
 <!-- ============================================================================
@@ -5532,6 +5604,20 @@ Scn.init(); loadScenario();
 @media(max-width:400px){#setup .top{padding-top:70px}}
 /* إخفاء البطاقات غير التعليمية (الميمات + الأصوات/الأغاني الخلفية) */
 #clipCard,#sndCard{display:none!important}
+/* شريط الإدراج السريع في محرّر السيناريو */
+#scnTools{display:flex;gap:7px;flex-wrap:wrap;flex:none;padding-bottom:2px}
+#scnTools .st{flex:none;padding:8px 12px;border-radius:999px;font-family:inherit;font-size:13px;font-weight:700;
+  color:#cfe0f0;background:#17212d;border:1px solid #2a3a4c;cursor:pointer;transition:transform .1s,background .12s}
+#scnTools .st:active{transform:scale(.95)}
+#scnTools .st:hover{background:#1e2a38}
+#scnTools .st.ai{background:linear-gradient(135deg,#7c5cff,#b14dff);color:#fff;border-color:transparent}
+#scnTools .st.ai .ic{width:15px;height:15px;vertical-align:-2px}
+/* زر عائم بارز لفتح محرّر السيناريو من شاشة البداية */
+#scnEditBig{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:4px;
+  padding:15px;border-radius:14px;font-family:inherit;font-size:16px;font-weight:800;color:#06121f;
+  background:linear-gradient(135deg,#4da3ff,#6c5cff);border:0;cursor:pointer}
+#scnEditBig:active{transform:scale(.98)}
+#scnEditBig .ic{width:20px;height:20px}
 
 .mrgOv{position:fixed;inset:0;z-index:1000;background:#0b0e14;color:#e6eef8;display:none;
   flex-direction:column;overflow:hidden;font-family:'Cairo','Noto Sans Arabic','Segoe UI',Tahoma,sans-serif}
@@ -5938,10 +6024,16 @@ Scn.init(); loadScenario();
   /* ============================================================
      ربط الواجهة + إخفاء الشريط أثناء التسجيل
      ============================================================ */
+  /* قائمة النوافذ التي يجب أن يختفي الشريط عند فتح أي منها (كي لا يغطّي أزرارها) */
+  var OVERLAYS=['scnEd','scnPick','gal','mgal','mrgCover','mrgGuide','mrgAI'];
+  function anyOverlayOpen(){
+    for(var i=0;i<OVERLAYS.length;i++){ var el=g(OVERLAYS[i]); if(el&&el.classList.contains('on')) return true; }
+    return false;
+  }
   function barVisibility(){
     var bar=g('mrgBar'); if(!bar) return;
     var setup=g('setup'), onSetup=setup&&!setup.classList.contains('hide');
-    bar.classList.toggle('hide',!onSetup);
+    bar.classList.toggle('hide', !onSetup || anyOverlayOpen());
   }
   function wire(){
     COV.init(); REC.init(); buildGuide();
@@ -5950,8 +6042,8 @@ Scn.init(); loadScenario();
     g('mrgGuideBtn').addEventListener('click',function(){ g('mrgGuide').classList.add('on'); });
     g('mrgCovClose').addEventListener('click',function(){ g('mrgCover').classList.remove('on'); });
     g('mrgGuideClose').addEventListener('click',function(){ g('mrgGuide').classList.remove('on'); });
-    var setup=g('setup');
-    if(setup){ var mo=new MutationObserver(barVisibility); mo.observe(setup,{attributes:true,attributeFilter:['class']}); }
+    var mo=new MutationObserver(barVisibility);
+    ['setup'].concat(OVERLAYS).forEach(function(id){ var el=g(id); if(el) mo.observe(el,{attributes:true,attributeFilter:['class']}); });
     barVisibility();
     // زر «سجّل» يوضّح الوضع
     g('mrgRecBtn').title=hasNativeRec()?'تسجيل عبر مسجّل التطبيق':'تسجيل مدمج في المتصفح';
