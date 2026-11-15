@@ -2931,6 +2931,29 @@ const WA=(()=>{
   .send,.mic,.scanbtn{filter:drop-shadow(0 4px 10px rgba(0,168,107,.35))}
   /* الرموز التعبيرية أنعم */
   .emo{font-size:1.04em}
+  /* ===== لوحة تفاعلات أغنى: زر + ===== */
+  .rxp .rxplus{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.08);color:#8696a0;margin-inline-start:3px;opacity:0;animation:rxe .22s ease-out forwards;animation-delay:calc(var(--i)*35ms)}
+  .rxp .rxplus svg{width:19px;height:19px}
+  .rxp{gap:2px;padding:6px 8px}
+  /* ===== رسالة صوتية محسّنة ===== */
+  .voice{display:flex;align-items:center;gap:9px}
+  .voice .play{color:#8696a0}
+  .out .voice .play{color:#aad8cc}
+  .wave{display:flex;align-items:center;gap:2px;height:26px}
+  .wave i{width:3px;border-radius:3px;background:#67787f;transition:background .1s}
+  .wave i.on{background:#53bdeb}
+  .out .wave i{background:#6f9a8f}.out .wave i.on{background:#aef1dd}
+  .vav{position:relative;width:38px;height:38px;flex:none;border-radius:50%;overflow:visible;margin-inline-start:2px}
+  .vav>svg,.vav img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;background:#0b141a}
+  .vmic{position:absolute;inset-inline-end:-2px;bottom:-2px;width:18px;height:18px;border-radius:50%;background:#00a884;display:grid;place-items:center;box-shadow:0 0 0 2px #202c33}
+  .out .vmic{box-shadow:0 0 0 2px #005c4b}
+  .vmic svg{width:11px;height:11px;fill:#fff}
+  .vdur{color:#8696a0;font-size:11.5px;font-weight:500}
+  /* ===== اقتباس/رد أجمل ===== */
+  .q{border-inline-start:4px solid #25d366!important;background:rgba(0,0,0,.22)!important;border-radius:7px!important;padding:5px 11px!important;overflow:hidden}
+  .q b{color:#25d366!important;font-weight:700!important;margin-bottom:1px}
+  .out .q{border-inline-start-color:#53bdeb!important}
+  .out .q b{color:#53bdeb!important}
   /* الشريط العلوي: وقت/بطارية أوضح */
   #sbTime,#sbPercent{font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.2px}
   .statue-icons{gap:6px}
@@ -3063,7 +3086,11 @@ const WA=(()=>{
   const tick=st=>`<svg class="ic tk${st==='read'?' read':''}"><use href="#i-${st==='sent'?'check':'checks'}"/></svg>`;
   const setSt=(row,st)=>{ const t=row.querySelector('.tk'); if(t) t.outerHTML=tick(st); };
   const WAVE=[8,14,20,12,24,16,10,22,18,9,15,25,13,20,11,17,23,10,14,19,8,16,22,12,18,11,21,15];
-  const voiceHtml=(d,wave)=>`<div class="voice"><span class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span><div class="wave">${(Array.isArray(wave)&&wave.length?wave:WAVE).map(h=>`<i style="height:${h}px"></i>`).join('')}</div></div><span class="vdur">${esc(d)}</span>`;
+  const voiceHtml=(d,wave,side)=>{
+    const avatar=(side==='lang'&&typeof logoHtml==='function')?logoHtml():`<svg viewBox="0 0 24 24" fill="#8696a0"><circle cx="12" cy="8" r="4"/><path d="M4 20.5C4 16 7.6 14 12 14s8 2 8 6.5" fill="#8696a0"/></svg>`;
+    const bars=(Array.isArray(wave)&&wave.length?wave:WAVE).map(h=>`<i style="height:${h}px"></i>`).join('');
+    return `<div class="voice"><span class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span><div class="wave">${bars}</div><span class="vav">${avatar}<span class="vmic"><svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z"/><path d="M7 11a5 5 0 0 0 10 0M12 16v3" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></span></span></div><span class="vdur">${esc(d)}</span>`;
+  };
   /* صورة/فيديو: معاينة بنسبة أبعاد الملف (thumb فارغة = مربع رمادي) */
   const mediaHtml=m=>{
     const ar=Math.max(.6,Math.min(1.7,+m.ar||(m.kind==='video'?16/9:4/3)));
@@ -3078,7 +3105,7 @@ const WA=(()=>{
     let inner='';
     if(o.reply) inner+=`<div class="q"><b>${esc(o.reply.to==='me'?ENV.me:ENV.lang)}</b>${chatTx(o.reply.t)}</div>`;
     if(o.media) inner+=mediaHtml(o.media);
-    if(o.voice) inner+=voiceHtml(o.dur||'0:08',o.wave);
+    if(o.voice) inner+=voiceHtml(o.dur||'0:08',o.wave,side);
     else{ if(o.code) inner+=codeBlock(o.code); if(o.t) inner+=`<span class="txt">${chatTx(o.t)}</span><span class="pad"></span>`; }
     const meta=`<span class="meta"><span>${esc(o.time||fmtWA(clockMin()))}</span>${lang?'':tick(o.old?'read':'sent')}</span>`;
     const row=CD.createElement('div'); row.className='row '+(lang?'in':'out')+(first?' first':'')+(o.old?'':' anim');
@@ -3138,9 +3165,11 @@ const WA=(()=>{
     m.classList.add('pressed'); sfx.play('soft',{vol:.6}); await sleep((o.press!=null?+o.press:.45)*1000/sp);
     m.classList.remove('pressed');
     /* 2) الشريط */
-    const set=RX_SET.slice(); let ti=set.indexOf(e); if(ti<0){ set[set.length-1]=e; ti=set.length-1; }
+    const base=(Array.isArray(o.set)&&o.set.length)?o.set.slice(0,6):RX_SET.slice();   // مجموعة تفاعلات مخصّصة اختيارية
+    const set=base.slice(); let ti=set.indexOf(e); if(ti<0){ set[set.length-1]=e; ti=set.length-1; }
     const bar=CD.createElement('div'); bar.className='rxp';
-    bar.innerHTML=set.map((x,i)=>`<span class="emo" style="--i:${i}">${x}</span>`).join('');
+    bar.innerHTML=set.map((x,i)=>`<span class="emo" style="--i:${i}">${x}</span>`).join('')
+      +`<span class="rxplus" style="--i:${set.length}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>`;
     /* في الرسائل الواردة (يسار) يُحاذى الشريط من البداية كي لا يخرج عن الشاشة */
     if(to!=='me'){ bar.style.insetInlineEnd='auto'; bar.style.insetInlineStart='0'; }
     m.appendChild(bar); sfx.play('whoosh',{vol:.25}); toEnd();
