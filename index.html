@@ -2466,9 +2466,21 @@ const VSC=(()=>{
   /* السطر النشط عبر توهّج المؤشر */
   .tc{box-shadow:0 0 9px rgba(77,163,255,.85);border-radius:1px}
   /* زر التشغيل العائم — تدرّج عصري متوهّج */
-  .fab{background:linear-gradient(135deg,#4da3ff,#7c5cff)!important;box-shadow:0 10px 26px rgba(77,163,255,.5),inset 0 0 0 1px rgba(255,255,255,.1)!important;transition:transform .14s cubic-bezier(.2,1.4,.4,1),box-shadow .2s!important}
+  .fab{background:linear-gradient(135deg,#4da3ff,#7c5cff)!important;box-shadow:0 10px 26px rgba(77,163,255,.5),inset 0 0 0 1px rgba(255,255,255,.1)!important;transition:transform .14s cubic-bezier(.2,1.4,.4,1),box-shadow .2s,background .25s!important;position:relative}
   .fab:active{transform:scale(.9)!important}
   .fab svg,.fab path,.fab polygon{fill:#ffffff!important}
+  /* مؤشّرات التشغيل: ⏳ يعمل / ✓ نجح / ✗ خطأ */
+  .fab.running::before{content:"";position:absolute;inset:-6px;border-radius:50%;border:3px solid rgba(255,255,255,.22);border-top-color:#fff;animation:__spin .75s linear infinite}
+  @keyframes __spin{to{transform:rotate(360deg)}}
+  .fab.st-ok{background:linear-gradient(135deg,#34d399,#10b981)!important;box-shadow:0 10px 26px rgba(16,185,129,.55),inset 0 0 0 1px rgba(255,255,255,.12)!important}
+  .fab.st-bad{background:linear-gradient(135deg,#ff7a7a,#e11d48)!important;box-shadow:0 10px 26px rgba(225,29,72,.55),inset 0 0 0 1px rgba(255,255,255,.12)!important}
+  .fab.st-ok::after,.fab.st-bad::after{position:absolute;top:-5px;inset-inline-end:-5px;width:23px;height:23px;border-radius:50%;display:grid;place-items:center;font:900 14px/1 'Segoe UI',sans-serif;color:#fff;box-shadow:0 2px 7px rgba(0,0,0,.5);animation:__pop .3s cubic-bezier(.2,1.6,.4,1)}
+  .fab.st-ok::after{content:"✓";background:#10b981}
+  .fab.st-bad::after{content:"✗";background:#e11d48}
+  @keyframes __pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+  /* مؤشّر السطر النهائي في الطرفية */
+  .rst{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;font:900 11px/1 sans-serif;vertical-align:-3px;margin-inline-end:4px;color:#06121f}
+  .rst.ok{background:#5be38a}.rst.bad{background:#ff7b7b}
   /* شريط الرموز السفلي — مفاتيح عصرية */
   .keys{background:#0d1420!important;border-top:1px solid #182234!important}
   .keys .ib{background:#1b2433!important;color:#cdd9e6!important;border-radius:9px!important;border:1px solid #223049!important;transition:background .15s,transform .1s,border-color .15s!important}
@@ -2571,6 +2583,7 @@ const VSC=(()=>{
   function openFile(name,clear=true){
     S.file=name; if(fileLbl) fileLbl.textContent=name;
     if(clear){ S.text=''; S.p=0; S.sel=null; S.err=null; }
+    runErr=false; setRunState('');                 // تصفير مؤشّر التشغيل لملف جديد
     paint();
   }
   function reset(o={}){
@@ -2635,6 +2648,33 @@ const VSC=(()=>{
   const tl=(html,cls='')=>{ const d=D.createElement('div'); d.className='tl '+cls; d.innerHTML=html; term.appendChild(d); term.scrollTop=term.scrollHeight; return d; };
   const clean=s=>esc(fill(s==null?'':s).replace(EMO_RE,'').replace(/\uFE0F/g,''));
   async function typeInto(el,str,speed){ for(const ch of str){ el.textContent+=ch; sfx.play('soft'); await sleep(speed*rnd(.7,1.3)); } }
+
+  /* ===== محلّل ANSI كامل للطرفية (ألوان/عريض/مائل/تسطير + 256 لونًا + truecolor) ===== */
+  const ANSI_FG={30:'#3b4252',31:'#ff6b6b',32:'#5be38a',33:'#ffcf6a',34:'#61afef',35:'#c678dd',36:'#56b6c2',37:'#cdd9e6',90:'#5c6a7a',91:'#ff8f8f',92:'#8ff0a8',93:'#ffe08a',94:'#89c4ff',95:'#d6a0e8',96:'#7fd3dd',97:'#ffffff'};
+  const ANSI_BG={40:'#0d1420',41:'#5a1e1e',42:'#1e4a2e',43:'#4a3a1e',44:'#1e3550',45:'#3a2147',46:'#1e4248',47:'#2a3442',100:'#2a3442',101:'#7a2a2a',102:'#2a6a3e',103:'#6a552a',104:'#2a4a70',105:'#50315f',106:'#2a6068',107:'#cdd9e6'};
+  function ansi256(n){ n=+n||0;
+    if(n<16){ const b=['#0d1420','#ff6b6b','#5be38a','#ffcf6a','#61afef','#c678dd','#56b6c2','#cdd9e6','#5c6a7a','#ff8f8f','#8ff0a8','#ffe08a','#89c4ff','#d6a0e8','#7fd3dd','#ffffff']; return b[n]; }
+    if(n>=232){ const v=8+(n-232)*10; return 'rgb('+v+','+v+','+v+')'; }
+    n-=16; const r=Math.floor(n/36),g=Math.floor(n%36/6),bl=n%6, cv=x=>x?55+x*40:0; return 'rgb('+cv(r)+','+cv(g)+','+cv(bl)+')'; }
+  function applyCodes(codes,st){ const a=(codes||'0').split(';').map(x=>x===''?0:+x);
+    for(let i=0;i<a.length;i++){ const c=a[i];
+      if(c===0){ st.fg=st.bg='';st.b=st.i=st.u=st.d=false; }
+      else if(c===1)st.b=true; else if(c===2)st.d=true; else if(c===3)st.i=true; else if(c===4)st.u=true;
+      else if(c===22){st.b=false;st.d=false;} else if(c===23)st.i=false; else if(c===24)st.u=false;
+      else if(c===39)st.fg=''; else if(c===49)st.bg='';
+      else if(ANSI_FG[c]!=null)st.fg=ANSI_FG[c]; else if(ANSI_BG[c]!=null)st.bg=ANSI_BG[c];
+      else if(c===38||c===48){ const to=c===38; if(a[i+1]===5){ const col=ansi256(a[i+2]); to?st.fg=col:st.bg=col; i+=2; } else if(a[i+1]===2){ const col='rgb('+(a[i+2]||0)+','+(a[i+3]||0)+','+(a[i+4]||0)+')'; to?st.fg=col:st.bg=col; i+=4; } } }
+  }
+  function ansiHtml(s){ s=fill(s==null?'':String(s)).replace(/️/g,'');
+    const re=/\u001b\[([0-9;]*)m/g; let out='',last=0,m; const st={fg:'',bg:'',b:false,i:false,u:false,d:false};
+    const open=()=>{ let x=''; if(st.fg)x+='color:'+st.fg+';'; if(st.bg)x+='background:'+st.bg+';padding:0 2px;border-radius:2px;'; if(st.b)x+='font-weight:700;'; if(st.i)x+='font-style:italic;'; if(st.u)x+='text-decoration:underline;'; if(st.d)x+='opacity:.6;'; return x?'<span style="'+x+'">':'<span>'; };
+    const seg=t=>{ if(t) out+=open()+esc(t)+'</span>'; };
+    while((m=re.exec(s))){ seg(s.slice(last,m.index)); last=re.lastIndex; applyCodes(m[1],st); }
+    seg(s.slice(last)); return out; }
+
+  /* ===== مؤشّر حالة التشغيل على الزر ===== */
+  let runErr=false;
+  function setRunState(state){ if(!runSvg) return; runSvg.classList.remove('running','st-ok','st-bad'); if(state) runSvg.classList.add(state==='ok'?'st-ok':state==='bad'?'st-bad':'running'); }
   async function termCmd(cmd,speed=62){
     unfin();
     const d=tl('<span class="ty"></span><i class="tc"></i>'); await typeInto(d.querySelector('.ty'),fill(cmd),speed);
@@ -2643,8 +2683,10 @@ const VSC=(()=>{
   function termOut(lines,kind=''){
     unfin();
     (Array.isArray(lines)?lines:[lines]).forEach(x=>{ const o=typeof x==='string'?{t:x,k:kind}:x, k=o.k||kind||'';
+      if(k==='err') runErr=true;                                     // نتتبّع الخطأ حتى لو كُتم النص في وضع الأطفال
       if(k==='err'&&S.kids) return;                                  // وضع الأطفال: لا نص أحمر في الـ Terminal
-      tl(clean(o.t),k); });
+      const body=/\u001b\[/.test(o.t==null?'':String(o.t))?ansiHtml(o.t):clean(o.t);   // ANSI إن وُجد
+      tl(body,k); });
   }
   async function termInput(prompt,answer,speed=120){
     unfin();
@@ -2657,11 +2699,14 @@ const VSC=(()=>{
   /* سطر [Program finished] الخاص بـ Pydroid: يظهر بعد انتهاء البرنامج ويُزال إن عاد البرنامج يكتب أو ينتظر إدخالًا */
   let fin=null;
   function unfin(){ if(fin){ fin.remove(); fin=null; } }
-  function finish(){ unfin(); if(term) fin=tl('[Program finished]','dim'); }
+  function finish(){ unfin(); const ok=!runErr;
+    if(term) fin=tl('<span class="rst '+(ok?'ok':'bad')+'">'+(ok?'✓':'✗')+'</span> '+(ok?'[Program finished]':'[Program exited with error]'),'dim');
+    setRunState(ok?'ok':'bad'); }
   const panelTab=()=>{}, sidebar=()=>{}, render=()=>paint();
 
   /* ---------- تشغيل: الزر الأصفر ---------- */
   async function run(){
+    runErr=false; setRunState('running');                 // ⏳ بدأ التشغيل
     runSvg.classList.add('press'); sfx.play('pop'); camfx('punch');
     await sleep(230); runSvg.classList.remove('press');
     termClear(); await sleep(250);
