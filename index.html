@@ -67,16 +67,17 @@ input{font:inherit;color:inherit}
   transform:translate(var(--x,0px),var(--y,0px)) scale(var(--s,1));overflow:hidden;background:#1e1e1e;display:none}
 #stage.on{display:block}
 #cam{position:absolute;inset:0;transform-origin:50% 50%}
-#cam.shake{animation:shake .55s}
-#cam.punch{animation:punch .4s ease-out}
-@keyframes shake{0%,100%{transform:none}10%{transform:translate(-14px,6px) rotate(-.8deg)}25%{transform:translate(12px,-8px) rotate(.7deg)}40%{transform:translate(-10px,-4px) rotate(-.5deg)}55%{transform:translate(8px,6px) rotate(.4deg)}70%{transform:translate(-5px,2px)}85%{transform:translate(3px,-2px)}}
-@keyframes punch{0%{transform:none}40%{transform:scale(1.05)}100%{transform:none}}
+#cam.shake{animation:shake .5s cubic-bezier(.36,.07,.19,.97)}
+#cam.punch{animation:punch .42s cubic-bezier(.2,1.5,.3,1)}
+@keyframes shake{0%,100%{transform:none}8%{transform:translate(-16px,7px) rotate(-.9deg) scale(1.012)}22%{transform:translate(14px,-9px) rotate(.8deg)}36%{transform:translate(-12px,-5px) rotate(-.6deg) scale(1.014)}52%{transform:translate(10px,7px) rotate(.5deg)}68%{transform:translate(-6px,3px)}84%{transform:translate(4px,-2px)}}
+@keyframes punch{0%{transform:none}32%{transform:scale(1.065)}62%{transform:scale(.988)}100%{transform:none}}
 #flash{position:absolute;inset:0;z-index:60;pointer-events:none;opacity:0}
-#flash.on{animation:fl .8s ease-out}
-@keyframes fl{0%{opacity:1}100%{opacity:0}}
-#flash.red{box-shadow:inset 0 0 180px 50px rgba(255,60,60,.65)}
-#flash.green{box-shadow:inset 0 0 180px 50px rgba(46,200,90,.55)}
-#flash.blue{box-shadow:inset 0 0 180px 50px rgba(0,122,204,.6)}
+#flash.on{animation:fl .75s cubic-bezier(.2,.7,.3,1)}
+@keyframes fl{0%{opacity:1}16%{opacity:.88}100%{opacity:0}}
+#flash.red{box-shadow:inset 0 0 200px 60px rgba(255,60,60,.72);background:radial-gradient(circle at 50% 46%,transparent 52%,rgba(255,40,40,.14))}
+#flash.green{box-shadow:inset 0 0 200px 60px rgba(46,210,96,.62);background:radial-gradient(circle at 50% 46%,transparent 52%,rgba(40,220,110,.12))}
+#flash.blue{box-shadow:inset 0 0 200px 60px rgba(0,140,255,.66);background:radial-gradient(circle at 50% 46%,transparent 52%,rgba(40,140,255,.12))}
+#flash.white{box-shadow:inset 0 0 220px 80px rgba(255,255,255,.55);background:rgba(255,255,255,.14)}
 #dark{position:absolute;inset:0;z-index:61;background:#000;opacity:0;pointer-events:none;transition:opacity .6s}
 #dark.on{opacity:1}
 
@@ -2510,6 +2511,11 @@ const VSC=(()=>{
   .tl.dim{color:#5c6a7a;font-style:italic;display:inline-block;margin-top:4px;padding:1px 8px;border:1px solid #1e2a3a;border-radius:6px;background:#0d1420}
   .tc{box-shadow:0 0 9px rgba(77,163,255,.85);background:#4da3ff!important;border-radius:1px}
   .ty{color:#d8e4f2}
+  /* الشريط العلوي: وقت/بطارية أوضح */
+  #sbTime,#sbPercent{font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.2px}
+  .statue-icons{gap:6px}
+  #sbFill{filter:drop-shadow(0 0 1.5px rgba(255,255,255,.3))}
+  .mobile-statue-label{background:linear-gradient(180deg,#0b0e14,#0d1420)!important}
   `;
 
   /* ---------- ربط عناصر الواجهة (بعد تحميلها) ---------- */
@@ -2886,6 +2892,10 @@ const WA=(()=>{
   .send,.mic,.scanbtn{filter:drop-shadow(0 4px 10px rgba(0,168,107,.35))}
   /* الرموز التعبيرية أنعم */
   .emo{font-size:1.04em}
+  /* الشريط العلوي: وقت/بطارية أوضح */
+  #sbTime,#sbPercent{font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.2px}
+  .statue-icons{gap:6px}
+  #sbFill{filter:drop-shadow(0 0 1.5px rgba(255,255,255,.3))}
   ::-webkit-scrollbar{width:0}`;
   /* ---------------------------------------------------- ربط الواجهتين ---- */
   function attach(){
@@ -4616,6 +4626,19 @@ const PyChat=(()=>{
   @keyframes __pp{from{opacity:0;transform:translateY(40%)}}
   @keyframes __po{to{opacity:0;transform:translateY(-40%)}}
   @keyframes __pd{40%{opacity:1;transform:translateY(-4px)}}
+  /* ===== تحسين صندوق واتساب في المحرّر: مظهر أصلي وأنيق ===== */
+  #__py{border-radius:18px!important;box-shadow:0 20px 50px rgba(0,0,0,.62),0 0 0 1px rgba(255,255,255,.05)!important;
+    transition:opacity .24s cubic-bezier(.2,.85,.25,1),transform .24s cubic-bezier(.2,.85,.25,1)!important}
+  #__py:not(.on){transform:translateY(16px) scale(.985)}
+  #__py .ph{background:linear-gradient(180deg,#202c33,#1b252c)!important;box-shadow:0 1px 0 rgba(0,0,0,.3)}
+  #__py .pav{box-shadow:0 0 0 2px rgba(0,168,132,.4),0 2px 8px rgba(0,0,0,.4)}
+  #__py .pl{background-color:#0b141a!important}
+  #__py .pm{box-shadow:0 1px 2px rgba(0,0,0,.35)!important}
+  #__py .pm.py,#__py .pm.py::before{background:#202c33!important}
+  #__py .pm.me,#__py .pm.me::before{background:#005c4b!important}
+  #__py .pw{background:#202c33!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
+  #__py .pb{background:#00a884!important;box-shadow:0 5px 16px rgba(0,168,132,.5)}
+  #__py .pm .tk{color:#53bdeb}
   `;
   const nm=()=>(ST.name&&ST.name!=='Python')?ST.name:((typeof ENV!=='undefined'&&ENV.lang)||'Python');
   function attach(){
@@ -5418,7 +5441,7 @@ const H={
     const k=s.k;
     if(k==='shake'||k==='punch') camfx(k);
     else if(k==='red'&&KIDS()) return;            // وضع الأطفال: بلا وميض أحمر
-    else if(['red','green','blue'].includes(k)) flash(k);
+    else if(['red','green','blue','white'].includes(k)) flash(k);
     else if(k==='dark'){ $('#dark').classList.add('on'); if(s.ms){ await sleep(s.ms); $('#dark').classList.remove('on'); } }
     else if(k==='clear'||k==='light') $('#dark').classList.remove('on');
   },
@@ -5806,6 +5829,18 @@ input[type=range]{accent-color:#4da3ff}
 .pz.on .lg{box-shadow:0 0 0 2px #4da3ff,0 0 14px rgba(77,163,255,.5)}
 /* البطاقات الأخرى (غير الرئيسية) حدّ خفيف متوهّج عند اللمس */
 #setup .cols>.card:not(#scnCard):active{border-color:#2e4a6e}
+/* رؤوس البطاقات: أيقونة بتدرّج */
+.card h3{letter-spacing:.2px}
+.card h3 .ic{color:#4da3ff;filter:drop-shadow(0 0 5px rgba(77,163,255,.4))}
+/* شعار العلامة في الأعلى: توهّج نابض لطيف */
+.brand .mk{box-shadow:0 0 0 1px rgba(124,92,255,.4),0 6px 20px rgba(124,92,255,.5)!important;animation:mkGlow 3.5s ease-in-out infinite}
+@keyframes mkGlow{0%,100%{box-shadow:0 0 0 1px rgba(124,92,255,.4),0 6px 20px rgba(124,92,255,.45)}50%{box-shadow:0 0 0 1px rgba(77,163,255,.5),0 6px 26px rgba(77,163,255,.6)}}
+.brand b{letter-spacing:.3px}
+/* وسم الطول: زجاجي متوهّج */
+#setup .len{box-shadow:0 4px 14px rgba(77,163,255,.14);background:linear-gradient(135deg,#132032,#152538)!important}
+/* اللغات الجاهزة: تمرير أنعم */
+.presets{scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+@media (prefers-reduced-motion:reduce){ .brand .mk{animation:none} }
 
 .mrgOv{position:fixed;inset:0;z-index:1000;background:#0b0e14;color:#e6eef8;display:none;
   flex-direction:column;overflow:hidden;font-family:'Cairo','Noto Sans Arabic','Segoe UI',Tahoma,sans-serif}
