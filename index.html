@@ -2439,13 +2439,50 @@ const VSC=(()=>{
   .tc{display:inline-block;width:8px;height:15px;background:var(--term-tx);vertical-align:-2px;margin-left:1px;animation:__cr 1s steps(1) infinite}
   `;
 
+  /* ===== تصميم حديث لمحرّر الأكواد والطرفية (ألوان فقط — لا يمسّ مقاييس المحاذاة) ===== */
+  const VS_ENHANCE=`
+  :root{
+    --sb:#0b0e14; --bar:#111722; --bar-tx:#e9f0f8; --bar-ic:#9fb4c9;
+    --ed:#0d1420; --gut:#0d1420; --gut-tx:#3d4a5c; --gut-line:#182234;
+    --tx:#cdd9e6; --term:#080c13; --term-tx:#d8e4f2; --term-line:#182234;
+    --keys:#0d1420; --key:#1b2433; --key-tx:#cdd9e6; --sbtx:#e9f0f8;
+    --fab:#4da3ff; --fab-ic:#ffffff;
+    --s-o:#cdd9e6; --s-k:#c678dd; --s-kc:#c678dd; --s-pp:#e5c07b;
+    --s-s:#98c379; --s-c:#5c6a7a; --s-f:#61afef; --s-n:#d19a66;
+    --s-v:#e06c75; --s-t:#56b6c2; --s-er:#ff6b6b; --s-erbg:#3a1e24;
+    --s-sel:rgba(77,163,255,.26); --s-cr:#4da3ff;
+  }
+  body{background:var(--ed)!important}
+  .appbar{background:linear-gradient(180deg,#141c2b,#111722)!important;border-bottom:1px solid #1e2a3a!important;box-shadow:0 2px 14px rgba(0,0,0,.35)!important}
+  .editor-container,#editor{background:var(--ed)!important}
+  #line-numbers{background:var(--gut)!important;border-inline-end:1px solid var(--gut-line)!important}
+  /* السطر النشط عبر توهّج المؤشر */
+  .tc{box-shadow:0 0 9px rgba(77,163,255,.85);border-radius:1px}
+  /* زر التشغيل العائم — تدرّج عصري متوهّج */
+  .fab{background:linear-gradient(135deg,#4da3ff,#7c5cff)!important;box-shadow:0 10px 26px rgba(77,163,255,.5),inset 0 0 0 1px rgba(255,255,255,.1)!important;transition:transform .14s cubic-bezier(.2,1.4,.4,1),box-shadow .2s!important}
+  .fab:active{transform:scale(.9)!important}
+  .fab svg,.fab path,.fab polygon{fill:#ffffff!important}
+  /* شريط الرموز السفلي — مفاتيح عصرية */
+  .keys{background:#0d1420!important;border-top:1px solid #182234!important}
+  .keys .ib{background:#1b2433!important;color:#cdd9e6!important;border-radius:9px!important;border:1px solid #223049!important;transition:background .15s,transform .1s,border-color .15s!important}
+  .keys .ib:active{transform:scale(.9)!important;background:#28344a!important;border-color:#4da3ff!important}
+  /* الطرفية */
+  #terminal-container,#terminal-output{background:var(--term)!important}
+  #terminal-output{box-shadow:inset 0 10px 24px rgba(0,0,0,.4)}
+  /* أشرطة تمرير رفيعة */
+  ::-webkit-scrollbar{width:7px;height:7px}
+  ::-webkit-scrollbar-thumb{background:#243242;border-radius:8px}
+  ::-webkit-scrollbar-thumb:hover{background:#2e3f55}
+  ::-webkit-scrollbar-track{background:transparent}
+  `;
+
   /* ---------- ربط عناصر الواجهة (بعد تحميلها) ---------- */
   function attach(){
     D=Screens.F.vs.doc; W=Screens.F.vs.win; if(!D) return false;
     ta=D.getElementById('editor'); ln=D.getElementById('line-numbers'); term=D.querySelector('#terminal-output .terminal-row');
     runSvg=D.getElementById('runBtn'); fileLbl=D.getElementById('fileTitle');
     ta.readOnly=true; ta.setAttribute('inputmode','none'); ta.tabIndex=-1; ta.value='';
-    Screens.inject('vs',CSS);
+    Screens.inject('vs',CSS+VS_ENHANCE);
     hl=D.createElement('div'); hl.id='__hl'; hlp=D.createElement('pre'); hl.appendChild(hlp); D.querySelector('.editor-container').appendChild(hl);
     place(); W.addEventListener('resize',place);
     return true;
@@ -5618,6 +5655,47 @@ Scn.init(); loadScenario().then(()=>{
   background:linear-gradient(135deg,#4da3ff,#6c5cff);border:0;cursor:pointer}
 #scnEditBig:active{transform:scale(.98)}
 #scnEditBig .ic{width:20px;height:20px}
+
+/* ============ لمسات فاخرة لشاشة البداية ============ */
+/* توهّج محيطي خلف الواجهة */
+#setup{position:relative}
+#setup::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(60% 40% at 50% 0%, rgba(77,163,255,.14), transparent 70%),
+    radial-gradient(50% 36% at 85% 20%, rgba(124,92,255,.12), transparent 70%),
+    radial-gradient(60% 50% at 10% 85%, rgba(61,220,151,.07), transparent 70%)}
+/* حركة دخول متدرّجة للبطاقات */
+@keyframes mrgRise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+#setup .top,#setup .cols>.card,#setup #startBtn{animation:mrgRise .5s cubic-bezier(.2,.8,.25,1) both}
+#setup .cols>.card:nth-child(1){animation-delay:.04s}
+#setup .cols>.card:nth-child(2){animation-delay:.09s}
+#setup .cols>.card:nth-child(3){animation-delay:.14s}
+#setup .cols>.card:nth-child(4){animation-delay:.18s}
+#setup .cols>.card:nth-child(n+5){animation-delay:.22s}
+/* بطاقات بعمق وحدود متدرّجة */
+#setup .cols>.card{transition:border-color .2s,box-shadow .25s,transform .15s;
+  box-shadow:0 10px 26px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.03)}
+#setup .cols>.card:active{transform:translateY(1px)}
+/* البطاقة الرئيسية (السيناريو) تبرز بتوهّج accent */
+#scnCard{border-color:#2b4a74!important;
+  box-shadow:0 14px 34px rgba(77,163,255,.14),0 0 0 1px rgba(77,163,255,.1) inset!important;
+  background:linear-gradient(180deg,#17202f,#141a26)!important}
+#scnEditBig{box-shadow:0 10px 26px rgba(77,163,255,.4);transition:transform .14s,box-shadow .2s;position:relative;overflow:hidden}
+#scnEditBig::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);transform:translateX(-120%);animation:mrgShine 3.6s ease-in-out infinite}
+@keyframes mrgShine{0%,60%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+/* أزرار ناعمة التفاعل */
+.btn2{transition:background .15s,border-color .15s,transform .1s!important}
+.btn2:active{transform:scale(.97)}
+.len{backdrop-filter:blur(6px)}
+/* زر البدء: توهّج نابض خفيف */
+#startBtn{position:relative;overflow:hidden}
+#startBtn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.18) 50%,transparent 65%);transform:translateX(-120%);animation:mrgShine 4.2s ease-in-out infinite}
+/* الشعار الدائري: حلقة متدرّجة */
+.logoBig{box-shadow:0 0 0 3px rgba(77,163,255,.35),0 12px 28px rgba(0,0,0,.55)!important}
+@media (prefers-reduced-motion:reduce){
+  #setup .top,#setup .cols>.card,#setup #startBtn{animation:none}
+  #scnEditBig::after,#startBtn::after{animation:none;display:none}
+}
 
 .mrgOv{position:fixed;inset:0;z-index:1000;background:#0b0e14;color:#e6eef8;display:none;
   flex-direction:column;overflow:hidden;font-family:'Cairo','Noto Sans Arabic','Segoe UI',Tahoma,sans-serif}
