@@ -700,6 +700,7 @@ webview1.addJavascriptInterface(new Object() {
     final int MAX_BITRATE = 55000000;    // سقف أمان (مرفوع ليسمح بالجودة الأعلى)
     final int AUDIO_BITRATE = 256000;    // صوت أوضح (AAC)
     final int AUDIO_OFFSET_MS = 0;       // لو الصوت متأخر عن الصورة اجعلها سالبة (-80)، ولو متقدم اجعلها موجبة (80)
+    String VIDEO_MIME = "video/hevc";    // الترميز: "video/hevc" = H.265 (جودة أعلى بنفس الحجم) مع تراجع تلقائي إلى "video/avc" = H.264 لو لم يدعمه الهاتف. لتعطيل HEVC اجعلها "video/avc"
 
     // ====== الحالة ======
     volatile boolean recording = false, stopping = false, busy = false;
@@ -969,13 +970,14 @@ webview1.addJavascriptInterface(new Object() {
     // ============================================================ خيط GL: تجهيز المشفّر + الـ GPU + الشاشة الافتراضية
     int clampBitrate(int br) {
         try {
-            return venc.getCodecInfo().getCapabilitiesForType("video/avc").getVideoCapabilities().getBitrateRange().clamp(br);
+            return venc.getCodecInfo().getCapabilitiesForType(VIDEO_MIME).getVideoCapabilities().getBitrateRange().clamp(br);
         } catch (Throwable t) { return br; }
     }
 
     // tier 0 = أعلى جودة (High + Level 4.2 + ألوان BT.709 مطابقة للشاشة)، 1 = High فقط، 2 = الإعدادات الأساسية
     android.media.MediaFormat videoFormat(int tier) {
-        android.media.MediaFormat f = android.media.MediaFormat.createVideoFormat("video/avc", outW, outH);
+        boolean hevc = "video/hevc".equals(VIDEO_MIME);
+        android.media.MediaFormat f = android.media.MediaFormat.createVideoFormat(VIDEO_MIME, outW, outH);
         int br = (int) Math.min((long) MAX_BITRATE, (long) (outW * (long) outH * FPS * QUALITY_BPP));
         f.setInteger(android.media.MediaFormat.KEY_COLOR_FORMAT, android.media.MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
         f.setInteger(android.media.MediaFormat.KEY_BIT_RATE, clampBitrate(br));
@@ -986,9 +988,12 @@ webview1.addJavascriptInterface(new Object() {
             f.setInteger(android.media.MediaFormat.KEY_PRIORITY, 0);
             f.setInteger(android.media.MediaFormat.KEY_OPERATING_RATE, FPS);
         }
-        if (tier <= 1) f.setInteger(android.media.MediaFormat.KEY_PROFILE, android.media.MediaCodecInfo.CodecProfileLevel.AVCProfileHigh);
+        if (tier <= 1) f.setInteger(android.media.MediaFormat.KEY_PROFILE,
+            hevc ? android.media.MediaCodecInfo.CodecProfileLevel.HEVCProfileMain
+                 : android.media.MediaCodecInfo.CodecProfileLevel.AVCProfileHigh);
         if (tier == 0) {
-            f.setInteger(android.media.MediaFormat.KEY_LEVEL, android.media.MediaCodecInfo.CodecProfileLevel.AVCLevel42);
+            // المستوى: نحدّده لـ H.264 فقط؛ نتركه تلقائيًا لـ HEVC لتفادي فشل الإعداد على بعض المشفّرات
+            if (!hevc) f.setInteger(android.media.MediaFormat.KEY_LEVEL, android.media.MediaCodecInfo.CodecProfileLevel.AVCLevel42);
             if (android.os.Build.VERSION.SDK_INT >= 24) {
                 f.setInteger(android.media.MediaFormat.KEY_COLOR_STANDARD, android.media.MediaFormat.COLOR_STANDARD_BT709);
                 f.setInteger(android.media.MediaFormat.KEY_COLOR_RANGE, android.media.MediaFormat.COLOR_RANGE_LIMITED);
@@ -1006,17 +1011,21 @@ webview1.addJavascriptInterface(new Object() {
     }
 
     void glStart() throws Exception {
-        // ---- المشفّر
+        // ---- المشفّر: نجرّب HEVC أولاً (إن اختير)، ثم نتراجع تلقائياً إلى H.264 لو لم يدعمه الهاتف
         boolean cfgOk = false;
-        for (int tier = 0; tier <= 2 && !cfgOk; tier++) {
-            venc = android.media.MediaCodec.createEncoderByType("video/avc");
-            try {
-                venc.configure(videoFormat(tier), null, null, android.media.MediaCodec.CONFIGURE_FLAG_ENCODE);
-                cfgOk = true;
-            } catch (Exception e) {
-                venc.release();
-                venc = null;
-                if (tier == 2) throw e;
+        for (int pass = 0; pass < 2 && !cfgOk; pass++) {
+            for (int tier = 0; tier <= 2 && !cfgOk; tier++) {
+                try {
+                    venc = android.media.MediaCodec.createEncoderByType(VIDEO_MIME);
+                    venc.configure(videoFormat(tier), null, null, android.media.MediaCodec.CONFIGURE_FLAG_ENCODE);
+                    cfgOk = true;
+                } catch (Exception e) {
+                    if (venc != null) { try { venc.release(); } catch (Exception x) {} venc = null; }
+                }
+            }
+            if (!cfgOk) {
+                if ("video/hevc".equals(VIDEO_MIME)) VIDEO_MIME = "video/avc";   // الهاتف لا يدعم HEVC → H.264
+                else throw new Exception("تعذّر تهيئة مشفّر الفيديو");
             }
         }
         encSurface = venc.createInputSurface();
