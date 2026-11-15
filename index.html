@@ -5559,8 +5559,8 @@ const H={
   },
   /* react داخل lang/me: reactDelay (ثوانٍ قبل التفاعل، الافتراضي 1.1) ، reactTo:"me"|"lang" (على أي طرف، الافتراضي رسالة هذا الطرف)،
      reactPick:false أو reactQuick:true لانبثاق مباشر بلا شريط ، reactSpeed لتسريع/إبطاء الحركة */
-  lang:async s=>{ await WA.langSay(s); if(s.react){ await pause(num(s.reactDelay,RXD)*1000); await WA.react(s.reactTo||'lang',s.react,{quick:s.reactQuick,pick:s.reactPick,speed:s.reactSpeed}); } },
-  me:async s=>{ await WA.meSay(s); if(s.react){ await pause(num(s.reactDelay,RXD)*1000); await WA.react(s.reactTo||'me',s.react,{quick:s.reactQuick,pick:s.reactPick,speed:s.reactSpeed}); } },
+  lang:async s=>{ await WA.langSay(s); if(s.react){ await pause(num(s.reactDelay,RXD)*1000); await WA.react(s.reactTo||'lang',s.react,{quick:s.reactQuick,pick:s.reactPick,speed:s.reactSpeed,set:s.reactSet}); } },
+  me:async s=>{ await WA.meSay(s); if(s.react){ await pause(num(s.reactDelay,RXD)*1000); await WA.react(s.reactTo||'me',s.react,{quick:s.reactQuick,pick:s.reactPick,speed:s.reactSpeed,set:s.reactSet}); } },
   /* voice: إن اخترتَ ملفًا من هاتفك لهذه الخطوة (شاشة البداية ← الوسائط الخارجية) فمدته وموجته منه ويُسمَع تلقائيًا */
   voice:async s=>{
     const side=s.side==='me'?'me':'lang', buf=Media.audioBuf(s._k), len=Media.voiceLen(s);
