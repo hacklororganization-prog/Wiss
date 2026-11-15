@@ -696,9 +696,9 @@ webview1.addJavascriptInterface(new Object() {
 
     // ====== إعدادات يمكنك تعديلها ======
     final int FPS = 60;                  // إن كان هاتفك ضعيفاً وظهر تقطيع: اجعلها 30
-    final float QUALITY_BPP = 0.19f;     // جودة الفيديو (بت لكل بكسل): 0.12 عادية، 0.19 عالية جداً، 0.25 أقصى. 1080p60 ≈ 24Mbps
-    final int MAX_BITRATE = 40000000;    // سقف أمان
-    final int AUDIO_BITRATE = 192000;
+    final float QUALITY_BPP = 0.26f;     // جودة الفيديو (بت لكل بكسل): 0.12 عادية · 0.19 عالية · 0.26 عالية جداً (~32Mbps) · 0.32 أقصى. 1080p60
+    final int MAX_BITRATE = 55000000;    // سقف أمان (مرفوع ليسمح بالجودة الأعلى)
+    final int AUDIO_BITRATE = 256000;    // صوت أوضح (AAC)
     final int AUDIO_OFFSET_MS = 0;       // لو الصوت متأخر عن الصورة اجعلها سالبة (-80)، ولو متقدم اجعلها موجبة (80)
 
     // ====== الحالة ======
