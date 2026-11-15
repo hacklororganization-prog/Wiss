@@ -2412,7 +2412,7 @@ function classify(line,L){
 
 const VSC=(()=>{
   const S={text:'',p:0,sel:null,err:null,bk:false,lang:'python',file:'main.py',kids:true};
-  let D=null, W=null, ta=null, ln=null, hl=null, hlp=null, term=null, runSvg=null, fileLbl=null;
+  let D=null, W=null, ta=null, ln=null, hl=null, hlp=null, term=null, runSvg=null, fileLbl=null, al=null;
 
   /* CSS لعناصر جديدة فقط تُحقن داخل إطار المحرر (طبقة التلوين، المؤشر، سطور الـ Terminal) */
   const FONT="'JetBrains Mono','Cascadia Code','Fira Code','Roboto Mono',Consolas,'DejaVu Sans Mono',monospace";
@@ -2454,8 +2454,14 @@ const VSC=(()=>{
   }
   body{background:var(--ed)!important}
   .appbar{background:linear-gradient(180deg,#141c2b,#111722)!important;border-bottom:1px solid #1e2a3a!important;box-shadow:0 2px 14px rgba(0,0,0,.35)!important}
-  .editor-container,#editor{background:var(--ed)!important}
-  #line-numbers{background:var(--gut)!important;border-inline-end:1px solid var(--gut-line)!important}
+  .editor-container{background:var(--ed)!important;position:relative}
+  #editor{background:transparent!important}
+  /* طبقة السطر النشط */
+  #__al{position:absolute;left:0;right:0;height:21px;z-index:0;pointer-events:none;display:none;
+    background:linear-gradient(90deg,rgba(77,163,255,.15),rgba(77,163,255,.05) 55%,rgba(77,163,255,.015));
+    box-shadow:inset 3px 0 0 #4da3ff;transition:top .08s ease}
+  #line-numbers{background:transparent!important;border-inline-end:1px solid var(--gut-line)!important;position:relative;z-index:1}
+  #editor{position:relative;z-index:1}
   /* السطر النشط عبر توهّج المؤشر */
   .tc{box-shadow:0 0 9px rgba(77,163,255,.85);border-radius:1px}
   /* زر التشغيل العائم — تدرّج عصري متوهّج */
@@ -2500,7 +2506,9 @@ const VSC=(()=>{
     runSvg=D.getElementById('runBtn'); fileLbl=D.getElementById('fileTitle');
     ta.readOnly=true; ta.setAttribute('inputmode','none'); ta.tabIndex=-1; ta.value='';
     Screens.inject('vs',CSS+VS_ENHANCE);
-    hl=D.createElement('div'); hl.id='__hl'; hlp=D.createElement('pre'); hl.appendChild(hlp); D.querySelector('.editor-container').appendChild(hl);
+    const ec=D.querySelector('.editor-container');
+    al=D.createElement('div'); al.id='__al'; ec.insertBefore(al, ec.firstChild);   // طبقة السطر النشط (خلف النص)
+    hl=D.createElement('div'); hl.id='__hl'; hlp=D.createElement('pre'); hl.appendChild(hlp); ec.appendChild(hl);
     place(); W.addEventListener('resize',place);
     return true;
   }
@@ -2545,6 +2553,10 @@ const VSC=(()=>{
     else if(y<ta.scrollTop) ta.scrollTop=Math.max(0,y-pad);
     if(x>ta.scrollLeft+ta.clientWidth-24) ta.scrollLeft=x-ta.clientWidth+48; else if(x<ta.scrollLeft) ta.scrollLeft=Math.max(0,x-24);
     hlp.style.transform=`translate(${-ta.scrollLeft}px,${-ta.scrollTop}px)`; ln.scrollTop=ta.scrollTop;
+    /* تمييز السطر النشط: يتبع المؤشّر عبر الهامش والمحرّر */
+    if(al){ const cw2=hlp.querySelector('.cw');
+      if(cw2){ al.style.height=lh+'px'; al.style.top=(ta.offsetTop+cw2.offsetTop-ta.scrollTop)+'px'; al.style.display='block'; }
+      else al.style.display='none'; }
   }
 
   /* ---------- ملف / إعادة ضبط ---------- */
