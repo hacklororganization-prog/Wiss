@@ -137,6 +137,45 @@ input{font:inherit;color:inherit}
 #tgCard .tgIn{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0}
 #tgCard input[type=text]{width:100%;height:44px;border-radius:12px;background:#0d1117;border:1.5px solid #2c3b54;color:#fff;padding:0 12px;font-size:16px;font-weight:700}
 
+/* ===== تطوير بطاقة النهاية ===== */
+#endCard{box-shadow:inset 0 0 200px 46px rgba(0,0,0,.5)}                 /* فينييت سينمائي */
+#endCard>:nth-child(7){transition-delay:.95s}
+/* الشعار: حلقة متدرّجة دوّارة + توهّج */
+#endCard .lg{position:relative}
+#endCard .lg::after{content:"";position:absolute;inset:-13px;border-radius:50%;z-index:-1;background:conic-gradient(from 0deg,rgb(var(--a)),rgb(var(--b)),rgb(var(--a)));filter:blur(3px);opacity:.8;animation:ecSpin 6s linear infinite}
+@keyframes ecSpin{to{transform:rotate(360deg)}}
+/* العنوان: خطّ accent متوهّج تحته */
+#endCard h2{position:relative;padding-bottom:14px}
+#endCard h2::after{content:"";position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:84px;height:5px;border-radius:3px;background:linear-gradient(90deg,rgb(var(--a)),rgb(var(--b)));box-shadow:0 0 16px rgba(var(--a),.7)}
+/* قرص الفائدة: توهّج أعمق */
+#endCard p{box-shadow:0 10px 34px rgba(var(--a),.22),inset 0 0 0 1px rgba(var(--a),.22)}
+/* الخيارات: رقائق متدرّجة */
+#endCard .ch span{background:linear-gradient(135deg,rgba(var(--a),.16),rgba(var(--b),.1))!important;border-color:rgba(var(--a),.45)!important;box-shadow:0 5px 16px rgba(0,0,0,.25);transition:transform .2s}
+/* زر المتابعة: بارز نابض بأيقونة جرس */
+#endFol{display:inline-flex!important;align-items:center;gap:10px;padding:13px 26px;border-radius:999px;color:#fff!important;font-size:21px!important;font-weight:800!important;
+  background:linear-gradient(135deg,rgb(var(--a)),rgb(var(--b)));box-shadow:0 12px 32px rgba(var(--a),.42),inset 0 0 0 1px rgba(255,255,255,.12);animation:ecFol 2.4s ease-in-out infinite}
+#endFol:empty{display:none!important}
+#endFol .bell{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;animation:ecBell 2.4s ease-in-out infinite;transform-origin:50% 10%}
+@keyframes ecFol{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+@keyframes ecBell{0%,70%,100%{transform:rotate(0)}76%{transform:rotate(14deg)}84%{transform:rotate(-11deg)}92%{transform:rotate(6deg)}}
+/* صفّ التفاعل (إعجاب/متابعة/مشاركة) */
+#endEng{display:flex;gap:30px;justify-content:center;align-items:flex-start}
+#endEng:empty{display:none}
+#endEng .eb{display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;transform:translateY(14px) scale(.6)}
+#endCard.on #endEng .eb{animation:ecPop .5s cubic-bezier(.2,1.5,.4,1) forwards}
+#endCard.on #endEng .eb:nth-child(1){animation-delay:1.0s}
+#endCard.on #endEng .eb:nth-child(2){animation-delay:1.14s}
+#endCard.on #endEng .eb:nth-child(3){animation-delay:1.28s}
+@keyframes ecPop{to{opacity:1;transform:none}}
+#endEng .ei{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:rgba(var(--ink),.08);border:2px solid rgba(var(--ink),.22);color:var(--txt);box-shadow:0 10px 24px rgba(0,0,0,.35)}
+#endEng .ei svg{width:31px;height:31px;fill:currentColor}
+#endEng .el{font-size:15.5px;font-weight:800;color:var(--sub)}
+#endEng .eb.like .ei{background:rgba(255,70,90,.16);border-color:rgba(255,70,90,.55);color:#ff5a6e}
+#endCard.on #endEng .eb.like .ei{animation:ecHeart 1.6s ease-in-out 1.6s infinite}
+@keyframes ecHeart{0%,100%{transform:scale(1)}30%{transform:scale(1.18)}45%{transform:scale(1)}}
+#endEng .eb.follow .ei{background:rgba(var(--a),.16);border-color:rgba(var(--a),.55);color:rgb(var(--a))}
+#endEng .eb.share .ei{background:rgba(var(--b),.16);border-color:rgba(var(--b),.55);color:rgb(var(--b))}
+
 /* رسالة المسجّل خارج المسرح */
 #recMsg{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(8px);z-index:300;max-width:90vw;padding:12px 20px;border-radius:14px;
   background:#2b2f3a;color:#fff;font-weight:700;font-size:16.5px;line-height:1.5;display:none;text-align:center;direction:rtl;opacity:0;
@@ -1324,7 +1363,7 @@ button:disabled{pointer-events:none}
   <div id="loader"><div class="lg" id="ldLg"></div><h3 id="ldT">جارٍ تجهيز المشهد</h3><div class="bar"><i id="ldBar"></i></div><small id="ldTx">0%</small></div>
 
   <!-- بطاقة النهاية -->
-  <div id="endCard"><div class="lg" id="endLg"></div><h2 id="endT"></h2><p id="endAsk"></p><div class="ch" id="endCh"></div><small id="endFol"></small><div id="endTg"></div></div>
+  <div id="endCard"><div class="lg" id="endLg"></div><h2 id="endT"></h2><p id="endAsk"></p><div class="ch" id="endCh"></div><small id="endFol"></small><div class="eng" id="endEng"></div><div id="endTg"></div></div>
 
  </div>
  <div id="flash"></div><div id="dark"></div>
@@ -5599,8 +5638,16 @@ async function buildScene(){
   $('#safeBg').innerHTML=logoHtml();
   Call.reset(); Music.reset(); Chrome.reset(); Lock.reset(); Media.reset(); Clips.reset(); $('#endCard').classList.remove('on'); $('#dark').classList.remove('on'); $('#flash').className='';
   const e=SC.end||{}; { const TH=['night','aurora','sunset','ocean','neon','forest','rose','gold','cosmic','light']; let th=String(e.theme||'night'); if(th==='random') th=TH[Math.floor(Math.random()*TH.length)]; if(!TH.includes(th)) th='night'; $('#endCard').dataset.th=th; }
-  $('#endLg').innerHTML=logoHtml(); $('#endT').textContent=fill(e.text||'النهاية'); $('#endAsk').innerHTML=tx(e.ask||''); $('#endFol').innerHTML=tx(e.follow||'');
+  $('#endLg').innerHTML=logoHtml(); $('#endT').textContent=fill(e.text||'النهاية'); $('#endAsk').innerHTML=tx(e.ask||'');
+  { const fol=fill(e.follow||''); $('#endFol').innerHTML=fol?('<svg class="bell" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0-6 6c0 5-2 6-2 7h16c0-1-2-2-2-7a6 6 0 0 0-6-6z"/><path d="M10.5 20a1.8 1.8 0 0 0 3 0"/></svg>'+tx(e.follow||'')):''; }
   $('#endCh').innerHTML=(e.choices||[]).map(c=>`<span>${tx(Array.isArray(c)?c[1]:c)}</span>`).join('');
+  /* صفّ التفاعل بأسلوب ريلز/تيك توك (يُخفى بـ end.engage:false) */
+  { const eng=$('#endEng'); if(e.engage===false){ eng.innerHTML=''; eng.style.display='none'; } else { eng.style.display='';
+    eng.innerHTML=[
+      ['like','أعجبني','<path d="M12 21s-7.5-4.6-10-9.3C.2 8 2.3 4.5 6 4.5c2 0 3.3 1 4 2 .7-1 2-2 4-2 3.7 0 5.8 3.5 4 7.2C19.5 16.4 12 21 12 21z"/>'],
+      ['follow','متابعة','<path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M2 21c0-4 3.3-6 7-6 1 0 2 .15 2.8.42"/><path d="M18 13.5v6M15 16.5h6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/>'],
+      ['share','مشاركة','<path d="M14 9V5l7 7-7 7v-4.1C9 13.8 6 15.5 4 19c.2-6.6 4.2-9.6 10-10z"/>']
+    ].map(x=>`<div class="eb ${x[0]}"><span class="ei"><svg viewBox="0 0 24 24">${x[2]}</svg></span><span class="el">${x[1]}</span></div>`).join(''); } }
   { const T0=(Setup.tg&&Setup.tg())||{}, box=$('#endTg');
     const T={on:e.tg==null?T0.on:!!e.tg, img:T0.img, name:(e.tgName||T0.name||'').trim(), text:(e.tgText||T0.text||'').trim()};
     if(T.on&&(T.img||T.name)){
