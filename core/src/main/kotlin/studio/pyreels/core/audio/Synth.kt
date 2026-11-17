@@ -29,39 +29,51 @@ object Synth {
 
     private val cache = HashMap<String, FloatArray>()
 
-    /** Base (un-humanised) sound, cached. */
-    fun base(id: String): FloatArray = synchronized(cache) { cache.getOrPut(id) { generate(id, Variant()) } }
+    /** Number of pre-rendered humanised variants per sound (cheap, and no two taps sound identical). */
+    private const val VARIANTS = 5
 
-    /** Humanised sound: pitch variation via resampling of the cached base. */
+    /** Base (un-humanised) sound, cached. */
+    fun base(id: String): FloatArray = synchronized(cache) { cache.getOrPut(id) { soften(generate(id, Variant())) } }
+
+    /** Humanised sound: one of [VARIANTS] cached variants with slightly different pitch and level. */
     fun sound(id: String, seed: Int): FloatArray {
-        val b = base(id)
-        val v = variant(seed)
-        if (abs(v.pitch - 1f) < 0.001f && abs(v.gain - 1f) < 0.001f) return b
-        val outLen = (b.size / v.pitch).toInt()
-        val out = FloatArray(outLen)
-        for (i in 0 until outLen) {
-            val x = i * v.pitch
-            val i0 = x.toInt()
-            val f = x - i0
-            val a = b.getOrElse(i0) { 0f }
-            val c = b.getOrElse(i0 + 1) { 0f }
-            out[i] = (a + (c - a) * f) * v.gain
+        val idx = Math.floorMod(seed, VARIANTS)
+        return synchronized(cache) {
+            cache.getOrPut("$id#$idx") {
+                val k = (idx - VARIANTS / 2).toFloat()
+                soften(generate(id, Variant(pitch = 1f + k * 0.018f, gain = 1f + k * 0.06f)))
+            }
         }
-        return out
+    }
+
+    /**
+     * Rounds every sound off: a gentle low-pass (no harsh highs) and short fades, so nothing clicks
+     * or sounds sharp even when many cues play in a row.
+     */
+    private fun soften(x: FloatArray, cutoffHz: Double = 4800.0): FloatArray {
+        if (x.isEmpty()) return x
+        val a = (1.0 - exp(-TWO_PI * cutoffHz / SAMPLE_RATE)).toFloat()
+        var y = 0f
+        for (i in x.indices) { y += a * (x[i] - y); x[i] = y }
+        val fadeIn = min(x.size / 2, n(0.003))
+        val fadeOut = min(x.size / 2, n(0.012))
+        for (i in 0 until fadeIn) x[i] *= i.toFloat() / fadeIn
+        for (i in 0 until fadeOut) x[x.size - 1 - i] *= i.toFloat() / fadeOut
+        return x
     }
 
     fun generate(id: String, v: Variant): FloatArray = when (id) {
         SfxIds.KEY_TAP -> keyTap(v)
-        SfxIds.MSG_SEND -> blip(listOf(660.0, 880.0), 0.07, 0.22, v)
-        SfxIds.MSG_RECV -> blip(listOf(784.0, 587.0), 0.08, 0.22, v)
+        SfxIds.MSG_SEND -> blip(listOf(523.25, 659.25), 0.09, 0.12, v)
+        SfxIds.MSG_RECV -> blip(listOf(659.25, 587.33), 0.10, 0.11, v)
         SfxIds.POP -> pop(v)
-        SfxIds.SOFT_WHOOSH -> whoosh(0.42, v)
-        SfxIds.SUCCESS_CHIME -> chime(listOf(523.25, 659.25, 783.99), 0.09, 0.9, v)
+        SfxIds.SOFT_WHOOSH -> whoosh(0.5, v)
+        SfxIds.SUCCESS_CHIME -> chime(listOf(523.25, 659.25, 783.99), 0.11, 0.75, v)
         SfxIds.GENTLE_ERROR -> chime(listOf(392.0, 329.63), 0.14, 0.6, v, soft = true)
         SfxIds.HEART_PULSE -> heart(v)
         SfxIds.TICK -> tick(v)
         SfxIds.HOOK_ENTER -> hookEnter(v)
-        SfxIds.RUN_START -> sweep(320.0, 640.0, 0.32, v)
+        SfxIds.RUN_START -> sweep(260.0, 520.0, 0.34, v)
         SfxIds.TYPE_LOOP -> typeLoop(v)
         else -> FloatArray(0)
     }
@@ -74,15 +86,15 @@ object Synth {
         return exp(-curve * x) * (1 - x)
     }
 
+    /** A soft, low "thock" — round and quiet, so a long typing run stays comfortable. */
     private fun keyTap(v: Variant): FloatArray {
-        val len = n(0.035)
+        val len = n(0.05)
         val out = FloatArray(len)
-        val r = Rng(42)
-        val bp = Biquad.bandPass(3200.0 * v.pitch, 1.4)
         for (i in 0 until len) {
-            val noise = bp.process(r.signed().toDouble())
-            val click = sin(TWO_PI * 1800 * v.pitch * i / SAMPLE_RATE) * 0.3
-            out[i] = ((noise + click) * env(i, len, n(0.001), 7.0) * 0.22 * v.gain).toFloat()
+            val t = i.toDouble() / SAMPLE_RATE
+            val e = exp(-t * 85.0) * min(1.0, i / (SAMPLE_RATE * 0.002))
+            val s = sin(TWO_PI * 380.0 * v.pitch * t) * 0.8 + sin(TWO_PI * 190.0 * v.pitch * t) * 0.5
+            out[i] = (s * e * 0.16 * v.gain).toFloat()
         }
         return out
     }
@@ -97,22 +109,22 @@ object Synth {
             var ph = 0.0
             for (i in 0 until nl) {
                 ph += TWO_PI * f * v.pitch / SAMPLE_RATE
-                val s = sin(ph) + 0.18 * sin(2 * ph)
-                out[start + i] += (s * env(i, nl, n(0.004), 6.0) * gain * v.gain).toFloat()
+                val s = sin(ph) + 0.06 * sin(2 * ph)
+                out[start + i] += (s * env(i, nl, n(0.012), 5.0) * gain * v.gain).toFloat()
             }
         }
         return out
     }
 
     private fun pop(v: Variant): FloatArray {
-        val len = n(0.07)
+        val len = n(0.09)
         val out = FloatArray(len)
         var ph = 0.0
         for (i in 0 until len) {
             val x = i.toDouble() / len
-            val f = (520 - 260 * x) * v.pitch
+            val f = (420 - 200 * x) * v.pitch
             ph += TWO_PI * f / SAMPLE_RATE
-            out[i] = (sin(ph) * env(i, len, n(0.002), 4.0) * 0.25 * v.gain).toFloat()
+            out[i] = (sin(ph) * env(i, len, n(0.006), 4.0) * 0.16 * v.gain).toFloat()
         }
         return out
     }
@@ -124,9 +136,9 @@ object Synth {
         for (i in 0 until len) {
             val x = i.toDouble() / len
             // update the filter coefficients every 64 samples for a smooth sweep
-            if (i % 64 == 0) whooshFilter.set(Biquad.bandPass((300 + 1600 * sin(PI * x)) * v.pitch, 0.8))
+            if (i % 64 == 0) whooshFilter.set(Biquad.bandPass((240 + 700 * sin(PI * x)) * v.pitch, 0.6))
             val s = whooshFilter.process(r.signed().toDouble())
-            out[i] = (s * sin(PI * x).pow(2) * 0.16 * v.gain).toFloat()
+            out[i] = (s * sin(PI * x).pow(2) * 0.10 * v.gain).toFloat()
         }
         whooshFilter.reset()
         return out
@@ -144,8 +156,8 @@ object Synth {
             for (i in 0 until nl) {
                 val t = i.toDouble() / SAMPLE_RATE
                 val ph = TWO_PI * f * v.pitch * t
-                val s = sin(ph) + (if (soft) 0.05 else 0.25) * sin(2 * ph) + 0.08 * sin(3 * ph)
-                out[start + i] += (s * env(i, nl, n(0.006), if (soft) 3.5 else 4.5) * (if (soft) 0.16 else 0.14) * v.gain).toFloat()
+                val s = sin(ph) + (if (soft) 0.04 else 0.12) * sin(2 * ph) + 0.03 * sin(3 * ph)
+                out[start + i] += (s * env(i, nl, n(0.014), if (soft) 3.5 else 4.2) * (if (soft) 0.11 else 0.09) * v.gain).toFloat()
             }
         }
         return out
@@ -161,16 +173,16 @@ object Synth {
             for (i in 0 until beat) {
                 val t = i.toDouble() / SAMPLE_RATE
                 val f = (85 - 30 * i.toDouble() / beat) * v.pitch
-                out[start + i] += (sin(TWO_PI * f * t) * env(i, beat, n(0.008), 5.0) * (if (b == 0) 0.4 else 0.3) * v.gain).toFloat()
+                out[start + i] += (sin(TWO_PI * f * t) * env(i, beat, n(0.008), 5.0) * (if (b == 0) 0.3 else 0.22) * v.gain).toFloat()
             }
         }
         return out
     }
 
     private fun tick(v: Variant): FloatArray {
-        val len = n(0.02)
+        val len = n(0.03)
         val out = FloatArray(len)
-        for (i in 0 until len) out[i] = (sin(TWO_PI * 2400 * v.pitch * i / SAMPLE_RATE) * env(i, len, 10, 8.0) * 0.12 * v.gain).toFloat()
+        for (i in 0 until len) out[i] = (sin(TWO_PI * 1500 * v.pitch * i / SAMPLE_RATE) * env(i, len, 24, 7.0) * 0.06 * v.gain).toFloat()
         return out
     }
 
@@ -181,7 +193,7 @@ object Synth {
         for (i in 0 until len) {
             val x = i.toDouble() / len
             ph += TWO_PI * (f0 + (f1 - f0) * x) * v.pitch / SAMPLE_RATE
-            out[i] = ((sin(ph) + 0.1 * sin(2 * ph)) * sin(PI * x) * 0.16 * v.gain).toFloat()
+            out[i] = ((sin(ph) + 0.1 * sin(2 * ph)) * sin(PI * x) * 0.11 * v.gain).toFloat()
         }
         return out
     }
@@ -198,7 +210,7 @@ object Synth {
             val e = sin(PI * x.pow(0.6)).pow(2)
             var s = 0.0
             chord.forEachIndexed { k, f -> s += sin(TWO_PI * f * v.pitch * t + k) * (0.6 - k * 0.1) }
-            out[i] = (s * e * 0.07 * v.gain + air[i] * 0.6).toFloat()
+            out[i] = (s * e * 0.05 * v.gain + air[i] * 0.5).toFloat()
         }
         return out
     }

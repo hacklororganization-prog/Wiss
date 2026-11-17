@@ -26,3 +26,9 @@ Each ambiguous point was decided for the calmer, clearer, cheaper-to-render opti
 - **Centred composition.** The phone and the cards have equal left and right margins; the safe-zone overlay still shows the platform UI areas.
 - **Profile pictures.** Gallery pictures (group, Ahmed, each language) are copied to private storage by `AvatarStore` and drawn by the same renderer in preview and export.
 - **Crash report.** `CrashLog` stores the last failure locally and shows it on the next launch with a copy button; an export that dies twice is not retried again.
+
+## Export crash, soft sound design, smoother UI (revision 2)
+
+- **Export crash root cause** (found by the emulator test on Android 14): the foreground-service notification used a framework drawable id as its small icon; the system rejects that (`CannotPostForegroundServiceNotificationException`) and kills the app — an exception no `try/catch` can intercept. The notification now uses an app-owned vector icon (`ic_stat_export`), no action icon, and the channel is ensured inside the service.
+- **Sound**: with the ambient bed gone, loudness normalisation was boosting the sparse effects by up to 12 dB. Effect-only mixes are no longer normalised; the voice mix is limited to ±6 dB. Effects were redesigned (soft low "thock" for typing instead of a noise click, rounder chimes/blips, gentle low-pass on everything), typing taps are sparser, and humanisation uses 5 cached variants instead of one resampled copy per cue.
+- **Smoothness**: preview renderer is built off the UI thread and only rebuilt when theme/cast/pictures change; redraw is capped (30 fps, 12 fps on the home card) and the controls update ~8×/s; no rendering or audio while the app is in the background; the picture waits for the audio to start so it no longer jumps; timelines, quality checks and JSON parsing run on a background dispatcher.

@@ -76,6 +76,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonPrimitive
 import studio.pyreels.app.data.ProjectRepository
@@ -110,7 +113,12 @@ class EditorViewModel @Inject constructor(
     private val engine: VideoEngine,
 ) : ViewModel() {
     val scenario = MutableStateFlow<Scenario?>(null)
-    val video = MutableStateFlow<PreparedVideo?>(null)
+    /** The timeline of the current scenario, rebuilt in the background (never blocks typing). */
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val video: kotlinx.coroutines.flow.StateFlow<PreparedVideo?> = scenario
+        .mapLatest { s -> s?.let { engine.quick(it) } }
+        .flowOn(kotlinx.coroutines.Dispatchers.Default)
+        .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.Eagerly, null)
     val canUndo = MutableStateFlow(false)
     val canRedo = MutableStateFlow(false)
     private val undo = ArrayDeque<Scenario>()
@@ -125,7 +133,7 @@ class EditorViewModel @Inject constructor(
         viewModelScope.launch {
             val p = projects.get(id) ?: return@launch
             brief = p.brief()
-            p.scenario()?.let { set(it, record = false) }
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) { p.scenario() }?.let { set(it, record = false) }
         }
     }
 
@@ -140,13 +148,12 @@ class EditorViewModel @Inject constructor(
     private fun set(s: Scenario, record: Boolean) {
         scenario.value?.let { if (record) { undo.addLast(it); if (undo.size > 100) undo.removeFirst(); redo.clear() } }
         scenario.value = s
-        video.value = engine.quick(s)
         canUndo.value = undo.isNotEmpty(); canRedo.value = redo.isNotEmpty()
         if (record) autosave()
     }
 
-    fun undo() { val prev = undo.removeLastOrNull() ?: return; scenario.value?.let { redo.addLast(it) }; scenario.value = prev; video.value = engine.quick(prev); canUndo.value = undo.isNotEmpty(); canRedo.value = true; autosave() }
-    fun redo() { val nx = redo.removeLastOrNull() ?: return; scenario.value?.let { undo.addLast(it) }; scenario.value = nx; video.value = engine.quick(nx); canRedo.value = redo.isNotEmpty(); canUndo.value = true; autosave() }
+    fun undo() { val prev = undo.removeLastOrNull() ?: return; scenario.value?.let { redo.addLast(it) }; scenario.value = prev; canUndo.value = undo.isNotEmpty(); canRedo.value = true; autosave() }
+    fun redo() { val nx = redo.removeLastOrNull() ?: return; scenario.value?.let { undo.addLast(it) }; scenario.value = nx; canRedo.value = redo.isNotEmpty(); canUndo.value = true; autosave() }
 
     private fun autosave() {
         saveJob?.cancel()

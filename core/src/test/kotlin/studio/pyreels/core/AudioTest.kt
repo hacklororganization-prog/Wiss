@@ -66,6 +66,27 @@ class AudioTest {
     }
 
     @Test
+    fun effectsOnlyMixKeepsItsSoftLevel() {
+        // no voice: the sparse sound effects must not be boosted to the voice loudness
+        val s = ScenarioValidator.parse(Resources.text("samples/02-variables.pyreels.json")).scenarios.single()
+        val tl = Timeline.build(s)
+        val mixer = AudioMixer(tl, emptyMap(), MixSettings())
+        val stats = mixer.prepare()
+        assertEquals(1f, stats.gain)
+        val buf = FloatArray(4096)
+        var peak = 0f
+        while (true) { val n = mixer.read(buf); if (n == 0) break; for (i in 0 until n) peak = maxOf(peak, abs(buf[i])) }
+        assertTrue(peak in 0.02f..0.45f, "effects-only peak $peak")
+    }
+
+    @Test
+    fun typingTapsAreSparse() {
+        val s = ScenarioValidator.parse(Resources.text("samples/02-variables.pyreels.json")).scenarios.single()
+        val taps = Timeline.build(s).sfx.filter { it.id == SfxIds.KEY_TAP }.map { it.timeMs }.sorted()
+        for (k in 1 until taps.size) assertTrue(taps[k] - taps[k - 1] >= 60, "taps too close at ${taps[k]}")
+    }
+
+    @Test
     fun wavRoundTrip() {
         val s = FloatArray(4800) { (0.5 * sin(2 * PI * 440 * it / 48000)).toFloat() }
         val back = Wav.read(Wav.write(s, 48000))

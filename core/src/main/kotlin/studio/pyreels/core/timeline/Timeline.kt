@@ -97,7 +97,7 @@ class Timeline private constructor(
                     val ringStart = s + d - sc.holdMs.coerceIn(1500, 2500)
                     // Gentle 1 Hz ticks during the suspense (never faster than 1 Hz).
                     var tick = ringStart + 1000
-                    while (tick < s + d - 200) { sfx += SfxCue(tick, SfxIds.TICK, 0.35f, i * 31 + tick.toInt()); tick += 1000 }
+                    while (tick < s + d - 200) { sfx += SfxCue(tick, SfxIds.TICK, 0.5f, i * 31 + tick.toInt()); tick += 1000 }
                     texts += TextCue(s + 700, s + d, null, sc.question)
                 }
                 is Scene.Recap, is Scene.KeySentence, is Scene.Teaser -> {
@@ -140,9 +140,11 @@ class Timeline private constructor(
                     val plan = typingPlan(sc.code, sc.typing, sc.typo, s + 350, s + d - 1_000, sc.focusLines, sc.language, i)
                     typing[i] = plan
                     var k = 0
+                    // one soft tap for every third key, never closer than 90 ms: comfortable, not busy
+                    var lastTap = Long.MIN_VALUE
                     while (k < plan.times.size) {
-                        sfx += SfxCue(plan.times[k], SfxIds.KEY_TAP, 0.28f, i * 1009 + k)
-                        k += if (plan.times.size > 300) 2 else 1
+                        if (plan.times[k] - lastTap >= 90) { sfx += SfxCue(plan.times[k], SfxIds.KEY_TAP, 0.7f, i * 1009 + k); lastTap = plan.times[k] }
+                        k += 3
                     }
                     lastCode = sc.code; lastLang = sc.language
                     sc.caption?.let { texts += TextCue(s + 300, s + d, teacher, it) }

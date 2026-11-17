@@ -77,9 +77,17 @@ class AudioMixer(
 
     /** Computes the normalisation gain. Call once before [read]. */
     fun prepare(): MixStats {
+        // Without a voice the soundtrack is only sparse sound effects. Normalising those to the
+        // voice loudness would boost every click by up to 12 dB, so they keep their designed
+        // (soft) level and are not measured at all.
+        if (voices.isEmpty() || !settings.normalize) {
+            normGain = 1f
+            seek(0)
+            return MixStats(-99.0, settings.targetLufs, normGain)
+        }
         val lufs = measureLoudness()
-        normGain = if (settings.normalize && lufs > -70) {
-            10.0.pow((settings.targetLufs - lufs) / 20).toFloat().coerceIn(0.25f, 4f)
+        normGain = if (lufs > -70) {
+            10.0.pow((settings.targetLufs - lufs) / 20).toFloat().coerceIn(0.5f, 2.5f)
         } else 1f
         seek(0)
         return MixStats(lufs, settings.targetLufs, normGain)

@@ -18,11 +18,18 @@ class PreviewPlayer {
     private var startMs = 0L
     private var startNanos = 0L
     private var writtenFrames = 0L
+    /** True once the audio thread has really started (the mixer is built off the UI thread). */
+    @Volatile private var audioReady = false
+    @Volatile private var waitingForAudio = false
+    @Volatile private var lastPos = 0L
 
     fun play(video: PreparedVideo, fromMs: Long, withAudio: Boolean) {
         stop()
         startMs = fromMs
         startNanos = System.nanoTime()
+        lastPos = fromMs
+        audioReady = false
+        waitingForAudio = withAudio
         running = true
         if (!withAudio) return
         try {
@@ -47,6 +54,9 @@ class PreviewPlayer {
                     val s = ShortArray(2048)
                     if (!running || track !== t) return@thread
                     t.play()
+                    // the picture starts now, in step with the first audio sample
+                    startNanos = System.nanoTime()
+                    audioReady = true
                     while (running && track === t) {
                         val n = mixer.read(f)
                         if (n <= 0) break
@@ -65,6 +75,21 @@ class PreviewPlayer {
 
     /** Current preview time: from the audio head position when audio plays, else the system clock. */
     fun positionMs(): Long {
+        val p = rawPositionMs()
+        // never run backwards when the clock source changes
+        if (p > lastPos) lastPos = p
+        return lastPos
+    }
+
+    private fun rawPositionMs(): Long {
+        // While the mixer is still being prepared the picture waits (at most 1.5 s) so that the
+        // image and the sound start together instead of the picture jumping back later.
+        if (waitingForAudio && !audioReady) {
+            val waited = (System.nanoTime() - startNanos) / 1_000_000
+            if (waited < 1_500) return startMs
+            waitingForAudio = false
+            startNanos = System.nanoTime()
+        }
         val t = track
         if (t != null) {
             try {

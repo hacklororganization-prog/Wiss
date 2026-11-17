@@ -48,11 +48,17 @@ class PreviewViewModel @Inject constructor(private val projects: ProjectReposito
         if (loaded == id) return
         loaded = id
         viewModelScope.launch {
-            val s = projects.get(id)?.scenario() ?: return@launch
-            video.value = engine.quick(s) // instant preview
+            val s = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) { projects.get(id)?.scenario() } ?: return@launch
+            video.value = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) { engine.quick(s) } // instant preview
             preparing.value = true
-            video.value = engine.prepare(context.applicationContext, s) // then real voice + real Python
-            preparing.value = false
+            try {
+                // then real voice + real Python (heavy: never on the UI thread)
+                video.value = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) { engine.prepare(context.applicationContext, s) }
+            } catch (t: Throwable) {
+                if (t is kotlinx.coroutines.CancellationException) throw t
+            } finally {
+                preparing.value = false
+            }
         }
     }
 }

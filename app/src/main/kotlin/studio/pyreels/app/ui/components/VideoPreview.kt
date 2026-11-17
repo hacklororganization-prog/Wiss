@@ -31,7 +31,14 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.withFrameNanos
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.currentStateFlow
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,29 +70,51 @@ fun VideoPreview(
     onTime: (Long) -> Unit = {},
     muted: Boolean = false,
     loop: Boolean = false,
+    /** Redraw rate: 30 for the main preview, lower for small cards. */
+    fps: Int = 30,
 ) {
     val ui = LocalUi.current
     val context = LocalContext.current
     val pictures by AvatarStore.version.collectAsState()
-    val renderer = remember(video, pictures) { FrameRenderer(context, video.scenario).apply { setChapters(video.timeline) } }
+    // The renderer (fonts, wallpaper bitmap, paints) is built off the UI thread, and only rebuilt
+    // when something it draws with changes (theme, cast, pictures) — not on every text edit.
+    val rendererKey = Triple(video.scenario.meta, video.scenario.cast, pictures)
+    val renderer by produceState<FrameRenderer?>(null, rendererKey) {
+        val scenario = video.scenario
+        val timeline = video.timeline
+        value = withContext(Dispatchers.Default) {
+            runCatching { FrameRenderer(context.applicationContext, scenario).apply { setChapters(timeline) } }.getOrNull()
+        }
+    }
+    LaunchedEffect(video) { renderer?.setChapters(video.timeline) }
     val player = remember { PreviewPlayer() }
-    var playing by remember(video) { mutableStateOf(autoPlay) }
+    var playing by remember(video.scenario.meta.lesson, autoPlay) { mutableStateOf(autoPlay) }
+    // `time` is read only while drawing (cheap redraw); `uiTime` feeds the controls a few times per second.
     var time by remember(video) { mutableLongStateOf(startAtMs.coerceIn(0, video.timeline.totalMs)) }
+    var uiTime by remember(video) { mutableLongStateOf(time) }
     val total = video.timeline.totalMs
+    // no rendering or audio while the app is in the background
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val lifecycleState by lifecycle.currentStateFlow.collectAsState()
+    val active = playing && lifecycleState.isAtLeast(Lifecycle.State.RESUMED)
+    val frameStepMs = 1000L / fps.coerceIn(5, 60)
 
     DisposableEffect(player) { onDispose { player.stop() } }
     // Without its own controls the preview follows the time given by the caller (cover picker).
-    LaunchedEffect(startAtMs, controls) { if (!controls) time = startAtMs.coerceIn(0, total) }
-    LaunchedEffect(playing, video) {
-        if (playing) {
+    LaunchedEffect(startAtMs, controls) { if (!controls) { time = startAtMs.coerceIn(0, total); uiTime = time } }
+    LaunchedEffect(active, total) {
+        if (active) {
             if (time >= total - 50) time = 0
             player.play(video, time, withAudio = !muted)
-            while (playing) {
+            var lastDraw = Long.MIN_VALUE / 2
+            var lastUi = Long.MIN_VALUE / 2
+            while (isActive) {
                 withFrameNanos { }
-                time = player.positionMs().coerceAtMost(total)
-                onTime(time)
-                if (time >= total) {
-                    if (loop) { time = 0; player.play(video, 0, withAudio = !muted) } else playing = false
+                val t = player.positionMs().coerceAtMost(total)
+                if (t - lastDraw >= frameStepMs || t >= total) { time = t; lastDraw = t }
+                if (t - lastUi >= 120 || t >= total) { uiTime = t; lastUi = t; onTime(t) }
+                if (t >= total) {
+                    if (loop) { time = 0; uiTime = 0; lastDraw = Long.MIN_VALUE / 2; player.play(video, 0, withAudio = !muted) } else { playing = false; break }
                 }
             }
             player.stop()
@@ -102,14 +131,17 @@ fun VideoPreview(
                 .semantics { contentDescription = ui.t("معاينة الفيديو", "Video preview") },
         ) {
             Canvas(Modifier.matchParentSizeCompat()) {
-                val frame = video.timeline.frameAt(time)
-                drawIntoCanvas { c ->
-                    val nc = c.nativeCanvas
-                    nc.save()
-                    nc.scale(size.width / Limits.WIDTH, size.height / Limits.HEIGHT)
-                    renderer.showSafeZones = safeZones
-                    renderer.draw(nc, frame)
-                    nc.restore()
+                val r = renderer
+                if (r != null) {
+                    val frame = video.timeline.frameAt(time)
+                    drawIntoCanvas { c ->
+                        val nc = c.nativeCanvas
+                        nc.save()
+                        nc.scale(size.width / Limits.WIDTH, size.height / Limits.HEIGHT)
+                        r.showSafeZones = safeZones
+                        r.draw(nc, frame)
+                        nc.restore()
+                    }
                 }
             }
         }
@@ -120,10 +152,10 @@ fun VideoPreview(
                     FilledIconButton(onClick = { playing = !playing }) {
                         Icon(if (playing) Icons.Filled.Pause else Icons.Filled.PlayArrow, contentDescription = if (playing) ui.t("إيقاف مؤقت", "Pause") else ui.t("تشغيل", "Play"))
                     }
-                    Text(fmt(time), style = MaterialTheme.typography.labelMedium)
+                    Text(fmt(uiTime), style = MaterialTheme.typography.labelMedium)
                     Slider(
-                        value = if (total > 0) (time.toFloat() / total).coerceIn(0f, 1f) else 0f,
-                        onValueChange = { v -> playing = false; time = (v * total).toLong(); onTime(time) },
+                        value = if (total > 0) (uiTime.toFloat() / total).coerceIn(0f, 1f) else 0f,
+                        onValueChange = { v -> playing = false; time = (v * total).toLong(); uiTime = time; onTime(time) },
                         modifier = Modifier.weight(1f),
                     )
                     Text(fmt(total), style = MaterialTheme.typography.labelMedium)

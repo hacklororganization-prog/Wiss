@@ -69,6 +69,7 @@ class ExportService : Service() {
             current?.cancel(CancellationException("cancelled"))
             return START_NOT_STICKY
         }
+        ensureChannel()
         // If the system refuses the foreground promotion the export still runs while the app is open.
         runCatching { startInForeground(notification(getString(R.string.export_channel), 0, indeterminate = true)) }
         if (current?.isActive == true) return START_STICKY
@@ -178,6 +179,15 @@ class ExportService : Service() {
         if (v.ok || v.problems.all { it.startsWith("duration") }) save(teaser, "${base}_teaser.mp4", Storage.Kind.VIDEO)
     }
 
+    private fun ensureChannel() {
+        runCatching {
+            val nm = getSystemService(NotificationManager::class.java)
+            if (nm.getNotificationChannel(PyReelsApp.EXPORT_CHANNEL) == null) {
+                nm.createNotificationChannel(android.app.NotificationChannel(PyReelsApp.EXPORT_CHANNEL, getString(R.string.export_channel), NotificationManager.IMPORTANCE_LOW))
+            }
+        }
+    }
+
     private fun startInForeground(n: Notification) {
         val type = if (Build.VERSION.SDK_INT >= 29) ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC else 0
         ServiceCompat.startForeground(this, NOTIFICATION_ID, n, type)
@@ -187,14 +197,14 @@ class ExportService : Service() {
         val cancel = PendingIntent.getService(this, 1, Intent(this, ExportService::class.java).setAction(ACTION_CANCEL), PendingIntent.FLAG_IMMUTABLE)
         val open = PendingIntent.getActivity(this, 2, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
         return NotificationCompat.Builder(this, PyReelsApp.EXPORT_CHANNEL)
-            .setSmallIcon(android.R.drawable.stat_sys_upload)
+            .setSmallIcon(R.drawable.ic_stat_export)
             .setContentTitle(title)
             .setContentText(if (indeterminate) "يجهّز…" else "$pct٪")
             .setProgress(100, pct, indeterminate)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setContentIntent(open)
-            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "إلغاء", cancel)
+            .addAction(0, "إلغاء", cancel)
             .build()
     }
 
@@ -206,7 +216,7 @@ class ExportService : Service() {
         val view = Intent(Intent.ACTION_VIEW).setDataAndType(uri, "video/mp4").addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         val pi = PendingIntent.getActivity(this, 3, view, PendingIntent.FLAG_IMMUTABLE)
         val n = NotificationCompat.Builder(this, PyReelsApp.EXPORT_CHANNEL)
-            .setSmallIcon(android.R.drawable.stat_sys_upload_done)
+            .setSmallIcon(R.drawable.ic_stat_export)
             .setContentTitle("اكتمل: $title")
             .setContentText("محفوظ في DCIM/${Storage.FOLDER}")
             .setContentIntent(pi)

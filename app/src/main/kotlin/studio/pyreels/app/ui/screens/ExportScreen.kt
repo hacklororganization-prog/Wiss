@@ -86,10 +86,13 @@ class ExportViewModel @Inject constructor(
         pid = id
         viewModelScope.launch {
             runCatching {
-                val s = projects.get(id)?.scenario() ?: return@launch
-                val v = engine.quick(s)
+                val s = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) { projects.get(id)?.scenario() } ?: return@launch
+                val (v, r) = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
+                    val pv = engine.quick(s)
+                    pv to QualityChecker.check(s, pv.timeline)
+                }
                 video.value = v
-                report.value = QualityChecker.check(s, v.timeline)
+                report.value = r
             }.onFailure { loadError.value = it.message ?: it.javaClass.simpleName }
         }
     }

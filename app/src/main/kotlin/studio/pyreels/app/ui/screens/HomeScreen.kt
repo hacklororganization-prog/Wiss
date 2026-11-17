@@ -54,6 +54,7 @@ import studio.pyreels.app.data.scenario
 import studio.pyreels.app.engine.PreparedVideo
 import studio.pyreels.app.engine.VideoEngine
 import studio.pyreels.app.ui.components.VideoPreview
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import androidx.compose.foundation.layout.width
 import studio.pyreels.app.ui.Navigator
@@ -90,7 +91,7 @@ class HomeViewModel @Inject constructor(
     /** Live preview of the most recent project for the "continue" card. */
     val latest: StateFlow<Pair<ProjectEntity, PreparedVideo>?> = projects.projects.map { l ->
         l.firstOrNull()?.let { p -> p.scenario()?.let { p to engine.quick(it) } }
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    }.flowOn(kotlinx.coroutines.Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     fun openSample(file: String, done: (Long) -> Unit) = viewModelScope.launch {
         val s = ScenarioValidator.parse(Resources.text(file)).scenarios.first()
@@ -130,7 +131,7 @@ fun HomeScreen(nav: Navigator, modifier: Modifier, vm: HomeViewModel = hiltViewM
                     CalmCard {
                         Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                             // respects the system "remove animations" accessibility setting
-                            VideoPreview(video, Modifier.width(120.dp), autoPlay = android.animation.ValueAnimator.areAnimatorsEnabled(), safeZones = false, onSafeZones = {}, controls = false, muted = true, loop = true)
+                            VideoPreview(video, Modifier.width(120.dp), autoPlay = android.animation.ValueAnimator.areAnimatorsEnabled(), safeZones = false, onSafeZones = {}, controls = false, muted = true, loop = true, fps = 12)
                             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(ui.t("تابع من حيث توقفت", "Continue where you left off"), color = Muted, style = MaterialTheme.typography.labelMedium)
                                 Text(p.title, style = MaterialTheme.typography.titleMedium)
