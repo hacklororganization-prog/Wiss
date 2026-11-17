@@ -38,12 +38,19 @@ class ExportUiTest {
         }
     }
 
+    private fun logcat(): String = runCatching {
+        val pfd = InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand("logcat -d -t 1500")
+        android.os.ParcelFileDescriptor.AutoCloseInputStream(pfd).bufferedReader().readLines()
+            .filter { Regex("pyreels|AndroidRuntime|FATAL|ANR|ForegroundService|am_proc_died|Force finishing|Process .* has died").containsMatchIn(it) }
+            .takeLast(60).joinToString("\n")
+    }.getOrElse { "(logcat unavailable: $it)" }
+
     /** On timeout the error contains the whole screen (including the export card's status text). */
     private fun waitFor(text: String, ms: Long = 15_000) {
         try {
             compose.waitUntil(ms) { compose.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty() }
         } catch (e: androidx.compose.ui.test.ComposeTimeoutException) {
-            throw AssertionError("waiting for «$text». Screen:\n" + compose.onRoot().printToString(40), e)
+            throw AssertionError("waiting for «$text». Screen:\n" + runCatching { compose.onRoot().printToString(40) }.getOrElse { "(no root: $it)" } + "\n\nCrashLog: " + (CrashLog.read(compose.activity) ?: "none") + "\n\nLogcat:\n" + logcat(), e)
         }
     }
 
