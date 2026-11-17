@@ -58,10 +58,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cp app/build/outputs/apk/release/app-release.apk PyReelsStudio.apk
-          gh release delete latest-apk --cleanup-tag --yes || true
-          gh release create latest-apk PyReelsStudio.apk --prerelease --target "${{ github.sha }}" \
-            --title "PyReels Studio - latest build" \
-            --notes "Install PyReelsStudio.apk (Android 10 or newer). Built from commit ${{ github.sha }}."
+          # no delete/re-create: the download link never disappears while a new build is published
+          gh release view latest-apk >/dev/null 2>&1 || gh release create latest-apk --prerelease --target "${{ github.sha }}" --title "PyReels Studio - latest build" --notes "first"
+          gh release upload latest-apk PyReelsStudio.apk --clobber
+          gh release edit latest-apk --notes "Install PyReelsStudio.apk (Android 10 or newer). Built from commit ${{ github.sha }}."
       - uses: actions/upload-artifact@v4
         with:
           name: android-test-apk

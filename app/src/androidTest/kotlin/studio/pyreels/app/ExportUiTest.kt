@@ -73,6 +73,8 @@ class ExportUiTest {
         waitFor("تصدير ونشر")
         compose.onNodeWithText("تصدير ونشر").performClick()
         waitFor("تصدير الفيديو")
+        // the button stays disabled until the quality check has finished: wait for it, or the click is a no-op
+        compose.waitUntil(30_000) { compose.onAllNodes(hasText("تصدير الفيديو") and androidx.compose.ui.test.isEnabled()).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("تصدير الفيديو").performScrollTo().performClick()
         kotlinx.coroutines.runBlocking {
             val started = waitJob(40_000) { it != null && it.state != studio.pyreels.app.data.ExportJobEntity.QUEUED }
