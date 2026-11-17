@@ -93,7 +93,7 @@ interface PresetDao {
     @Query("SELECT * FROM presets ORDER BY builtIn DESC, name ASC") fun observeAll(): Flow<List<PresetEntity>>
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun upsert(p: PresetEntity)
     @Query("DELETE FROM presets WHERE id = :id AND builtIn = 0") suspend fun delete(id: String)
-    @Query("SELECT COUNT(*) FROM presets") suspend fun count(): Int
+    @Query("DELETE FROM presets WHERE builtIn = 1") suspend fun purgeBuiltIn()
 }
 
 @Dao

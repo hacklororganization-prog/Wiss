@@ -92,35 +92,16 @@ object PublishPack {
         return if (core.length < 2) null else "#" + core.take(30)
     }
 
-    /** Local fallback kit (used when the scenario has no AI-written `meta.publish`). */
-    fun localKit(s: Scenario): PublishKit {
-        val key = s.scenes.filterIsInstance<Scene.KeySentence>().firstOrNull()?.text
-        val ep = s.meta.series.episode?.let { "الحلقة $it: " } ?: ""
-        val concept = s.meta.lesson.concept.replace(Regex("[^\\p{L}\\p{N}_]"), "_")
-        val lang = s.cast.firstOrNull { it.role == "teacher" }?.let { it.language ?: it.id } ?: "python"
-        val langTag = "#" + lang.replace("+", "p").replace("#", "sharp").lowercase()
-        val tiktok = listOf("#تعلم_البرمجة", langTag, "#برمجة_للمبتدئين", "#LearnOnTikTok", "#coding").distinct()
-        val insta = listOf("#تعلم_البرمجة", langTag, "#programming", "#codinglife", "#${concept}_$lang").distinct()
-        val teaser = s.scenes.filterIsInstance<Scene.Teaser>().firstOrNull()
-        val challenge = s.scenes.filterIsInstance<Scene.Chat>().lastOrNull { it.challenge }?.text ?: teaser?.challenge
-        return PublishKit(
-            description = ("$ep${s.meta.title} في 90 ثانية مع أحمد 👀 " + (key?.let { "| $it " } ?: "") + "توقّع الناتج قبل التشغيل واكتبه في التعليقات!").take(220),
-            tiktokHashtags = (tiktok + listOf("#برمجة", "#tech")).distinct().take(5),
-            instagramHashtags = (insta + listOf("#برمجة", "#developer")).distinct().take(5),
-            pinnedComment = (challenge ?: "ما ناتج الكود في بداية الفيديو؟ اكتب توقّعك 👇").take(200),
-        )
-    }
-
     fun caption(s: Scenario): Caption {
         val hook = s.scenes.filterIsInstance<Scene.HookPredict>().firstOrNull()
-        val kit = s.meta.publish ?: localKit(s)
-        val local = localKit(s)
-        fun five(list: List<String>, fallback: List<String>) = (list.mapNotNull { normalizeTag(it) } + fallback).distinct().take(5)
+        val kit = s.meta.publish
         val hookLine = "توقّع قبل أن أشغّل 👀 " + (hook?.code?.lines()?.firstOrNull()?.let { "«$it» … ماذا سيحدث؟" } ?: "")
+        // Nothing is invented here: the description and hashtags are exactly what the AI wrote.
         return Caption(
-            hookLine.trim(), kit.description.trim(),
-            five(kit.tiktokHashtags, local.tiktokHashtags), five(kit.instagramHashtags, local.instagramHashtags),
-            (kit.pinnedComment ?: local.pinnedComment ?: "").trim(),
+            hookLine.trim(), kit?.description?.trim().orEmpty(),
+            kit?.tiktokHashtags.orEmpty().mapNotNull { normalizeTag(it) }.distinct().take(5),
+            kit?.instagramHashtags.orEmpty().mapNotNull { normalizeTag(it) }.distinct().take(5),
+            kit?.pinnedComment?.trim().orEmpty(),
         )
     }
 

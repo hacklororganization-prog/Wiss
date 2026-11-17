@@ -4,6 +4,7 @@ import android.content.Context
 import studio.pyreels.app.engine.python.PythonRunner
 import studio.pyreels.app.engine.tts.VoiceEngine
 import studio.pyreels.core.model.Scenario
+import studio.pyreels.core.model.resolved
 import studio.pyreels.core.timeline.Timeline
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,9 +24,10 @@ class VideoEngine @Inject constructor(
     private val voice: VoiceEngine,
 ) {
     /** Fast path for live editing: estimated voice durations, declared traces. */
-    fun quick(scenario: Scenario): PreparedVideo = PreparedVideo(scenario, Timeline.build(scenario), emptyMap(), emptyList())
+    fun quick(scenario: Scenario): PreparedVideo = scenario.resolved().let { PreparedVideo(it, Timeline.build(it), emptyMap(), emptyList()) }
 
-    suspend fun prepare(context: Context, scenario: Scenario, withVoice: Boolean = true, withPython: Boolean = true): PreparedVideo {
+    suspend fun prepare(context: Context, scenarioIn: Scenario, withVoice: Boolean = true, withPython: Boolean = true): PreparedVideo {
+        val scenario = scenarioIn.resolved()
         val notes = ArrayList<String>()
         val runs = if (withPython) {
             val (r, n) = python.runAll(context, scenario); notes += n; r

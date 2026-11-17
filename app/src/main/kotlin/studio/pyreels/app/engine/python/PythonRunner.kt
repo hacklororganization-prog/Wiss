@@ -60,7 +60,7 @@ class PythonRunner @Inject constructor() {
         scenario.scenes.forEachIndexed { i, s ->
             if (s is Scene.CodeType) lastCode = s.code
             if (s is Scene.CommonMistake) lastCode = s.fix
-            if (s is Scene.Run && s.exec == "real" && s.language == "python") {
+            if (s is Scene.Run && s.exec == "real" && studio.pyreels.core.model.Languages.isPython(s.language)) {
                 val code = s.code ?: lastCode ?: return@forEachIndexed
                 val o = run(context, code)
                 if (o.result != null) {

@@ -56,10 +56,15 @@ jobs:
           path: app/build/outputs/apk/androidTest/debug/*.apk
 
   instrumented:
-    name: Instrumented tests (emulator)
+    # Android 10 (minSdk), 12 (the creator's phone) and 14 (latest behaviour changes)
+    name: Instrumented tests (Android ${{ matrix.api }})
     needs: build-apk
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        api: [29, 31, 34]
     env:
       PYREELS_BUILD_PYTHON: python3.11
     steps:
@@ -77,7 +82,7 @@ jobs:
       - name: Run connected tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 34
+          api-level: ${{ matrix.api }}
           arch: x86_64
           target: google_apis
           disable-animations: true
@@ -85,15 +90,16 @@ jobs:
           script: |
             ./gradlew --no-daemon :app:connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true || touch tests_failed
             mkdir -p snapshots && adb exec-out run-as studio.pyreels.app tar c files/snapshots > snapshots/s.tar && tar xf snapshots/s.tar -C snapshots --strip-components=2 || true
-            for f in snapshots/*.jpg; do echo "SNAP-BEGIN $(basename $f)"; base64 -w 4000 "$f"; echo "SNAP-END"; done || true
+            [ "${{ matrix.api }}" != "34" ] || for f in snapshots/*.jpg; do echo "SNAP-BEGIN $(basename $f)"; base64 -w 4000 "$f"; echo "SNAP-END"; done || true
+            adb logcat -d -b crash | tail -80 || true
             test ! -f tests_failed
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: render-snapshots
+          name: render-snapshots-${{ matrix.api }}
           path: snapshots
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: instrumented-report
+          name: instrumented-report-${{ matrix.api }}
           path: app/build/reports/androidTests

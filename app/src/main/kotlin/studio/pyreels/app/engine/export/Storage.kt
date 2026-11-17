@@ -2,9 +2,7 @@ package studio.pyreels.app.engine.export
 
 import android.content.ContentValues
 import android.content.Context
-import android.media.MediaScannerConnection
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
@@ -16,39 +14,33 @@ object Storage {
 
     enum class Kind(val mime: String) { VIDEO("video/mp4"), IMAGE("image/png"), TEXT("text/plain"), SRT("application/x-subrip") }
 
+    /**
+     * Saves into the public gallery/Downloads through MediaStore (scoped storage, Android 10+: no
+     * storage permission). A half-written entry is removed again if anything fails.
+     */
     fun saveToMediaStore(context: Context, file: File, displayName: String, kind: Kind): Uri? {
         val resolver = context.contentResolver
-        if (Build.VERSION.SDK_INT >= 29) {
-            val (collection, dir) = when (kind) {
-                // DCIM: videos and covers appear directly in the phone's gallery
-                Kind.VIDEO -> MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY) to Environment.DIRECTORY_DCIM
-                Kind.IMAGE -> MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY) to Environment.DIRECTORY_DCIM
-                else -> MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY) to Environment.DIRECTORY_DOWNLOADS
-            }
-            val values = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
-                put(MediaStore.MediaColumns.MIME_TYPE, kind.mime)
-                put(MediaStore.MediaColumns.RELATIVE_PATH, "$dir/$FOLDER")
-                put(MediaStore.MediaColumns.IS_PENDING, 1)
-            }
-            val uri = resolver.insert(collection, values) ?: return null
-            resolver.openOutputStream(uri)?.use { out -> file.inputStream().use { it.copyTo(out) } }
+        val (collection, dir) = when (kind) {
+            // DCIM: videos and covers appear directly in the phone's gallery
+            Kind.VIDEO -> MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY) to Environment.DIRECTORY_DCIM
+            Kind.IMAGE -> MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY) to Environment.DIRECTORY_DCIM
+            else -> MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY) to Environment.DIRECTORY_DOWNLOADS
+        }
+        val values = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
+            put(MediaStore.MediaColumns.MIME_TYPE, kind.mime)
+            put(MediaStore.MediaColumns.RELATIVE_PATH, "$dir/$FOLDER")
+            put(MediaStore.MediaColumns.IS_PENDING, 1)
+        }
+        var uri: Uri? = null
+        return try {
+            uri = resolver.insert(collection, values) ?: return null
+            resolver.openOutputStream(uri)?.use { out -> file.inputStream().use { it.copyTo(out) } } ?: error("cannot open $uri")
             values.clear(); values.put(MediaStore.MediaColumns.IS_PENDING, 0)
             resolver.update(uri, values, null, null)
-            return uri
-        }
-        // API 26–28: public directory (WRITE_EXTERNAL_STORAGE, maxSdkVersion 28) + media scan.
-        return try {
-            val base = when (kind) {
-                Kind.VIDEO, Kind.IMAGE -> Environment.DIRECTORY_DCIM; else -> Environment.DIRECTORY_DOWNLOADS
-            }
-            @Suppress("DEPRECATION")
-            val dir = File(Environment.getExternalStoragePublicDirectory(base), FOLDER).apply { mkdirs() }
-            val dest = File(dir, displayName)
-            file.copyTo(dest, overwrite = true)
-            MediaScannerConnection.scanFile(context, arrayOf(dest.absolutePath), arrayOf(kind.mime), null)
-            Uri.fromFile(dest)
+            uri
         } catch (_: Exception) {
+            uri?.let { runCatching { resolver.delete(it, null, null) } }
             null
         }
     }

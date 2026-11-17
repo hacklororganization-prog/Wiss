@@ -13,7 +13,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class TimelineTest {
-    private val scenario = ScenarioValidator.parse(Resources.text("samples/02-variables.pyreels.json")).scenarios.single()
+    private val scenario = ScenarioValidator.parse(Fixtures.text("variables")).scenarios.single()
 
     @Test
     fun fitterHitsTargetAndRespectsBounds() {

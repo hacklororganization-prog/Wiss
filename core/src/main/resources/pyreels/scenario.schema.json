@@ -35,20 +35,10 @@
       "pattern": "^[a-z][a-z0-9_+-]{0,23}$"
     },
     "codeLanguage": {
-      "enum": [
-        "python",
-        "java",
-        "cpp",
-        "javascript",
-        "kotlin",
-        "csharp",
-        "go",
-        "rust",
-        "php",
-        "typescript",
-        "swift",
-        "c"
-      ]
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 24,
+      "description": "Any programming language, as a short id (python, cpp, zig, ...). Omit it to use the first teacher's language."
     },
     "sfxId": {
       "enum": [
@@ -1043,6 +1033,22 @@
             "celebrate": {
               "type": "boolean",
               "description": "Automatic celebration sticker after the first correct output"
+            },
+            "pace": {
+              "enum": [
+                "slow",
+                "calm",
+                "normal"
+              ],
+              "description": "Pace of the video (default calm)."
+            },
+            "sfx": {
+              "enum": [
+                "off",
+                "soft",
+                "normal"
+              ],
+              "description": "Sound-effects level (default soft). There is no background music."
             }
           },
           "additionalProperties": false

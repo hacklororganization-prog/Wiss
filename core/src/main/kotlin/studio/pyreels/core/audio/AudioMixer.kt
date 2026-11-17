@@ -24,6 +24,11 @@ data class MixSettings(
     val normalize: Boolean = true,
 )
 
+/** Mix settings for a scenario: only the sound-effect level is user-selectable (there is no music bed). */
+fun mixSettingsFor(meta: studio.pyreels.core.model.Meta): MixSettings = MixSettings(
+    sfxGain = when (meta.sfx) { "off" -> 0f; "normal" -> 1.15f; else -> 0.8f },
+)
+
 /**
  * Streaming mixer: renders the whole soundtrack (ambient + SFX + voice) sample-accurately from the
  * timeline, with ducking, fades, loudness normalisation and a soft peak limiter. It never holds the
@@ -41,7 +46,7 @@ class AudioMixer(
 
     private class Placed(val start: Long, val data: FloatArray, val gain: Float)
 
-    private val sfx: List<Placed> = timeline.sfx.filter { it.id != "none" }.map { c: SfxCue ->
+    private val sfx: List<Placed> = timeline.sfx.filter { it.id != "none" && settings.sfxGain > 0f }.map { c: SfxCue ->
         val jitter = ((Synth.variant(c.seed).pitch - 1f) * 400).toLong() // ±12 ms timing humanisation
         Placed(max(0, (c.timeMs + jitter) * sampleRate / 1000), Synth.sound(c.id, c.seed), c.gain * settings.sfxGain)
     }.sortedBy { it.start }

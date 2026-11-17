@@ -4,8 +4,6 @@ import studio.pyreels.core.Resources
 import studio.pyreels.core.brief.Brief
 import studio.pyreels.core.brief.EpisodeRecord
 import studio.pyreels.core.brief.SeriesMemory
-import studio.pyreels.core.content.ContentRepository
-import studio.pyreels.core.content.CurriculumLesson
 import studio.pyreels.core.model.Limits
 import studio.pyreels.core.model.Personas
 import studio.pyreels.core.model.SfxIds
@@ -21,8 +19,8 @@ object PromptBuilder {
     data class Input(
         val brief: Brief,
         val history: List<EpisodeRecord> = emptyList(),
-        /** Lessons of a weekly plan (null = single episode). */
-        val weekly: List<CurriculumLesson>? = null,
+        /** Topics of a weekly plan, one per episode in order (null = single episode). */
+        val weekly: List<String>? = null,
     )
 
     fun fileName(brief: Brief, date: LocalDate = LocalDate.now(), weekly: Boolean = false): String {
@@ -33,9 +31,9 @@ object PromptBuilder {
 
     fun build(input: Input): String {
         val b = input.brief.normalized()
-        val curriculum = ContentRepository.curriculum
-        val lesson = curriculum.byId(b.lessonId)
-        val topic = lesson?.title ?: b.lessonTitle.ifBlank { "درس اليوم" }
+        val topic = b.lessonTitle.ifBlank { "درس اليوم" }
+        val teacherIds = b.teachers
+        val teacherLine = teacherIds.joinToString(", ") { id -> "`$id` = ${b.nameOf(id)}" }
         val sb = StringBuilder()
         fun h(n: Int, title: String) = sb.append("\n## $n. $title\n\n")
 
@@ -49,7 +47,7 @@ object PromptBuilder {
         sb.append(
             """You are a **senior instructional scriptwriter for Arabic programming-education short videos** (TikTok / Instagram Reels, vertical 9:16).
 Your goal: write ${if (input.weekly != null) "a JSON **array of ${input.weekly.size} linked scenarios**" else "**one scenario file**"} that the PyReels Studio app renders directly into a calm, polished ~${b.targetSeconds}-second lesson video.
-The video is a WhatsApp-style group chat between **Ahmed (أحمد), a beginner learner**, and programming languages as teacher characters, plus an in-video code editor and terminal.
+The video is a WhatsApp-style group chat between **Ahmed (أحمد), a beginner learner**, and programming languages as teacher characters (each language the creator chose is a character with its own name and picture), plus an in-video code editor and terminal.
 The viewer must feel: "my questions are normal, I'm learning with Ahmed, and I want the next episode."
 """,
         )
@@ -68,9 +66,9 @@ Common optional fields on every scene: `say` (boolean, read aloud by TTS), `sfx`
 - **Themes (meta.theme):** `calm-dark`, `calm-light`. Use `${b.theme}`. **Frame (meta.frame):** `${b.frame}`. **Chat colour (meta.chatColor):** `${b.chatColor}`. **Celebration (meta.celebrate):** `${b.celebrate}` (the app adds a 🎉 sticker after Ahmed's first message following the first run; use `sticker` sparingly elsewhere, at most once more).
 - **Screenshots:** a chat message with `code` and `"codeStyle": "screenshot"` is shown as a photo of the editor (great when Ahmed shares his attempt).
 - **Publishing kit (meta.publish, REQUIRED in your answer):** `description` (20–220 chars), `tiktokHashtags` (exactly 5), `instagramHashtags` (exactly 5), `pinnedComment` (≤ 200 chars). See section 13.
-- **Cast ids:** `ahmed` (role `learner`, always present) + teacher ids: ${b.teachers.joinToString(", ") { "`$it`" }} (role `teacher`, field `language` = same id).
-- **Code languages:** python, java, cpp, javascript, kotlin, csharp, go, rust, php, typescript, swift, c.
-- Python `run` scenes may use `"exec": "real"` (executed in a sandbox; the trace is derived from real execution). Every other language MUST use `"exec": "simulated"` with a correct `output` and `trace`.
+- **Cast ids (use them exactly):** `ahmed` (name «أحمد», role `learner`, always present) + the teachers: $teacherLine. Each teacher has `role` = `teacher`, `id` = the id above, `name` = the name above, and `language` = the same id.
+- **Code languages:** any. Use the teacher's language id for the code of that teacher (a scene's `language` may be omitted: it then means the first teacher's language). Write idiomatic, correct code for that language.
+- Only Python `run` scenes may use `"exec": "real"` (executed in a sandbox; the trace comes from real execution). Every other language MUST use `"exec": "simulated"` with the exact `output` and a correct `trace` — you are responsible for their accuracy, so keep the code short and deterministic.
 
 **Limits (hard):**
 - Chat bubble: max ${Limits.MAX_CHARS_PER_LINE} characters per line, max ${Limits.MAX_LINES_PER_BUBBLE} lines (≈ ${Limits.MAX_BUBBLE_CHARS} characters). Prefer 1–2 short lines readable in 2–3 seconds.
@@ -88,10 +86,9 @@ Common optional fields on every scene: `say` (boolean, read aloud by TTS), `sfx`
         // 3
         h(3, "The creator's brief")
         sb.append("```yaml\n")
-        sb.append("teachers: ${b.teachers}\n")
-        sb.append("lesson_id: ${b.lessonId ?: "custom"}\n")
+        sb.append("teachers: ${b.teachers.map { "${it} (${b.nameOf(it)})" }}\n")
         sb.append("lesson_title: \"$topic\"\n")
-        sb.append("concept: ${lesson?.concept ?: "(one concept chosen from the title)"}\n")
+        sb.append("concept: (one concept chosen from the title; `meta.lesson.id` = a short lowercase-ascii-with-hyphens slug of it)\n")
         sb.append("learner_level: ${b.level}\n")
         sb.append("example: ${if (b.exampleMode == "custom" && b.customExample.isNotBlank()) "custom" else "auto"}\n")
         sb.append("teaching_methods: ${b.methods}\n")
@@ -102,18 +99,9 @@ Common optional fields on every scene: `say` (boolean, read aloud by TTS), `sfx`
         sb.append("```\n\n")
         sb.append("**Summary:** درس عن «$topic» لمستوى ${Brief.LEVELS[b.level] ?: b.level}، بأسلوب ${Brief.TONES[b.tone] ?: b.tone} (مستوى المزاح ${b.humor}/5)، ")
         sb.append("بطريقة: ${b.methods.joinToString("، ") { Brief.METHODS[it] ?: it }}. اللغة: ${Brief.STYLES[b.languageStyle] ?: b.languageStyle}. ")
-        sb.append("المعلّمون: ${b.teachers.joinToString("، ") { Personas.forLanguage(it).nameAr }}.\n")
-        lesson?.let {
-            sb.append("\nRoadmap data for this lesson (use it, improve wording freely):\n")
-            sb.append("- summary: ${it.summary}\n- analogy idea: ${it.analogy}\n- key sentence idea: ${it.keySentence}\n")
-            sb.append("- example code (verified):\n```python\n${it.example}\n```\n- its real output:\n```\n${it.expectedOutput}\n```\n")
-        }
+        sb.append("المعلّمون: ${b.teachers.joinToString("، ") { b.nameOf(it) }}.\n")
         if (b.exampleMode == "custom" && b.customExample.isNotBlank()) sb.append("\nCreator's own example (use it):\n```\n${b.customExample}\n```\n")
-        val teaser = when {
-            b.teaserMode == "custom" && b.customTeaser.isNotBlank() -> b.customTeaser
-            else -> lesson?.teaser
-        }
-        teaser?.let { sb.append("\nNext-lesson teaser text: «$it»\n") }
+        if (b.teaserMode == "custom" && b.customTeaser.isNotBlank()) sb.append("\nNext-lesson teaser text: «${b.customTeaser}»\n")
         if (b.notes.isNotBlank()) sb.append("\nCreator notes: ${b.notes}\n")
 
         // 4
@@ -152,7 +140,7 @@ Place `engage_moment` so that the scenes before it sum to ≈ 45–50 s.
 
         // 5
         h(5, "Cast sheet")
-        val cast = listOf(Personas.AHMED) + b.teachers.map { Personas.forLanguage(it) }
+        val cast = listOf(Personas.AHMED) + b.teachers.map { Personas.forLanguage(it, b.nameOf(it), b.teacherNotes[it]) }
         val ahmedLevel = SeriesMemory.ahmedLevel(input.history.size)
         cast.forEach { p ->
             sb.append("### ${p.nameAr} (`${p.id}`) — ${if (p.id == "ahmed") "learner" else "teacher"}\n")
@@ -178,15 +166,7 @@ Place `engage_moment` so that the scenes before it sum to ≈ 45–50 s.
 """,
         )
         if (b.includeMistake) {
-            val errs = ContentRepository.errors.relevant(b.lessonId, curriculum)
-            if (errs.isNotEmpty()) {
-                sb.append("\n**Errors library (pick ONE for `common_mistake`; copy `error` text exactly, set `libraryId`):**\n\n")
-                errs.forEach { e ->
-                    sb.append("- `${e.id}` — code: `${e.snippet.replace("\n", "⏎")}` → error: `${e.message}` → fix: `${e.fix.replace("\n", "⏎")}`")
-                    e.fixOutput?.let { sb.append(" (fix output: `${it.replace("\n", "⏎")}`)") }
-                    sb.append(" — ${e.explain}\n")
-                }
-            }
+            sb.append("\n**Common mistake:** pick ONE realistic beginner error for this exact topic and language. Copy the error message **exactly as the real interpreter/compiler prints it**; if you are not 100 % sure of the exact text, choose a different error you are certain about. Never invent a message.\n")
         } else sb.append("\nThe creator chose NOT to include a common mistake: omit `common_mistake`.\n")
 
         // 7
@@ -214,8 +194,8 @@ Place `engage_moment` so that the scenes before it sum to ≈ 45–50 s.
         } else sb.append("Return ONE JSON object that follows this JSON Schema exactly.\n\n")
         sb.append("**Return JSON only — no markdown fences, no commentary, no explanations before or after.**\n\n")
         sb.append("JSON Schema (draft 2020-12):\n\n```json\n").append(Resources.schemaText.trim()).append("\n```\n\n")
-        sb.append("One complete valid example (a different lesson — do not copy its content):\n\n```json\n")
-        sb.append(Resources.text("samples/02-variables.pyreels.json").trim()).append("\n```\n")
+        sb.append("Structure skeleton (placeholders in <angle brackets> are NOT content — replace every one; follow the field names and scene order):\n\n```json\n")
+        sb.append(skeleton(b)).append("\n```\n")
 
         // 9
         h(9, "Self-check (run silently before answering)")
@@ -227,7 +207,7 @@ Place `engage_moment` so that the scenes before it sum to ≈ 45–50 s.
 - [ ] Every bubble ≤ ${Limits.MAX_LINES_PER_BUBBLE} lines of ≤ ${Limits.MAX_CHARS_PER_LINE} characters; code lines ≤ ${Limits.MAX_CODE_LINE_CHARS} characters.
 - [ ] Text is safe-zone friendly: short lines, nothing that depends on screen edges.
 - [ ] Every `from` id exists in `cast`; every `sfx` id is in the allowed list; every trace `line` exists in the code.
-- [ ] `run.output` is exactly what the code prints; errors are copied from the errors library.
+- [ ] `run.output` is exactly what the code prints; the error text is exactly what the real tool prints.
 - [ ] `key_sentence` ≤ 10 words; a challenge for the comments exists.
 - [ ] `meta.publish` present: description ≤ 220 chars without spoilers, exactly 5 TikTok + 5 Instagram hashtags, all valid and unique.
 """,
@@ -250,7 +230,7 @@ Place `engage_moment` so that the scenes before it sum to ≈ 45–50 s.
         input.weekly?.let { week ->
             sb.append("\n### Weekly batch contract\n\n")
             sb.append("Write ${week.size} episodes in this exact order:\n\n")
-            week.forEachIndexed { i, l -> sb.append("${i + 1}. `${l.id}` — ${l.title} (concept `${l.concept}`): ${l.summary}\n") }
+            week.forEachIndexed { i, topic -> sb.append("${i + 1}. $topic\n") }
             sb.append(
                 """
 - Episode N's `teaser.text` announces episode N+1, and episode N+1's `recap.text` recalls episode N (they must match in meaning).
@@ -266,7 +246,7 @@ Place `engage_moment` so that the scenes before it sum to ≈ 45–50 s.
         sb.append(
             """When `say` is true, the app reads the scene's text with TTS after converting code to natural Arabic speech using built-in rules, for example:
 `x = 5` → «إكس يساوي خمسة»، `x == 5` → «إكس يطابق خمسة»، `print(...)` → «دالة الطباعة»، `for i in range(3)` → «لكل آي في المدى من صفر إلى ثلاثة».
-Set `"speakCode": true` on scenes whose text contains code. Write a `spoken` override **only** when these default reading rules would be wrong. Pick error texts from the errors library above; never invent interpreter messages.
+Set `"speakCode": true` on scenes whose text contains code. Write a `spoken` override **only** when these default reading rules would be wrong. Never invent interpreter messages.
 """,
         )
 
@@ -290,7 +270,7 @@ Set `"speakCode": true` on scenes whose text contains code. Write a `spoken` ove
 - More than one concept, or re-explaining what Ahmed learned in earlier episodes.
 - Long bubbles (> 4 lines), long code lines (> 38 chars), more than 12 code lines.
 - `run.output` that does not match what the code really prints; trace `line` numbers that do not exist; variables listed before the line that creates them.
-- Invented error messages; use the errors library text exactly.
+- Invented error messages; use only text the real tool prints.
 - Teachers mocking Ahmed; harsh words; pressure in the engagement moment.
 - Missing `meta.publish`, or not exactly 5 + 5 hashtags.
 """,
@@ -319,6 +299,39 @@ Set `"speakCode": true` on scenes whose text contains code. Write a `spoken` ove
         append("## JSON Schema\n\n```json\n").append(Resources.schemaText.trim()).append("\n```\n")
     }
 
+    /** A structural skeleton for the AI (placeholders only — it is not valid content and cannot be imported as is). */
+    private fun skeleton(b: Brief): String {
+        val t = b.teachers.firstOrNull() ?: "<teacher-id>"
+        val name = b.nameOf(t)
+        return """{
+  "schema": "pyreels/1",
+  "meta": {
+    "title": "<title ≤ 60 chars>", "lesson": { "id": "<slug-with-hyphens>", "concept": "<one concept>" },
+    "targetSeconds": ${b.targetSeconds}, "theme": "${b.theme}", "ambient": "none",
+    "series": { "name": "<series name>", "episode": 1, "previousRecap": "<one sentence>", "nextTeaser": "<one sentence>" },
+    "publish": { "description": "<20–220 chars>", "tiktokHashtags": ["#<1>", "#<2>", "#<3>", "#<4>", "#<5>"], "instagramHashtags": ["#<1>", "#<2>", "#<3>", "#<4>", "#<5>"], "pinnedComment": "<challenge question>" }
+  },
+  "cast": [
+    { "id": "ahmed", "role": "learner", "name": "أحمد" },
+    { "id": "$t", "role": "teacher", "name": "$name", "language": "$t" }
+  ],
+  "scenes": [
+    { "type": "hook_predict", "code": "<2–4 lines in the teacher's language>" },
+    { "type": "recap", "text": "<previous lesson in one sentence>" },
+    { "type": "chat", "from": "ahmed", "text": "<Ahmed's short beginner question>" },
+    { "type": "chat", "from": "$t", "text": "<short warm answer>" },
+    { "type": "analogy", "title": "<real-life analogy>", "items": [ { "label": "<label>", "value": "<value>" } ] },
+    { "type": "code_type", "code": "<the example code>", "focusLines": [1] },
+    { "type": "run", "exec": "simulated", "trace": [ { "line": 1, "vars": { "<name>": "<value>" }, "out": "<printed text, if any>" } ], "output": "<exact output>" },
+    { "type": "engage_moment", "from": "$t", "text": "<warm message>", "bridge": "<back to the lesson>" },
+    { "type": "reveal", "answer": "<answer to the hook>", "text": "<short line>" },
+    { "type": "common_mistake", "code": "<wrong code>", "error": "<exact real error>", "explain": "<calm explanation>", "fix": "<fixed code>" },
+    { "type": "key_sentence", "text": "<≤ 10 words>" },
+    { "type": "teaser", "text": "<next lesson teaser>", "challenge": "<tiny question for the comments>" }
+  ]
+}"""
+    }
+
     private data class Row(val t: String, val p: String, val r: String, val o: String)
 
     private val sceneTable = listOf(
@@ -330,7 +343,7 @@ Set `"speakCode": true` on scenes whose text contains code. Write a `spoken` ove
         Row("run", "execution with visual trace + terminal", "— (uses previous code_type's code)", "language, exec (real/simulated), code, trace, output, error, caption"),
         Row("engage_moment", "gentle like/follow/share moment", "text", "from, actions [like, follow, share], bridge"),
         Row("reveal", "answer to the hook", "answer, text", "from"),
-        Row("common_mistake", "one beginner error + live fix", "code, error, explain, fix", "language, fixOutput, libraryId, from"),
+        Row("common_mistake", "one beginner error + live fix", "code, error, explain, fix", "language, fixOutput, from"),
         Row("key_sentence", "sentence of the day (≤10 words)", "text", ""),
         Row("teaser", "next lesson teaser (last)", "text", "challenge"),
     )

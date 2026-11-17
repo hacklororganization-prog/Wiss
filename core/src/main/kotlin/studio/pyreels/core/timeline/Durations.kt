@@ -86,6 +86,13 @@ object DurationEstimator {
  * Fits scene durations to a target total. Fixed scenes keep their duration; flexible scenes are
  * scaled proportionally within their bounds (iteratively, so clamped scenes hand their share to others).
  */
+/** Pace of a video: how long scenes linger and how far past the target a calm cut may run. */
+enum class Pace(val id: String, val factor: Double, val stretch: Double) {
+    SLOW("slow", 1.25, 1.6), CALM("calm", 1.0, Limits.CALM_STRETCH), NORMAL("normal", 0.85, 1.15);
+
+    companion object { fun of(id: String?) = entries.firstOrNull { it.id == id } ?: CALM }
+}
+
 object DurationFitter {
 
     data class Fit(val durations: LongArray, val totalMs: Long, val targetMs: Long, val reachable: Boolean)
@@ -94,9 +101,9 @@ object DurationFitter {
      * Calm pacing first: when the comfortable (ideal) durations run longer than the target, the
      * video is allowed to run up to [Limits.CALM_STRETCH] × target before any scene is compressed.
      */
-    fun calmTarget(bounds: List<SceneBounds>, targetMs: Long): Long {
+    fun calmTarget(bounds: List<SceneBounds>, targetMs: Long, stretch: Double = Limits.CALM_STRETCH): Long {
         val ideal = bounds.sumOf { it.idealMs }
-        val cap = minOf((targetMs * Limits.CALM_STRETCH).roundToLong(), Limits.HARD_CAP_SECONDS * 1000L - 2_000)
+        val cap = minOf((targetMs * stretch).roundToLong(), Limits.HARD_CAP_SECONDS * 1000L - 2_000)
         return ideal.coerceIn(minOf(targetMs, cap), maxOf(targetMs, cap))
     }
 

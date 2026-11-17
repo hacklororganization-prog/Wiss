@@ -22,7 +22,7 @@ class PyReelsApp : Application() {
         CrashLog.install(this)
         val nm = getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(NotificationChannel(EXPORT_CHANNEL, getString(R.string.export_channel), NotificationManager.IMPORTANCE_LOW))
-        appScope.launch { presets.ensureDefaults() }
+        appScope.launch { presets.removeBuiltIns() }
     }
 
     companion object {

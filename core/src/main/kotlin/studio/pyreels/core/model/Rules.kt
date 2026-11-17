@@ -83,11 +83,7 @@ object EngageActions {
     val ALL = listOf("like", "follow", "share")
 }
 
-val CODE_LANGUAGES = listOf(
-    "python", "java", "cpp", "javascript", "kotlin", "csharp", "go", "rust", "php", "typescript", "swift", "c",
-)
-
-/** Personality template of a cast member. */
+/** Personality sheet of a cast member (used in the prompt, the colours and the TTS voice). */
 data class Persona(
     val id: String,
     val nameAr: String,
@@ -104,6 +100,11 @@ data class Persona(
     val monogram: String,
 )
 
+/**
+ * Cast sheets. Ahmed (the learner) is the only built-in character. A teacher is whatever language
+ * the creator adds: its colour, voice and monogram are derived from its name, so there is no
+ * language list anywhere.
+ */
 object Personas {
     val AHMED = Persona(
         id = "ahmed", nameAr = "أحمد", nameEn = "Ahmed",
@@ -116,84 +117,45 @@ object Personas {
         pitch = 1.08f, rate = 1.0f, monogram = "أ",
     )
 
-    private val TEMPLATES = listOf(
-        Persona(
-            "python", "بايثون", "Python", 0xFFE8C872, 0xFF9A7414,
-            "هادئ، ودود، يبسّط الأمور ويحب الكود النظيف.",
+    const val DEFAULT_PERSONALITY = "معلّم صبور ودود، يشرح بجمل قصيرة وتشبيهات من الحياة."
+
+    /** A teacher persona for any language [language] shown as [displayName]. */
+    fun forLanguage(language: String?, displayName: String? = null, note: String? = null): Persona {
+        val id = Languages.slug(language ?: displayName)
+        val name = displayName?.trim()?.takeIf { it.isNotEmpty() } ?: language?.trim()?.takeIf { it.isNotEmpty() } ?: "معلّم"
+        val h = (id.fold(7) { a, c -> a * 31 + c.code } and 0x7FFFFFFF)
+        val hue = (h % 360).toFloat()
+        return Persona(
+            id, name, name, hsv(hue, 0.42f, 0.93f), hsv(hue, 0.65f, 0.55f),
+            note?.trim()?.takeIf { it.isNotEmpty() } ?: DEFAULT_PERSONALITY,
             "جمل قصيرة دافئة، تشبيه من الحياة أولًا ثم الكود.",
             listOf("يطمئن أحمد", "يستخدم تشبيهات يومية", "يمدح المحاولة"),
-            listOf("لا يستعجل", "لا يستخدم مصطلحات بلا شرح"),
-            listOf("سؤال ممتاز يا أحمد!", "تخيّل صندوقًا مكتوبًا عليه اسم.", "لا بأس، الخطأ جزء من التعلّم."),
-            0.95f, 0.95f, "Py",
-        ),
-        Persona(
-            "java", "جافا", "Java", 0xFFE0956B, 0xFFA34F22,
-            "رسمي، منظّم، صارم قليلًا، يحب الأنواع والقواعد.",
-            "جمل مرتّبة بنقاط، يذكر النوع دائمًا.",
-            listOf("يشرح القاعدة بوضوح", "يقارن بلطف"),
-            listOf("لا يقسو", "لا يطيل"),
-            listOf("عندي يجب أن تعلن النوع أولًا: int x = 5;", "القواعد تحمينا من المفاجآت."),
-            0.85f, 0.92f, "J",
-        ),
-        Persona(
-            "cpp", "سي++", "C++", 0xFF8DA7E8, 0xFF3B5BB0,
-            "سريع، واثق، فخور بالأداء، يتباهى بمرح.",
-            "جمل قصيرة وسريعة مع مزاح خفيف.",
-            listOf("يذكر السرعة بمرح", "يحترم الآخرين"),
-            listOf("لا يتعالى", "لا يُربك المبتدئ"),
-            listOf("وأنا أنفّذها أسرع من رمشة عين 😎", "عندي: int x = 5; وانتهينا."),
-            0.9f, 1.08f, "C++",
-        ),
-        Persona(
-            "javascript", "جافاسكربت", "JavaScript", 0xFFE3D36B, 0xFF8A7A10,
-            "نشيط، غير رسمي، يمزح.",
-            "عفوي ومرح، يستخدم أمثلة من المتصفح.",
-            listOf("يضيف لمسة مرح", "يعطي مثالًا عمليًا"),
-            listOf("لا يسخر", "لا يشتّت عن الفكرة"),
-            listOf("عندي let x = 5 وبس! 🎉", "جرّبها في المتصفح فورًا."),
-            1.1f, 1.08f, "JS",
-        ),
-        Persona(
-            "kotlin", "كوتلن", "Kotlin", 0xFFB59AE8, 0xFF6A45B5,
-            "عصري، مختصر، يحب الأمان.", "مختصر وواضح.", listOf("يذكر الأمان"), listOf("لا يتعالى"),
-            listOf("val x = 5 — وثابتة للأبد."), 1.0f, 1.0f, "Kt",
-        ),
-        Persona(
-            "csharp", "سي شارب", "C#", 0xFF9FD18B, 0xFF3F7A2C,
-            "منظّم ولطيف.", "واضح ومرتّب.", listOf("يشرح بهدوء"), listOf("لا يطيل"),
-            listOf("var x = 5; وأنا أعرف نوعه."), 0.92f, 0.98f, "C#",
-        ),
-        Persona(
-            "go", "جو", "Go", 0xFF7FCFD6, 0xFF1F7A82,
-            "بسيط، عملي.", "قصير جدًا.", listOf("يفضّل البساطة"), listOf("لا يعقّد"),
-            listOf("x := 5 وخلاص."), 0.95f, 1.0f, "Go",
-        ),
-        Persona(
-            "rust", "رست", "Rust", 0xFFD9A38A, 0xFF8F4A2E,
-            "حريص، دقيق، يحب الأمان.", "دقيق ومهذّب.", listOf("يحذّر بلطف"), listOf("لا يخيف"),
-            listOf("let x = 5; ولا أحد يغيّرها بلا إذن."), 0.88f, 0.96f, "Rs",
-        ),
-        Persona(
-            "php", "بي إتش بي", "PHP", 0xFFA7A9DE, 0xFF4E519E,
-            "خبير ويب ودود.", "عملي.", listOf("يربط بالويب"), listOf("لا يشتّت"),
-            listOf("\$x = 5; وعلامة الدولار دائمًا معي."), 0.95f, 1.0f, "php",
-        ),
-    )
-
-    /** Default template for an unknown language. */
-    fun forLanguage(language: String?, displayName: String? = null): Persona {
-        val l = language?.lowercase()?.replace("c++", "cpp")?.replace("js", "javascript")
-        TEMPLATES.firstOrNull { it.id == l }?.let { return it }
-        val name = displayName ?: language ?: "معلّم"
-        return Persona(
-            l ?: "teacher", name, language ?: "Teacher", 0xFFA9C4B8, 0xFF3F6E5B,
-            "معلّم صبور ودود.", "جمل قصيرة وتشبيهات.", listOf("يشرح بهدوء"), listOf("لا يسخر"),
-            listOf("سؤال جميل يا أحمد."), 1.0f, 1.0f, name.take(2),
+            listOf("لا يستعجل", "لا يسخر", "لا يستخدم مصطلحات بلا شرح"),
+            listOf("سؤال ممتاز يا أحمد!"),
+            0.88f + (h / 7 % 25) / 100f, 0.94f + (h / 13 % 14) / 100f,
+            monogramOf(name),
         )
     }
 
-    fun teachers(): List<Persona> = TEMPLATES
-
     fun forCast(member: CastMember): Persona =
         if (member.role == "learner") AHMED else forLanguage(member.language ?: member.id, member.name)
+
+    private fun monogramOf(name: String): String {
+        val n = name.trim()
+        if (n.length <= 3) return n
+        val first = n.first()
+        return if (first.code < 128) n.take(2).replaceFirstChar { it.uppercase() } else first.toString()
+    }
+
+    private fun hsv(h: Float, s: Float, v: Float): Long {
+        val c = v * s
+        val x = c * (1 - kotlin.math.abs((h / 60f) % 2 - 1))
+        val m = v - c
+        val (r, g, b) = when {
+            h < 60 -> Triple(c, x, 0f); h < 120 -> Triple(x, c, 0f); h < 180 -> Triple(0f, c, x)
+            h < 240 -> Triple(0f, x, c); h < 300 -> Triple(x, 0f, c); else -> Triple(c, 0f, x)
+        }
+        fun ch(f: Float) = ((f + m) * 255f + 0.5f).toInt().coerceIn(0, 255).toLong()
+        return 0xFF000000L or (ch(r) shl 16) or (ch(g) shl 8) or ch(b)
+    }
 }

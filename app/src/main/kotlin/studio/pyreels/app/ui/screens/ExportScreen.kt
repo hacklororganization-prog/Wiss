@@ -139,7 +139,6 @@ fun ExportScreen(nav: Navigator, projectId: Long, modifier: Modifier, vm: Export
         }
     }
     val notifPerm = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
-    val storagePerm = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
     Column(modifier) {
         CalmTopBar(ui.t("تصدير ونشر", "Export & publish"), { nav.back() })
@@ -194,7 +193,6 @@ fun ExportScreen(nav: Navigator, projectId: Long, modifier: Modifier, vm: Export
             Button(
                 onClick = {
                     if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) notifPerm.launch(Manifest.permission.POST_NOTIFICATIONS)
-                    if (Build.VERSION.SDK_INT < 29 && tree == null && ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) storagePerm.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     runCatching { vm.start(context.applicationContext, platform, quality, pack, tree, cover.takeIf { it >= 0 }) }
                 },
                 enabled = report?.canExport == true && !running,

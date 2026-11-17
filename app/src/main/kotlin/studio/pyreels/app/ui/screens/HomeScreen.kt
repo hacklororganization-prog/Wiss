@@ -64,14 +64,9 @@ import studio.pyreels.app.ui.components.CalmTopBar
 import studio.pyreels.app.ui.components.Muted
 import studio.pyreels.app.ui.components.SectionTitle
 import studio.pyreels.app.ui.theme.LocalUi
-import studio.pyreels.core.Resources
 import studio.pyreels.core.brief.EpisodeRecord
 import studio.pyreels.core.brief.SeriesMemory
 import studio.pyreels.core.brief.StylePreset
-import studio.pyreels.core.content.ContentRepository
-import studio.pyreels.core.content.CurriculumLesson
-import studio.pyreels.core.templates.Templates
-import studio.pyreels.core.validate.ScenarioValidator
 import javax.inject.Inject
 
 @HiltViewModel
@@ -80,7 +75,9 @@ class HomeViewModel @Inject constructor(
     private val engine: VideoEngine,
     series: SeriesRepository,
     presets: PresetRepository,
+    teacherStore: studio.pyreels.app.data.TeacherStore,
 ) : ViewModel() {
+    val teachers = teacherStore.teachers
     val list: StateFlow<List<ProjectEntity>> = projects.projects.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
     val history: StateFlow<List<EpisodeRecord>> = series.history.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
     val presetList: StateFlow<List<StylePreset>> = presets.presets.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
@@ -92,17 +89,6 @@ class HomeViewModel @Inject constructor(
     val latest: StateFlow<Pair<ProjectEntity, PreparedVideo>?> = projects.projects.map { l ->
         l.firstOrNull()?.let { p -> p.scenario()?.let { p to engine.quick(it) } }
     }.flowOn(kotlinx.coroutines.Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
-    fun openSample(file: String, done: (Long) -> Unit) = viewModelScope.launch {
-        val s = ScenarioValidator.parse(Resources.text(file)).scenarios.first()
-        done(projects.create(s, null))
-    }
-
-    /** One-tap start from a preset: only the lesson is left to choose. */
-    fun startFromPreset(p: StylePreset, lesson: CurriculumLesson, done: (Long) -> Unit) = viewModelScope.launch {
-        val s = Templates.draft(lesson, p.brief.copy(lessonId = lesson.id, lessonTitle = lesson.title), seriesRepo.all())
-        done(projects.create(s, p.brief))
-    }
 }
 
 @Composable
@@ -112,10 +98,7 @@ fun HomeScreen(nav: Navigator, modifier: Modifier, vm: HomeViewModel = hiltViewM
     val history by vm.history.collectAsState()
     val presets by vm.presetList.collectAsState()
     val latest by vm.latest.collectAsState()
-    val curriculum = ContentRepository.curriculum
-    val completed = history.map { it.lessonId }.toSet()
-    val next = curriculum.nextFor(completed)
-    var presetPick by remember { mutableStateOf<StylePreset?>(null) }
+    val teachers by vm.teachers.collectAsState()
 
     Column(modifier) {
         CalmTopBar("PyReels Studio", null) {
@@ -143,19 +126,19 @@ fun HomeScreen(nav: Navigator, modifier: Modifier, vm: HomeViewModel = hiltViewM
                     }
                 }
             }
-            item {
+            if (teachers.isEmpty()) item {
                 CalmCard {
-                    Text(ui.t("مسار الدروس", "Lesson roadmap"), style = MaterialTheme.typography.titleMedium)
-                    LinearProgressIndicator(progress = { curriculum.progress(completed) }, modifier = Modifier.fillMaxWidth())
+                    Text(ui.t("ابدأ بإضافة لغتك الأولى", "Start by adding your first language"), style = MaterialTheme.typography.titleMedium)
+                    Text(ui.t("اكتب اسم أي لغة برمجة (C++ أو Rust أو غيرها) واختر صورتها من المعرض؛ ثم أنشئ درسك الأول.", "Type the name of any programming language and pick its picture from the gallery; then create your first lesson."), color = Muted)
+                    Button(onClick = { nav.go(Route.Settings) }) { Text(ui.t("إضافة لغة", "Add a language")) }
+                }
+            } else if (history.isNotEmpty()) item {
+                CalmCard {
                     Text(
-                        ui.t("أكملت ${completed.size} من ${curriculum.lessons.size} · مستوى أحمد ${SeriesMemory.ahmedLevel(history.size)}/4",
-                            "${completed.size} of ${curriculum.lessons.size} done · Ahmed level ${SeriesMemory.ahmedLevel(history.size)}/4"),
-                        color = Muted, style = MaterialTheme.typography.bodySmall,
+                        ui.t("أنجزت ${history.size} حلقة · مستوى أحمد ${SeriesMemory.ahmedLevel(history.size)}/4",
+                            "${history.size} episodes done · Ahmed level ${SeriesMemory.ahmedLevel(history.size)}/4"),
+                        color = Muted, style = MaterialTheme.typography.bodyMedium,
                     )
-                    if (next != null) {
-                        Text(ui.t("الدرس التالي المقترح: ${next.title}", "Suggested next lesson: ${next.title}"), style = MaterialTheme.typography.bodyLarge)
-                        Button(onClick = { nav.go(Route.Wizard(lessonId = next.id)) }) { Text(ui.t("إعداد الدرس", "Set up lesson")) }
-                    }
                 }
             }
             item {
@@ -173,23 +156,14 @@ fun HomeScreen(nav: Navigator, modifier: Modifier, vm: HomeViewModel = hiltViewM
                     Icon(Icons.Outlined.CalendarMonth, null); Spacer(Modifier.padding(3.dp)); Text(ui.t("الخطة الأسبوعية (7 حلقات)", "Weekly plan (7 episodes)"))
                 }
             }
-            item {
-                SectionTitle(ui.t("ابدأ بنقرة من إعداد مسبق", "One-tap start from a preset"))
+            if (presets.isNotEmpty()) item {
+                SectionTitle(ui.t("أنماطي المحفوظة", "My saved styles"))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(presets, key = { it.id }) { p -> AssistChip(onClick = { presetPick = p }, label = { Text(p.name) }) }
-                }
-            }
-            item {
-                SectionTitle(ui.t("أمثلة جاهزة", "Ready samples"))
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(Resources.SAMPLE_FILES) { f ->
-                        val name = f.substringAfter("/").removeSuffix(".pyreels.json").substringAfter("-")
-                        AssistChip(onClick = { vm.openSample(f) { nav.go(Route.Editor(it)) } }, label = { Text(name) })
-                    }
+                    items(presets, key = { it.id }) { p -> AssistChip(onClick = { nav.go(Route.Wizard(presetId = p.id)) }, label = { Text(p.name) }) }
                 }
             }
             item { SectionTitle(ui.t("مشاريعي", "My projects")) }
-            if (projects.isEmpty()) item { Text(ui.t("لا توجد مشاريع بعد. ابدأ درسًا جديدًا أو افتح مثالًا.", "No projects yet. Start a lesson or open a sample."), color = Muted) }
+            if (projects.isEmpty()) item { Text(ui.t("لا توجد مشاريع بعد. أنشئ درسًا جديدًا أو استورد سيناريو.", "No projects yet. Create a lesson or import a scenario."), color = Muted) }
             items(projects, key = { it.id }) { p ->
                 CalmCard(Modifier.clickable { nav.go(Route.Editor(p.id)) }) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -203,23 +177,5 @@ fun HomeScreen(nav: Navigator, modifier: Modifier, vm: HomeViewModel = hiltViewM
             }
             item { Spacer(Modifier.height(40.dp)) }
         }
-    }
-
-    presetPick?.let { preset ->
-        AlertDialog(
-            onDismissRequest = { presetPick = null },
-            title = { Text(ui.t("${preset.name}: اختر الدرس", "${preset.name}: pick the lesson")) },
-            text = {
-                LazyColumn(Modifier.height(380.dp)) {
-                    items(curriculum.lessons) { l ->
-                        Text(
-                            "${l.order}. ${l.title}" + if (l.id in completed) " ✓" else "",
-                            modifier = Modifier.fillMaxWidth().clickable { presetPick = null; vm.startFromPreset(preset, l) { nav.go(Route.Editor(it)) } }.padding(vertical = 10.dp),
-                        )
-                    }
-                }
-            },
-            confirmButton = { TextButton(onClick = { presetPick = null }) { Text(ui.t("إغلاق", "Close")) } },
-        )
     }
 }

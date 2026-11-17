@@ -7,7 +7,6 @@ import studio.pyreels.core.brief.Brief
 import studio.pyreels.core.brief.EpisodeRecord
 import studio.pyreels.core.brief.StylePreset
 import studio.pyreels.core.model.Scenario
-import studio.pyreels.core.templates.Templates
 import studio.pyreels.core.validate.ScenarioValidator
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -59,7 +58,7 @@ class SeriesRepository @Inject constructor(private val db: AppDatabase) {
     /** Records (or replaces) the episode of a project when it is saved/exported. */
     suspend fun record(projectId: Long?, s: Scenario) {
         projectId?.let { db.episodes().deleteForProject(it) }
-        val r = Templates.record(s, System.currentTimeMillis())
+        val r = studio.pyreels.core.util.ScenarioTools.record(s, System.currentTimeMillis())
         val episode = if (r.episode > 0) r.episode else (db.episodes().all().maxOfOrNull { it.episode } ?: 0) + 1
         db.episodes().insert(
             EpisodeEntity(projectId = projectId, episode = episode, lessonId = r.lessonId, concept = r.concept, title = r.title, keySentence = r.keySentence, mistake = r.mistake, challenge = r.challenge, analogy = r.analogy, savedAt = r.savedAt),
@@ -79,9 +78,8 @@ class PresetRepository @Inject constructor(private val db: AppDatabase) {
         l.mapNotNull { p -> runCatching { StylePreset(p.id, p.name, json.decodeFromString(Brief.serializer(), p.briefJson), p.builtIn) }.getOrNull() }
     }
 
-    suspend fun ensureDefaults() {
-        if (db.presets().count() == 0) StylePreset.DEFAULTS.forEach { save(it) }
-    }
+    /** Older versions shipped ready-made presets; nothing is built in any more. */
+    suspend fun removeBuiltIns() = db.presets().purgeBuiltIn()
 
     suspend fun save(p: StylePreset) = db.presets().upsert(PresetEntity(p.id, p.name, json.encodeToString(Brief.serializer(), p.brief), p.builtIn))
     suspend fun delete(id: String) = db.presets().delete(id)

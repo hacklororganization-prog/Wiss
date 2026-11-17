@@ -9,7 +9,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class ValidatorTest {
-    private val sample = Resources.text("samples/02-variables.pyreels.json")
+    private val sample = Fixtures.text("variables")
 
     @Test
     fun syntaxErrorIsReportedWithLine() {

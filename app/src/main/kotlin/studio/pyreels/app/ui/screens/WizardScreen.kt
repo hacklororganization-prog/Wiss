@@ -63,11 +63,11 @@ import studio.pyreels.app.ui.components.SectionTitle
 import studio.pyreels.app.ui.theme.LocalUi
 import studio.pyreels.core.brief.Brief
 import studio.pyreels.core.brief.StylePreset
-import studio.pyreels.core.content.ContentRepository
+import studio.pyreels.app.data.TeacherStore
+import studio.pyreels.app.ui.components.TeacherDialog
 import studio.pyreels.core.model.Limits
 import studio.pyreels.core.model.Personas
 import studio.pyreels.core.prompt.PromptBuilder
-import studio.pyreels.core.templates.Templates
 import javax.inject.Inject
 
 @HiltViewModel
@@ -75,33 +75,40 @@ class WizardViewModel @Inject constructor(
     private val projects: ProjectRepository,
     private val series: SeriesRepository,
     private val presets: PresetRepository,
+    val teacherStore: TeacherStore,
 ) : ViewModel() {
     val brief = MutableStateFlow(Brief())
+    val teachers = teacherStore.teachers
     val presetList = presets.presets.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
     private var initialised = false
 
     fun init(lessonId: String?, presetId: String?) {
         if (initialised) return
         initialised = true
+        // empty, immediately: nothing is pre-selected or pre-filled
+        brief.value = Brief()
+        if (presetId == null) return
         viewModelScope.launch {
-            val p = presetId?.let { id -> presets.presets.first().firstOrNull { it.id == id } }
-            var b = p?.brief ?: Brief()
-            val history = series.all()
-            val lesson = ContentRepository.curriculum.byId(lessonId) ?: ContentRepository.curriculum.nextFor(history.map { it.lessonId }.toSet())
-            if (lesson != null) b = b.copy(lessonId = lesson.id, lessonTitle = lesson.title)
-            brief.value = b
+            val p = presets.presets.first().firstOrNull { it.id == presetId } ?: return@launch
+            // keep only teachers that still exist; the topic is always left for the creator
+            val known = teacherStore.teachers.value.map { it.id }.toSet()
+            brief.value = p.brief.let { it.copy(teachers = it.teachers.filter { id -> id in known }, lessonId = null, lessonTitle = "") }
         }
     }
 
     fun update(f: (Brief) -> Brief) { brief.value = f(brief.value).normalized() }
 
-    suspend fun prompt(): String = PromptBuilder.build(PromptBuilder.Input(brief.value, series.all()))
-
-    fun draft(done: (Long) -> Unit) = viewModelScope.launch {
+    /** The brief with the chosen teachers' names and personality notes filled in. */
+    fun fullBrief(): Brief {
+        val all = teacherStore.teachers.value.associateBy { it.id }
         val b = brief.value
-        val lesson = ContentRepository.curriculum.byId(b.lessonId) ?: ContentRepository.curriculum.lessons.first()
-        done(projects.create(Templates.draft(lesson, b, series.all()), b))
+        return b.copy(
+            teacherNames = b.teachers.mapNotNull { id -> all[id]?.let { id to it.name } }.toMap(),
+            teacherNotes = b.teachers.mapNotNull { id -> all[id]?.takeIf { it.note.isNotBlank() }?.let { id to it.note } }.toMap(),
+        )
     }
+
+    suspend fun prompt(): String = PromptBuilder.build(PromptBuilder.Input(fullBrief(), series.all()))
 
     fun savePreset(name: String) = viewModelScope.launch {
         presets.save(StylePreset("custom-" + System.currentTimeMillis(), name, brief.value.copy(lessonId = null, lessonTitle = "")))
@@ -119,7 +126,8 @@ fun WizardScreen(nav: Navigator, route: Route.Wizard, modifier: Modifier, vm: Wi
     var pendingPrompt by remember { mutableStateOf<String?>(null) }
     var saved by remember { mutableStateOf<Uri?>(null) }
     var presetName by remember { mutableStateOf<String?>(null) }
-    var lessonMenu by remember { mutableStateOf(false) }
+    val teachers by vm.teachers.collectAsState()
+    var addingTeacher by remember { mutableStateOf(false) }
 
     // Storage Access Framework: the user chooses where the prompt file goes. Never a silent write.
     val createDoc = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/markdown")) { uri ->
@@ -142,31 +150,25 @@ fun WizardScreen(nav: Navigator, route: Route.Wizard, modifier: Modifier, vm: Wi
             }
             CalmCard {
                 SectionTitle(ui.t("درس اليوم", "Today's lesson"))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    OutlinedButton(onClick = { lessonMenu = true }) { Text(ContentRepository.curriculum.byId(b.lessonId)?.let { "${it.order}. ${it.title}" } ?: ui.t("اختر من المسار", "Pick from roadmap")) }
-                    DropdownMenu(expanded = lessonMenu, onDismissRequest = { lessonMenu = false }) {
-                        ContentRepository.curriculum.lessons.forEach { l ->
-                            DropdownMenuItem(text = { Text("${l.order}. ${l.title}") }, onClick = { lessonMenu = false; vm.update { it.copy(lessonId = l.id, lessonTitle = l.title) } })
-                        }
-                    }
-                }
-                OutlinedTextField(b.lessonTitle, { v -> vm.update { it.copy(lessonTitle = v, lessonId = if (ContentRepository.curriculum.byId(it.lessonId)?.title == v) it.lessonId else null) } },
-                    label = { Text(ui.t("أو اكتب موضوعًا حرًّا", "Or type a free topic")) }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(b.lessonTitle, { v -> vm.update { it.copy(lessonTitle = v.take(80)) } },
+                    label = { Text(ui.t("موضوع الدرس (اكتبه بحرية)", "Lesson topic (type anything)")) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Brief.LEVELS.forEach { (k, v) -> FilterChip(selected = b.level == k, onClick = { vm.update { it.copy(level = k) } }, label = { Text(v) }) }
                 }
             }
             CalmCard {
-                SectionTitle(ui.t("المعلّمون (1–4)", "Teachers (1–4)"))
+                SectionTitle(ui.t("المعلّمون: لغاتك (1–4)", "Teachers: your languages (1–4)"))
+                if (teachers.isEmpty()) Text(ui.t("أضف لغة واحدة على الأقل: اسمها وصورتها من المعرض.", "Add at least one language: its name and a picture from the gallery."), color = Muted)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Personas.teachers().forEach { p ->
-                        val sel = p.id in b.teachers
+                    teachers.forEach { t ->
+                        val sel = t.id in b.teachers
                         FilterChip(selected = sel, onClick = {
-                            vm.update { br -> br.copy(teachers = if (sel) (br.teachers - p.id).ifEmpty { listOf("python") } else (br.teachers + p.id).take(Limits.MAX_TEACHERS)) }
-                        }, label = { Text(p.nameAr) })
+                            vm.update { br -> br.copy(teachers = if (sel) br.teachers - t.id else (br.teachers + t.id).take(Limits.MAX_TEACHERS)) }
+                        }, label = { Text(t.name) })
                     }
                 }
-                b.teachers.forEach { id -> val p = Personas.forLanguage(id); Text("• ${p.nameAr}: ${p.personality}", color = Muted, style = MaterialTheme.typography.bodySmall) }
+                OutlinedButton(onClick = { addingTeacher = true }) { Text(ui.t("+ إضافة لغة", "+ Add a language")) }
+                teachers.filter { it.id in b.teachers && it.note.isNotBlank() }.forEach { Text("• ${it.name}: ${it.note}", color = Muted, style = MaterialTheme.typography.bodySmall) }
             }
             CalmCard {
                 SectionTitle(ui.t("المثال", "Example"))
@@ -176,7 +178,7 @@ fun WizardScreen(nav: Navigator, route: Route.Wizard, modifier: Modifier, vm: Wi
                 }
                 if (b.exampleMode == "custom") OutlinedTextField(b.customExample, { v -> vm.update { it.copy(customExample = v) } }, label = { Text(ui.t("نص أو كود", "Text or code")) },
                     modifier = Modifier.fillMaxWidth(), textStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace), minLines = 3)
-                else ContentRepository.curriculum.byId(b.lessonId)?.let { Text(it.example, fontFamily = FontFamily.Monospace, color = Muted) }
+                else Text(ui.t("سيختار الذكاء الاصطناعي مثالًا قصيرًا مناسبًا للموضوع واللغة.", "The AI will pick a short example that fits the topic and language."), color = Muted, style = MaterialTheme.typography.bodySmall)
             }
             CalmCard {
                 SectionTitle(ui.t("طريقة الشرح", "Teaching method"))
@@ -202,7 +204,7 @@ fun WizardScreen(nav: Navigator, route: Route.Wizard, modifier: Modifier, vm: Wi
                 ToggleRow(ui.t("تحدٍّ في التعليقات", "Comment challenge"), b.includeChallenge) { v -> vm.update { it.copy(includeChallenge = v) } }
                 ToggleRow(ui.t("تعليق صوتي", "Voice-over"), b.voiceOver) { v -> vm.update { it.copy(voiceOver = v) } }
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(selected = b.teaserMode == "auto", onClick = { vm.update { it.copy(teaserMode = "auto") } }, label = { Text(ui.t("تشويق تلقائي من المسار", "Auto teaser")) })
+                    FilterChip(selected = b.teaserMode == "auto", onClick = { vm.update { it.copy(teaserMode = "auto") } }, label = { Text(ui.t("تشويق يكتبه الذكاء الاصطناعي", "AI-written teaser")) })
                     FilterChip(selected = b.teaserMode == "custom", onClick = { vm.update { it.copy(teaserMode = "custom") } }, label = { Text(ui.t("تشويق مخصّص", "Custom teaser")) })
                 }
                 if (b.teaserMode == "custom") OutlinedTextField(b.customTeaser, { v -> vm.update { it.copy(customTeaser = v) } }, modifier = Modifier.fillMaxWidth())
@@ -223,18 +225,22 @@ fun WizardScreen(nav: Navigator, route: Route.Wizard, modifier: Modifier, vm: Wi
                 ToggleRow(ui.t("ملصق احتفال عند أول نجاح 🎉", "Celebration sticker at the first win 🎉"), b.celebrate) { v -> vm.update { it.copy(celebrate = v) } }
                 OutlinedTextField(b.notes, { v -> vm.update { it.copy(notes = v) } }, label = { Text(ui.t("ملاحظات إضافية", "Extra notes")) }, modifier = Modifier.fillMaxWidth(), minLines = 2)
             }
-            Button(onClick = {
+            val ready = b.lessonTitle.isNotBlank() && b.teachers.isNotEmpty()
+            Button(enabled = ready, onClick = {
                 scope.launch {
                     pendingPrompt = vm.prompt()
                     createDoc.launch(PromptBuilder.fileName(b))
                 }
             }, modifier = Modifier.fillMaxWidth()) { Text(ui.t("إنشاء البرومبت الاحترافي", "Generate professional prompt")) }
+            if (!ready) Text(ui.t("اكتب موضوع الدرس واختر معلّمًا واحدًا على الأقل.", "Write the lesson topic and pick at least one teacher."), color = Muted, style = MaterialTheme.typography.bodySmall)
             OutlinedButton(onClick = { nav.go(Route.Import()) }, modifier = Modifier.fillMaxWidth()) { Text(ui.t("استيراد نتيجة الذكاء الاصطناعي", "Import the AI's result")) }
-            OutlinedButton(onClick = { vm.draft { nav.replace(Route.Editor(it)) } }, modifier = Modifier.fillMaxWidth()) { Text(ui.t("مسودة فورية من القوالب (بدون ذكاء اصطناعي)", "Instant draft from templates (no AI)")) }
             TextButton(onClick = { presetName = "" }) { Text(ui.t("حفظ كإعداد مسبق", "Save as preset")) }
             Spacer(Modifier.height(32.dp))
         }
     }
+
+    if (addingTeacher) TeacherDialog(vm.teacherStore, null, onDismiss = { addingTeacher = false },
+        onSaved = { t -> vm.update { br -> br.copy(teachers = (br.teachers + t.id).distinct().take(Limits.MAX_TEACHERS)) } })
 
     saved?.let { uri ->
         AlertDialog(

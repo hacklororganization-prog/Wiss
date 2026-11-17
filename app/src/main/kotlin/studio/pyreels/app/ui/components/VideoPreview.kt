@@ -27,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,6 +73,10 @@ fun VideoPreview(
     loop: Boolean = false,
     /** Redraw rate: 30 for the main preview, lower for small cards. */
     fps: Int = 30,
+    /** "Play this range": when [requestToken] changes, playback starts at [requestStartMs] and stops at [stopAtMs]. */
+    requestStartMs: Long? = null,
+    stopAtMs: Long? = null,
+    requestToken: Int = 0,
 ) {
     val ui = LocalUi.current
     val context = LocalContext.current
@@ -98,11 +103,21 @@ fun VideoPreview(
     val lifecycleState by lifecycle.currentStateFlow.collectAsState()
     val active = playing && lifecycleState.isAtLeast(Lifecycle.State.RESUMED)
     val frameStepMs = 1000L / fps.coerceIn(5, 60)
+    var rangeEnd by remember { mutableStateOf<Long?>(null) }
+    var restart by remember { mutableIntStateOf(0) }
+    LaunchedEffect(requestToken) {
+        if (requestToken > 0 && requestStartMs != null) {
+            time = requestStartMs.coerceIn(0, total); uiTime = time
+            rangeEnd = stopAtMs
+            playing = true
+            restart++
+        }
+    }
 
     DisposableEffect(player) { onDispose { player.stop() } }
     // Without its own controls the preview follows the time given by the caller (cover picker).
     LaunchedEffect(startAtMs, controls) { if (!controls) { time = startAtMs.coerceIn(0, total); uiTime = time } }
-    LaunchedEffect(active, total) {
+    LaunchedEffect(active, total, restart) {
         if (active) {
             if (time >= total - 50) time = 0
             player.play(video, time, withAudio = !muted)
@@ -113,6 +128,8 @@ fun VideoPreview(
                 val t = player.positionMs().coerceAtMost(total)
                 if (t - lastDraw >= frameStepMs || t >= total) { time = t; lastDraw = t }
                 if (t - lastUi >= 120 || t >= total) { uiTime = t; lastUi = t; onTime(t) }
+                val end = rangeEnd
+                if (end != null && t >= end) { playing = false; rangeEnd = null; break }
                 if (t >= total) {
                     if (loop) { time = 0; uiTime = 0; lastDraw = Long.MIN_VALUE / 2; player.play(video, 0, withAudio = !muted) } else { playing = false; break }
                 }
@@ -149,13 +166,13 @@ fun VideoPreview(
             // Player controls always read left-to-right (time grows to the right), like every video player.
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Row(Modifier.fillMaxWidth().padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    FilledIconButton(onClick = { playing = !playing }) {
+                    FilledIconButton(onClick = { rangeEnd = null; playing = !playing }) {
                         Icon(if (playing) Icons.Filled.Pause else Icons.Filled.PlayArrow, contentDescription = if (playing) ui.t("إيقاف مؤقت", "Pause") else ui.t("تشغيل", "Play"))
                     }
                     Text(fmt(uiTime), style = MaterialTheme.typography.labelMedium)
                     Slider(
                         value = if (total > 0) (uiTime.toFloat() / total).coerceIn(0f, 1f) else 0f,
-                        onValueChange = { v -> playing = false; time = (v * total).toLong(); uiTime = time; onTime(time) },
+                        onValueChange = { v -> rangeEnd = null; playing = false; time = (v * total).toLong(); uiTime = time; onTime(time) },
                         modifier = Modifier.weight(1f),
                     )
                     Text(fmt(total), style = MaterialTheme.typography.labelMedium)

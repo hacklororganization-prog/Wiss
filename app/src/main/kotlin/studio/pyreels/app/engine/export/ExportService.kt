@@ -72,9 +72,11 @@ class ExportService : Service() {
         ensureChannel()
         // If the system refuses the foreground promotion the export still runs while the app is open.
         runCatching { startInForeground(notification(getString(R.string.export_channel), 0, indeterminate = true)) }
-        if (current?.isActive == true) return START_STICKY
+        if (current?.isActive == true) return START_NOT_STICKY
         current = scope.launch { runQueue() }
-        return START_STICKY
+        // not sticky: Android 12+ forbids restarting a foreground service from the background; an
+        // interrupted job is resumed the next time the app opens (MainActivity)
+        return START_NOT_STICKY
     }
 
     private suspend fun runQueue() {
@@ -113,14 +115,14 @@ class ExportService : Service() {
             val scenario = project.scenario() ?: error("السيناريو غير صالح")
             val prepared = engine.prepare(this, scenario)
             if (prepared.timeline.totalMs > Limits.HARD_CAP_SECONDS * 1000L) error("المدة تتجاوز ${Limits.HARD_CAP_SECONDS} ثانية")
-            val options = if (job.quality == "high") VideoExporter.Options.high() else VideoExporter.Options.standard()
-            val exporter = VideoExporter(this)
+            val mix = studio.pyreels.core.audio.mixSettingsFor(scenario.meta)
+            val options = (if (job.quality == "high") VideoExporter.Options.high() else VideoExporter.Options.standard()).copy(mix = mix)
             val stamp = SimpleDateFormat("yyyyMMdd_HHmm", Locale.US).format(Date())
             val base = "${scenario.meta.lesson.id}_${job.platform}_$stamp"
             val out = File(Storage.exportsDir(this), "$base.mp4")
             var lastPct = -1
             val packSteps = if (job.publishPack) 0.15f else 0f
-            val verification = exporter.export(prepared, out, options) { p ->
+            fun report(p: Float) {
                 val pct = (p * (1f - packSteps) * 100).toInt()
                 if (pct != lastPct) {
                     lastPct = pct
@@ -128,18 +130,38 @@ class ExportService : Service() {
                     scope.launch { runCatching { db.jobs().update(job.copy(progress = pct / 100f, message = "يرسم الإطارات… $pct٪")) } }
                 }
             }
+            suspend fun attempt(o: VideoExporter.Options) = VideoExporter(this).export(prepared, out, o) { report(it) }
+            val verification = try {
+                attempt(options)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (t: Throwable) {
+                // some phones' encoders reject the requested settings: retry once, gentler
+                studio.pyreels.app.CrashLog.record(this, t, "export-attempt-1")
+                lastPct = -1
+                attempt(VideoExporter.Options.standard().copy(videoBitrate = 5_000_000, mix = mix))
+            }
             if (!verification.ok) error("فشل التحقق من الملف: ${verification.problems.joinToString()}")
+            var packNote = ""
             val tree = job.packTreeUri?.let { Uri.parse(it) }
             val videoUri = if (tree != null) Storage.saveToTree(this, tree, out, "$base.mp4", Storage.Kind.VIDEO)
             else Storage.saveToMediaStore(this, out, "$base.mp4", Storage.Kind.VIDEO)
             videoUri ?: error("تعذّر حفظ الفيديو")
             if (job.publishPack) {
                 job = job.copy(message = "يجهّز حزمة النشر…"); db.jobs().update(job)
-                writePublishPack(prepared, base, tree, job.coverTimeMs)
+                try {
+                    writePublishPack(prepared, base, tree, job.coverTimeMs)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (t: Throwable) {
+                    // the video itself is already saved: a failed extra (cover, subtitles, teaser) is not fatal
+                    studio.pyreels.app.CrashLog.record(this, t, "publish-pack")
+                    packNote = " (تعذّر إنشاء جزء من حزمة النشر)"
+                }
             }
             projects.setExport(project.id, videoUri.toString())
             series.record(project.id, scenario)
-            job = job.copy(state = ExportJobEntity.DONE, progress = 1f, outputUri = videoUri.toString(), message = "تم الحفظ والتحقق: ${verification.width}×${verification.height}، ${"%.1f".format(verification.durationMs / 1000.0)} ث")
+            job = job.copy(state = ExportJobEntity.DONE, progress = 1f, outputUri = videoUri.toString(), message = "تم الحفظ والتحقق: ${verification.width}×${verification.height}، ${"%.1f".format(verification.durationMs / 1000.0)} ث$packNote")
             db.jobs().update(job)
             notifyDone(scenario.meta.title, videoUri)
             out.delete()
@@ -175,7 +197,7 @@ class ExportService : Service() {
         save(coverFile, "${base}_cover.png", Storage.Kind.IMAGE)
         // teaser clip (hook + build-up, no spoilers)
         val teaser = File(dir, "${base}_teaser.mp4")
-        val v = VideoExporter(this).export(prepared, teaser, VideoExporter.Options(ranges = PublishPack.teaserWindow(prepared.timeline))) { }
+        val v = VideoExporter(this).export(prepared, teaser, VideoExporter.Options(ranges = PublishPack.teaserWindow(prepared.timeline), mix = studio.pyreels.core.audio.mixSettingsFor(prepared.scenario.meta))) { }
         if (v.ok || v.problems.all { it.startsWith("duration") }) save(teaser, "${base}_teaser.mp4", Storage.Kind.VIDEO)
     }
 

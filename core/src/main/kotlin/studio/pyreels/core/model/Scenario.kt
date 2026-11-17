@@ -45,6 +45,10 @@ data class Meta(
     val chatColor: String = "green",
     /** Automatic celebration sticker after the first successful run. */
     val celebrate: Boolean = true,
+    /** Pace of the whole video: "slow", "calm" (default) or "normal". */
+    val pace: String = "calm",
+    /** Sound effects level: "off", "soft" (default) or "normal". There is never a background track. */
+    val sfx: String = "soft",
 )
 
 @Serializable
@@ -117,7 +121,8 @@ sealed class Scene {
     @Serializable
     @SerialName("hook_predict")
     data class HookPredict(
-        val language: String = "python",
+        /** Code language id; blank = the first teacher's language (see [resolved]). */
+        val language: String = "",
         val code: String,
         val question: String = HOOK_QUESTION,
         val holdMs: Long = 2000,
@@ -187,7 +192,8 @@ sealed class Scene {
     @Serializable
     @SerialName("code_type")
     data class CodeType(
-        val language: String = "python",
+        /** Code language id; blank = the first teacher's language (see [resolved]). */
+        val language: String = "",
         val code: String,
         val typing: String = "natural",
         val focusLines: List<Int> = emptyList(),
@@ -206,7 +212,8 @@ sealed class Scene {
     @Serializable
     @SerialName("run")
     data class Run(
-        val language: String = "python",
+        /** Code language id; blank = the first teacher's language (see [resolved]). */
+        val language: String = "",
         val exec: String = "simulated",
         val code: String? = null,
         val trace: List<TraceStep> = emptyList(),
@@ -226,7 +233,8 @@ sealed class Scene {
     @Serializable
     @SerialName("engage_moment")
     data class EngageMoment(
-        val from: String = "python",
+        /** Speaker id; blank = the first teacher (see [resolved]). */
+        val from: String = "",
         val text: String,
         val actions: List<String> = listOf("like", "follow", "share"),
         val bridge: String = "حسنًا يا أحمد، نكمل!",
@@ -259,7 +267,8 @@ sealed class Scene {
     @Serializable
     @SerialName("common_mistake")
     data class CommonMistake(
-        val language: String = "python",
+        /** Code language id; blank = the first teacher's language (see [resolved]). */
+        val language: String = "",
         val code: String,
         val error: String,
         val explain: String,
@@ -343,3 +352,27 @@ fun Scene.speaker(scenario: Scenario): String? = when (this) {
 
 fun Scenario.firstTeacherId(): String? = cast.firstOrNull { it.role == "teacher" }?.id
 fun Scenario.castById(id: String?): CastMember? = cast.firstOrNull { it.id == id }
+
+/**
+ * Fills the values the scenario left open: scenes without a `language` use the first teacher's
+ * language, and an engage moment without `from` is spoken by the first teacher. Idempotent.
+ */
+fun Scenario.resolved(): Scenario {
+    val teacher = cast.firstOrNull { it.role == "teacher" }
+    val lang = Languages.slug(teacher?.language ?: teacher?.id)
+    val tid = teacher?.id ?: ""
+    var changed = false
+    val fixed = scenes.map { sc ->
+        val r: Scene = when (sc) {
+            is Scene.HookPredict -> if (sc.language.isBlank()) sc.copy(language = lang) else sc
+            is Scene.CodeType -> if (sc.language.isBlank()) sc.copy(language = lang) else sc
+            is Scene.Run -> if (sc.language.isBlank()) sc.copy(language = lang) else sc
+            is Scene.CommonMistake -> if (sc.language.isBlank()) sc.copy(language = lang) else sc
+            is Scene.EngageMoment -> if (sc.from.isBlank()) sc.copy(from = tid) else sc
+            else -> sc
+        }
+        if (r !== sc) changed = true
+        r
+    }
+    return if (changed) copy(scenes = fixed) else this
+}

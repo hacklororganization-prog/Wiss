@@ -8,6 +8,7 @@ import studio.pyreels.core.model.Scene
 import studio.pyreels.core.model.SfxIds
 import studio.pyreels.core.model.TraceStep
 import studio.pyreels.core.model.firstTeacherId
+import studio.pyreels.core.model.resolved
 import studio.pyreels.core.model.typeId
 import studio.pyreels.core.speech.SpeakCode
 import kotlin.math.max
@@ -35,15 +36,17 @@ data class TimedScene(val index: Int, val scene: Scene, val startMs: Long, val d
  * results) and then sampled with [frameAt] for preview (60 fps) and export (30 fps).
  */
 class Timeline private constructor(
-    val scenario: Scenario,
+    scenarioIn: Scenario,
     val scenes: List<TimedScene>,
     val fit: DurationFitter.Fit,
     private val runResults: Map<Int, RunResult>,
     private val voiceMs: Map<Int, Long>,
 ) {
+    val scenario: Scenario = scenarioIn.resolved()
+    private val pace = Pace.of(scenario.meta.pace)
     val totalMs: Long = scenes.lastOrNull()?.endMs ?: 0L
 
-    private val teacher = scenario.firstTeacherId() ?: "python"
+    private val teacher = scenario.firstTeacherId() ?: "teacher"
     private val messages = ArrayList<PlannedMessage>()
     private val typing = HashMap<Int, TypingPlan>()
     private val runs = HashMap<Int, RunPlan>()
@@ -272,9 +275,9 @@ class Timeline private constructor(
                 t += 150
             }
             val base = when {
-                mode == "steady" || fast -> 50L
+                mode == "steady" || fast -> (50 * pace.factor).toLong()
                 c == ' ' && k > 0 && code[k - 1] == ' ' -> 14L // indentation is fast
-                else -> 62L + rnd.nextInt(36)
+                else -> ((62L + rnd.nextInt(36)) * pace.factor).toLong()
             }
             t += base
             if (k > 0 && code[k - 1] == '\n') t += if (fast) 90 else 240
@@ -607,17 +610,9 @@ class Timeline private constructor(
             else -> Stage.CHAT
         }
 
-        fun fileName(language: String) = when (language) {
-            "python" -> "main.py"; "java" -> "Main.java"; "cpp" -> "main.cpp"; "c" -> "main.c"; "javascript" -> "main.js"
-            "typescript" -> "main.ts"; "kotlin" -> "Main.kt"; "csharp" -> "Program.cs"; "go" -> "main.go"; "rust" -> "main.rs"
-            "php" -> "index.php"; "swift" -> "main.swift"; else -> "main.txt"
-        }
+        fun fileName(language: String) = studio.pyreels.core.model.Languages.fileName(language)
 
-        fun runCommand(language: String) = when (language) {
-            "python" -> "python main.py"; "java" -> "java Main.java"; "cpp" -> "g++ main.cpp && ./a.out"; "c" -> "gcc main.c && ./a.out"
-            "javascript" -> "node main.js"; "typescript" -> "ts-node main.ts"; "kotlin" -> "kotlin Main.kt"; "csharp" -> "dotnet run"
-            "go" -> "go run main.go"; "rust" -> "cargo run"; "php" -> "php index.php"; "swift" -> "swift main.swift"; else -> "run"
-        }
+        fun runCommand(language: String) = studio.pyreels.core.model.Languages.runCommand(language)
 
         /** Rough TTS duration estimate used before real synthesis (≈ 13 chars/s for Arabic). */
         fun estimateSpeechMs(text: String): Long = (text.length * 75L + 400).coerceAtLeast(800)
@@ -627,19 +622,26 @@ class Timeline private constructor(
          * holds real Python execution results per scene index.
          */
         fun build(
-            scenario: Scenario,
+            scenarioIn: Scenario,
             voiceMs: Map<Int, Long> = emptyMap(),
             runResults: Map<Int, RunResult> = emptyMap(),
-            targetMs: Long = scenario.meta.targetSeconds * 1000L,
+            targetMs: Long = scenarioIn.meta.targetSeconds * 1000L,
         ): Timeline {
+            val scenario = scenarioIn.resolved()
+            val pace = Pace.of(scenario.meta.pace)
             val celebrate = celebrationIndex(scenario)
             val bounds = scenario.scenes.mapIndexed { i, s ->
                 val voice = if (s.say) voiceMs[i] ?: estimateSpeechMs(s.spoken ?: s.readableText()) else null
-                val b = DurationEstimator.bounds(s, voice)
+                val b0 = DurationEstimator.bounds(s, voice)
+                // pace: scenes linger longer (slow) or shorter (normal); fixed scenes are untouched
+                val b = if (b0.fixed || pace == Pace.CALM) b0 else {
+                    val ideal = (b0.idealMs * pace.factor).roundToLong().coerceAtLeast(b0.minMs)
+                    SceneBounds(b0.minMs, ideal, max(b0.maxMs, ideal))
+                }
                 // a sticker needs ~1.4 s of screen time after its message
                 if ((s is Scene.Chat && s.sticker != null) || i == celebrate) SceneBounds(b.minMs + 1_400, b.idealMs + 1_400, b.maxMs + 1_400) else b
             }
-            val fit = DurationFitter.fit(bounds, DurationFitter.calmTarget(bounds, targetMs))
+            val fit = DurationFitter.fit(bounds, DurationFitter.calmTarget(bounds, targetMs, pace.stretch))
             var start = 0L
             val timed = scenario.scenes.mapIndexed { i, s ->
                 TimedScene(i, s, start, fit.durations[i], stageOf(s)).also { start += fit.durations[i] }

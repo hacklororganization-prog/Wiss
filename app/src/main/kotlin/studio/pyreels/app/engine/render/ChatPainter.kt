@@ -20,6 +20,8 @@ import kotlin.math.min
  */
 class ChatPainter(private val g: Gfx, private val scenario: Scenario, private val w: Float, private val h: Float) {
     private val s = g.skin
+    /** Language of the code shown in screenshot messages: the first teacher's. */
+    private val codeLanguage = scenario.cast.firstOrNull { it.role == "teacher" }?.let { studio.pyreels.core.model.Languages.slug(it.language ?: it.id) } ?: "text"
     private val text = g.text
 
     private val headerTop = 52f
@@ -531,7 +533,7 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         for ((i, line) in code.split('\n').withIndex()) {
             var cx = x
             val base = y + i * lh + size
-            for (tok in SyntaxHighlighter.tokens(line, "python")) {
+            for (tok in SyntaxHighlighter.tokens(line, codeLanguage)) {
                 val p = text.paint(TextKit.Face.MONO, size, SyntaxHighlighter.color(tok.kind, g.p))
                 canvas.drawText(tok.text, cx, base, p)
                 cx += p.measureText(tok.text)

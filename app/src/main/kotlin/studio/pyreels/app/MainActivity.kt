@@ -107,16 +107,19 @@ fun AppRoot(prefs: Prefs, incoming: String?, consumed: () -> Unit) {
     val safeZones by prefs.safeZones.collectAsState()
     CrashReportDialog()
     val mod = Modifier.fillMaxSize().safeDrawingPadding()
-    when (val r = nav.current) {
-        Route.Home -> HomeScreen(nav, mod)
-        is Route.Wizard -> WizardScreen(nav, r, mod)
-        is Route.Import -> ImportScreen(nav, r.text, mod)
-        is Route.Editor -> EditorScreen(nav, r.projectId, safeZones, prefs::setSafeZones, mod)
-        is Route.Preview -> PreviewScreen(nav, r.projectId, safeZones, prefs::setSafeZones, mod)
-        is Route.Export -> ExportScreen(nav, r.projectId, mod)
-        Route.Weekly -> WeeklyScreen(nav, mod)
-        Route.Series -> SeriesScreen(nav, mod)
-        Route.Settings -> SettingsScreen(nav, prefs, mod)
+    // a short cross-fade between screens (the old screen is gone as soon as the new one is ready)
+    androidx.compose.animation.Crossfade(targetState = nav.current, animationSpec = androidx.compose.animation.core.tween(160), label = "screen") { r ->
+        when (r) {
+            Route.Home -> HomeScreen(nav, mod)
+            is Route.Wizard -> WizardScreen(nav, r, mod)
+            is Route.Import -> ImportScreen(nav, r.text, mod)
+            is Route.Editor -> EditorScreen(nav, r.projectId, safeZones, prefs::setSafeZones, mod)
+            is Route.Preview -> PreviewScreen(nav, r.projectId, safeZones, prefs::setSafeZones, mod)
+            is Route.Export -> ExportScreen(nav, r.projectId, mod)
+            Route.Weekly -> WeeklyScreen(nav, mod)
+            Route.Series -> SeriesScreen(nav, mod)
+            Route.Settings -> SettingsScreen(nav, prefs, mod)
+        }
     }
 }
 

@@ -14,12 +14,12 @@ android {
 
     defaultConfig {
         applicationId = "studio.pyreels.app"
-        minSdk = 26
+        minSdk = 29 // Android 10+
         targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
         testInstrumentationRunner = "studio.pyreels.app.HiltTestRunner"
-        ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
+        ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64") }
         vectorDrawables { useSupportLibrary = true }
     }
 

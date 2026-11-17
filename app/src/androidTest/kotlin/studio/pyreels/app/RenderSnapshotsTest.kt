@@ -8,7 +8,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import studio.pyreels.app.engine.render.FrameRenderer
-import studio.pyreels.core.Resources
 import studio.pyreels.core.model.typeId
 import studio.pyreels.core.timeline.Timeline
 import studio.pyreels.core.validate.ScenarioValidator
@@ -26,8 +25,8 @@ class RenderSnapshotsTest {
     fun renderSnapshots() {
         val dir = File(context.filesDir, "snapshots").apply { deleteRecursively(); mkdirs() }
         var count = 0
-        for ((sample, prefix) in listOf("samples/02-variables.pyreels.json" to "a", "samples/03-if.pyreels.json" to "b", "samples/01-print.pyreels.json" to "c")) {
-            val s = ScenarioValidator.parse(Resources.text(sample)).scenarios.single()
+        for ((sample, prefix) in listOf("variables" to "a", "if" to "b", "print" to "c", "zig-variables" to "z")) {
+            val s = TestFixtures.scenario(sample)
             val tl = Timeline.build(s)
             val r = FrameRenderer(context, s).apply { setChapters(tl) }
             val bmp = Bitmap.createBitmap(540, 960, Bitmap.Config.ARGB_8888)
@@ -40,7 +39,7 @@ class RenderSnapshotsTest {
             for (ts in tl.scenes) {
                 val type = ts.scene.typeId()
                 val key = if (type == "chat") "chat${ts.index}" else type
-                if (prefix == "b" && type != "chat" && type != "code_type") continue
+                if ((prefix == "b" || prefix == "z") && type != "chat" && type != "code_type") continue
                 if (prefix == "c" && !(type == "chat" && (ts.scene as studio.pyreels.core.model.Scene.Chat).code != null)) continue
                 if (!seen.add(key) && type != "chat") continue
                 if (type == "chat" && seen.count { it.startsWith("chat") } > 3) continue

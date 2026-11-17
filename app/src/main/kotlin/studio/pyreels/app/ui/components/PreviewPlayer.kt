@@ -47,7 +47,7 @@ class PreviewPlayer {
                 // Everything here may race with stop() (the track can already be released): a
                 // failure only silences the preview, it must never take the app down.
                 try {
-                    val mixer = AudioMixer(video.timeline, video.voicePcm)
+                    val mixer = AudioMixer(video.timeline, video.voicePcm, studio.pyreels.core.audio.mixSettingsFor(video.scenario.meta))
                     mixer.prepare()
                     mixer.seek(fromMs * rate / 1000)
                     val f = FloatArray(2048)

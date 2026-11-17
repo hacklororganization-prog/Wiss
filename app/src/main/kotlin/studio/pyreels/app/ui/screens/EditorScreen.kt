@@ -31,6 +31,7 @@ import androidx.compose.material.icons.outlined.Fullscreen
 import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -96,7 +97,6 @@ import studio.pyreels.app.ui.components.VideoPreview
 import studio.pyreels.app.ui.components.fmt
 import studio.pyreels.app.ui.theme.LocalUi
 import studio.pyreels.core.brief.Brief
-import studio.pyreels.core.content.ContentRepository
 import studio.pyreels.core.model.Limits
 import studio.pyreels.core.model.Scenario
 import studio.pyreels.core.model.Scene
@@ -104,7 +104,8 @@ import studio.pyreels.core.model.VarBox
 import studio.pyreels.core.model.typeId
 import studio.pyreels.core.quality.QualityChecker
 import studio.pyreels.core.quality.QualityReport
-import studio.pyreels.core.templates.Templates
+import studio.pyreels.core.util.ScenarioTools
+import studio.pyreels.core.model.resolved
 import javax.inject.Inject
 
 @HiltViewModel
@@ -124,7 +125,6 @@ class EditorViewModel @Inject constructor(
     private val undo = ArrayDeque<Scenario>()
     private val redo = ArrayDeque<Scenario>()
     private var projectId = -1L
-    private var brief: Brief? = null
     private var saveJob: Job? = null
 
     fun load(id: Long) {
@@ -132,7 +132,6 @@ class EditorViewModel @Inject constructor(
         projectId = id
         viewModelScope.launch {
             val p = projects.get(id) ?: return@launch
-            brief = p.brief()
             kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) { p.scenario() }?.let { set(it, record = false) }
         }
     }
@@ -145,7 +144,8 @@ class EditorViewModel @Inject constructor(
 
     fun editScene(index: Int, s: Scene) = edit { sc -> sc.copy(scenes = sc.scenes.toMutableList().also { it[index] = s }) }
 
-    private fun set(s: Scenario, record: Boolean) {
+    private fun set(s0: Scenario, record: Boolean) {
+        val s = s0.resolved()
         scenario.value?.let { if (record) { undo.addLast(it); if (undo.size > 100) undo.removeFirst(); redo.clear() } }
         scenario.value = s
         canUndo.value = undo.isNotEmpty(); canRedo.value = redo.isNotEmpty()
@@ -168,29 +168,24 @@ class EditorViewModel @Inject constructor(
     fun delete(i: Int) = edit { s -> s.copy(scenes = s.scenes.toMutableList().apply { removeAt(i) }) }
 
     fun add(type: String) = edit { s ->
+        // new scenes start (almost) empty: nothing is pre-written for you
         val scene: Scene = when (type) {
-            "chat" -> Scene.Chat("ahmed", "سؤال جديد؟")
-            "analogy" -> Scene.Analogy(title = "تشبيه جديد", items = listOf(VarBox("x", "5")))
-            "code_type" -> Scene.CodeType(code = "print(\"مرحبا\")")
-            "run" -> Scene.Run(exec = "real", output = "")
-            "common_mistake" -> ContentRepository.errors.errors.first().let { Scene.CommonMistake(code = it.snippet, error = it.message, explain = it.explain, fix = it.fix, fixOutput = it.fixOutput, libraryId = it.id) }
-            "recap" -> Scene.Recap("تذكير بالحلقة الماضية")
-            "key_sentence" -> Scene.KeySentence("قاعدة اليوم")
-            "engage_moment" -> Scene.EngageMoment(text = "إن أفادك الدرس، تابعنا 💛")
-            "reveal" -> Scene.Reveal(answer = "?", text = "هذه الإجابة")
-            "teaser" -> Scene.Teaser("في الحلقة القادمة…")
-            else -> Scene.HookPredict(code = "print(1 + 1)")
+            "chat" -> Scene.Chat("ahmed", "…")
+            "analogy" -> Scene.Analogy(title = "…", items = listOf(VarBox("…", "…")))
+            "code_type" -> Scene.CodeType(code = "")
+            "run" -> Scene.Run(exec = "simulated", output = "")
+            "common_mistake" -> Scene.CommonMistake(code = "", error = "…", explain = "…", fix = "")
+            "recap" -> Scene.Recap("…")
+            "key_sentence" -> Scene.KeySentence("…")
+            "engage_moment" -> Scene.EngageMoment(text = "…")
+            "reveal" -> Scene.Reveal(answer = "…", text = "…")
+            "teaser" -> Scene.Teaser("…")
+            else -> Scene.HookPredict(code = "")
         }
         val list = s.scenes.toMutableList()
         val at = if (list.lastOrNull() is Scene.Teaser && type != "teaser") list.lastIndex else list.size
         list.add(at, scene)
         s.copy(scenes = list)
-    }
-
-    fun pasteLesson(text: String) = edit { s ->
-        val b = (brief ?: Brief()).copy(lessonTitle = s.meta.title, lessonId = s.meta.lesson.id, teachers = s.cast.filter { it.role == "teacher" }.map { it.id })
-        val p = Templates.fromPastedText(text, b)
-        s.copy(scenes = p.scenes, cast = p.cast)
     }
 
     fun quality(): QualityReport? {
@@ -233,16 +228,20 @@ fun EditorScreen(nav: Navigator, projectId: Long, safeZones: Boolean, onSafeZone
     val canRedo by vm.canRedo.collectAsState()
     var expanded by remember { mutableStateOf<Int?>(null) }
     var addMenu by remember { mutableStateOf(false) }
-    var paste by remember { mutableStateOf<String?>(null) }
     var report by remember { mutableStateOf<QualityReport?>(null) }
     var settings by remember { mutableStateOf(false) }
+    // "play this scene": start, end, and a counter so the same scene can be replayed
+    var sceneRange by remember { mutableStateOf<Triple<Long, Long, Int>?>(null) }
+    fun playScene(i: Int) {
+        val ts = video?.timeline?.scenes?.getOrNull(i) ?: return
+        sceneRange = Triple(ts.startMs, ts.endMs, (sceneRange?.third ?: 0) + 1)
+    }
 
     Column(modifier) {
         CalmTopBar(scenario?.meta?.title ?: "", { nav.back() }) {
             IconButton(onClick = vm::undo, enabled = canUndo) { Icon(Icons.AutoMirrored.Filled.Undo, ui.t("تراجع", "Undo")) }
             IconButton(onClick = vm::redo, enabled = canRedo) { Icon(Icons.AutoMirrored.Filled.Redo, ui.t("إعادة", "Redo")) }
             IconButton(onClick = { settings = true }) { Icon(Icons.Outlined.Palette, ui.t("إعدادات الفيديو", "Video settings")) }
-            IconButton(onClick = { paste = "" }) { Icon(Icons.Outlined.ContentPaste, ui.t("لصق نص الدرس", "Paste lesson text")) }
             IconButton(onClick = { report = vm.quality() }) { Icon(Icons.Outlined.Verified, ui.t("فحص الجودة", "Quality check")) }
             IconButton(onClick = { nav.go(Route.Preview(projectId)) }) { Icon(Icons.Outlined.Fullscreen, ui.t("معاينة كاملة", "Full preview")) }
             IconButton(onClick = { nav.go(Route.Export(projectId)) }) { Icon(Icons.Outlined.IosShare, ui.t("تصدير", "Export")) }
@@ -251,7 +250,8 @@ fun EditorScreen(nav: Navigator, projectId: Long, safeZones: Boolean, onSafeZone
         val v = video
         if (s == null || v == null) { Text(ui.t("يحمّل…", "Loading…"), Modifier.padding(16.dp)); return@Column }
         Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            VideoPreview(v, Modifier.width(170.dp), safeZones = safeZones, onSafeZones = onSafeZones)
+            VideoPreview(v, Modifier.width(170.dp), safeZones = safeZones, onSafeZones = onSafeZones,
+                requestStartMs = sceneRange?.first, stopAtMs = sceneRange?.second, requestToken = sceneRange?.third ?: 0)
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 DurationBar(v.timeline.totalMs, s.meta.targetSeconds * 1000L)
                 Text(ui.t("${s.scenes.size} مشهد · المدة ${fmt(v.timeline.totalMs)}", "${s.scenes.size} scenes · ${fmt(v.timeline.totalMs)}"), style = MaterialTheme.typography.bodySmall, color = Muted)
@@ -272,7 +272,7 @@ fun EditorScreen(nav: Navigator, projectId: Long, safeZones: Boolean, onSafeZone
                             Text(ui.t("حذف (يمكن التراجع)", "Delete (undo available)"))
                         }
                     }) {
-                        SceneCard(i, sc, s, expanded == i, { expanded = if (expanded == i) null else i }, vm)
+                        SceneCard(i, sc, s, expanded == i, { expanded = if (expanded == i) null else i }, { playScene(i) }, vm)
                     }
                 }
                 item { Spacer(Modifier.height(90.dp)) }
@@ -286,21 +286,6 @@ fun EditorScreen(nav: Navigator, projectId: Long, safeZones: Boolean, onSafeZone
                 }
             }
         }
-    }
-
-    paste?.let { t ->
-        AlertDialog(
-            onDismissRequest = { paste = null },
-            title = { Text(ui.t("لصق نص الدرس", "Paste lesson text")) },
-            text = {
-                Column {
-                    Text(ui.t("الصق شرحًا عاديًا؛ الأسئلة تصبح رسائل أحمد، والشرح رسائل المعلّم، والكود مشهد كتابة وتشغيل.", "Paste a plain explanation: questions become Ahmed's messages, sentences the teacher's, code becomes typing + run."), style = MaterialTheme.typography.bodySmall)
-                    OutlinedTextField(t, { paste = it }, Modifier.fillMaxWidth().heightIn(min = 160.dp), minLines = 6)
-                }
-            },
-            confirmButton = { TextButton(onClick = { if (t.isNotBlank()) vm.pasteLesson(t); paste = null }) { Text(ui.t("اقتراح المشاهد", "Propose scenes")) } },
-            dismissButton = { TextButton(onClick = { paste = null }) { Text(ui.t("إلغاء", "Cancel")) } },
-        )
     }
 
     if (settings) scenario?.let { sc ->
@@ -351,7 +336,19 @@ private fun VideoSettings(s: Scenario, edit: ((studio.pyreels.core.model.Meta) -
             CHAT_COLORS.forEach { (k, v) -> FilterChip(selected = m.chatColor == k, onClick = { edit { it.copy(chatColor = k) } }, label = { Text(if (ui.english) k else v) }) }
         }
         ToggleRow(ui.t("ملصق احتفال عند أول نجاح 🎉", "Celebration sticker 🎉"), m.celebrate) { v -> edit { it.copy(celebrate = v) } }
-        ProfilePicturesCard()
+        Text(ui.t("إيقاع الفيديو", "Video pace"), style = MaterialTheme.typography.titleSmall)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf("slow" to ui.t("هادئ جدًا", "Very calm"), "calm" to ui.t("هادئ", "Calm"), "normal" to ui.t("عادي", "Normal")).forEach { (k, v) ->
+                FilterChip(selected = m.pace == k, onClick = { edit { it.copy(pace = k) } }, label = { Text(v) })
+            }
+        }
+        Text(ui.t("المؤثرات الصوتية (لا موسيقى خلفية)", "Sound effects (no background music)"), style = MaterialTheme.typography.titleSmall)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf("off" to ui.t("بلا", "Off"), "soft" to ui.t("هادئة", "Soft"), "normal" to ui.t("عادية", "Normal")).forEach { (k, v) ->
+                FilterChip(selected = m.sfx == k, onClick = { edit { it.copy(sfx = k) } }, label = { Text(v) })
+            }
+        }
+        LanguagesCard()
         Spacer(Modifier.height(24.dp))
     }
 }
@@ -376,7 +373,7 @@ private fun DurationBar(totalMs: Long, targetMs: Long) {
 }
 
 @Composable
-private fun SceneCard(i: Int, sc: Scene, s: Scenario, open: Boolean, toggle: () -> Unit, vm: EditorViewModel) {
+private fun SceneCard(i: Int, sc: Scene, s: Scenario, open: Boolean, toggle: () -> Unit, onPlay: () -> Unit, vm: EditorViewModel) {
     val ui = LocalUi.current
     var drag by remember { mutableFloatStateOf(0f) }
     CalmCard(Modifier.clickable { toggle() }) {
@@ -399,6 +396,7 @@ private fun SceneCard(i: Int, sc: Scene, s: Scenario, open: Boolean, toggle: () 
                 Text("${i + 1}. ${sceneLabel(sc.typeId(), !ui.english)}" + (if (sc is Scene.Chat) " · ${s.cast.firstOrNull { it.id == sc.from }?.name ?: sc.from}" else ""), style = MaterialTheme.typography.titleSmall)
                 Text(summary(sc), style = MaterialTheme.typography.bodySmall, color = Muted, maxLines = 2)
             }
+            IconButton(onClick = onPlay) { Icon(Icons.Outlined.PlayArrow, ui.t("شغّل هذا المشهد", "Play this scene"), tint = MaterialTheme.colorScheme.primary) }
             IconButton(onClick = { vm.move(i, i - 1) }) { Icon(Icons.Outlined.KeyboardArrowUp, ui.t("لأعلى", "Up")) }
             IconButton(onClick = { vm.move(i, i + 1) }) { Icon(Icons.Outlined.KeyboardArrowDown, ui.t("لأسفل", "Down")) }
         }
@@ -449,11 +447,10 @@ private fun Field(label: String, value: String, mono: Boolean = false, onChange:
 @Composable
 private fun SceneFields(i: Int, sc: Scene, s: Scenario, vm: EditorViewModel) {
     val ui = LocalUi.current
-    var libraryOpen by remember { mutableStateOf(false) }
     val set: (Scene) -> Unit = { vm.editScene(i, it) }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         when (sc) {
-            is Scene.HookPredict -> { Field(ui.t("كود الهوك", "Hook code"), sc.code, true) { set(sc.copy(code = it)) } }
+            is Scene.HookPredict -> { LangField(sc.language) { set(sc.copy(language = it)) }; Field(ui.t("كود الهوك", "Hook code"), sc.code, true) { set(sc.copy(code = it)) } }
             is Scene.Recap -> Field(ui.t("النص", "Text"), sc.text) { set(sc.copy(text = it)) }
             is Scene.KeySentence -> Field(ui.t("جملة اليوم (≤ 10 كلمات)", "Sentence (≤ 10 words)"), sc.text) { set(sc.copy(text = it)) }
             is Scene.Teaser -> { Field(ui.t("التشويق", "Teaser"), sc.text) { set(sc.copy(text = it)) }; Field(ui.t("التحدّي", "Challenge"), sc.challenge ?: "") { set(sc.copy(challenge = it.ifBlank { null })) } }
@@ -470,17 +467,19 @@ private fun SceneFields(i: Int, sc: Scene, s: Scenario, vm: EditorViewModel) {
                 Field(ui.t("نص", "Text"), sc.text ?: "") { set(sc.copy(text = it.ifBlank { null })) }
             }
             is Scene.CodeType -> {
+                LangField(sc.language) { set(sc.copy(language = it)) }
                 Field(ui.t("الكود", "Code"), sc.code, true) { set(sc.copy(code = it)) }
                 Field(ui.t("أسطر التركيز (مثل 1,2)", "Focus lines (e.g. 1,2)"), sc.focusLines.joinToString(",")) { t -> set(sc.copy(focusLines = t.split(',').mapNotNull { it.trim().toIntOrNull() }.take(4))) }
                 ToggleRow(ui.t("خطأ كتابة واقعي ثم تصحيح", "Realistic typo then fix"), sc.typo) { set(sc.copy(typo = it)) }
             }
             is Scene.Run -> {
-                ToggleRow(ui.t("تنفيذ حقيقي (بايثون)", "Real execution (Python)"), sc.exec == "real") { set(sc.copy(exec = if (it) "real" else "simulated")) }
+                LangField(sc.language) { set(sc.copy(language = it)) }
+                ToggleRow(ui.t("تنفيذ حقيقي (متاح لبايثون فقط)", "Real execution (Python only)"), sc.exec == "real") { set(sc.copy(exec = if (it) "real" else "simulated")) }
                 Field(ui.t("المخرجات المتوقعة", "Expected output"), sc.output, true) { set(sc.copy(output = it)) }
                 Field(ui.t("خطأ (اختياري)", "Error (optional)"), sc.error ?: "", true) { set(sc.copy(error = it.ifBlank { null })) }
                 if (sc.trace.isEmpty()) TextButton(onClick = {
                     val code = sc.code ?: s.scenes.take(i).filterIsInstance<Scene.CodeType>().lastOrNull()?.code ?: ""
-                    set(sc.copy(trace = Templates.simpleTrace(code)))
+                    set(sc.copy(trace = ScenarioTools.simpleTrace(code)))
                 }) { Text(ui.t("توليد تتبّع بسيط", "Generate a simple trace")) }
             }
             is Scene.EngageMoment -> {
@@ -490,7 +489,7 @@ private fun SceneFields(i: Int, sc: Scene, s: Scenario, vm: EditorViewModel) {
             }
             is Scene.Reveal -> { Field(ui.t("الإجابة", "Answer"), sc.answer) { set(sc.copy(answer = it)) }; Field(ui.t("الشرح", "Explanation"), sc.text) { set(sc.copy(text = it)) } }
             is Scene.CommonMistake -> {
-                OutlinedButton(onClick = { libraryOpen = true }) { Text(ui.t("اختر من مكتبة الأخطاء", "Pick from errors library")) }
+                LangField(sc.language) { set(sc.copy(language = it)) }
                 Field(ui.t("الكود الخاطئ", "Faulty code"), sc.code, true) { set(sc.copy(code = it)) }
                 Field(ui.t("رسالة الخطأ", "Error message"), sc.error, true) { set(sc.copy(error = it)) }
                 Field(ui.t("شرح هادئ", "Calm explanation"), sc.explain) { set(sc.copy(explain = it)) }
@@ -506,26 +505,13 @@ private fun SceneFields(i: Int, sc: Scene, s: Scenario, vm: EditorViewModel) {
             })
         }
     }
-    if (libraryOpen && sc is Scene.CommonMistake) {
-        val list = ContentRepository.errors.relevant(s.meta.lesson.id, ContentRepository.curriculum, max = 60).ifEmpty { ContentRepository.errors.errors }
-        AlertDialog(
-            onDismissRequest = { libraryOpen = false },
-            title = { Text(ui.t("مكتبة الأخطاء الشائعة", "Common errors library")) },
-            text = {
-                LazyColumn(Modifier.heightIn(max = 420.dp)) {
-                    itemsIndexed(list) { _, e ->
-                        Column(Modifier.fillMaxWidth().clickable {
-                            set(sc.copy(code = e.snippet, error = e.message, explain = e.explain, fix = e.fix, fixOutput = e.fixOutput, libraryId = e.id)); libraryOpen = false
-                        }.padding(vertical = 8.dp)) {
-                            Text(e.message, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall)
-                            Text(e.explain, style = MaterialTheme.typography.bodySmall, color = Muted)
-                        }
-                    }
-                }
-            },
-            confirmButton = { TextButton(onClick = { libraryOpen = false }) { Text(ui.t("إغلاق", "Close")) } },
-        )
-    }
+}
+
+/** The code language of a scene (any language; blank = the first teacher's). */
+@Composable
+private fun LangField(value: String, onChange: (String) -> Unit) {
+    val ui = LocalUi.current
+    Field(ui.t("لغة الكود (أي لغة، مثل cpp)", "Code language (any, e.g. cpp)"), value) { onChange(studio.pyreels.core.model.Languages.slug(it).takeIf { _ -> it.isNotBlank() } ?: "") }
 }
 
 @Composable

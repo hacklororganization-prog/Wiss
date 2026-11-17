@@ -45,7 +45,7 @@ class AudioTest {
 
     @Test
     fun mixIsNormalisedAndNeverClips() {
-        val s = ScenarioValidator.parse(Resources.text("samples/02-variables.pyreels.json")).scenarios.single()
+        val s = ScenarioValidator.parse(Fixtures.text("variables")).scenarios.single()
         val tl = Timeline.build(s)
         val voice = tl.voices.associate { v -> v.sceneIndex to FloatArray((v.durationMs * 48).toInt()) { (0.4 * sin(2 * PI * 220 * it / 48000)).toFloat() } }
         val mixer = AudioMixer(tl, voice, MixSettings())
@@ -68,7 +68,7 @@ class AudioTest {
     @Test
     fun effectsOnlyMixKeepsItsSoftLevel() {
         // no voice: the sparse sound effects must not be boosted to the voice loudness
-        val s = ScenarioValidator.parse(Resources.text("samples/02-variables.pyreels.json")).scenarios.single()
+        val s = ScenarioValidator.parse(Fixtures.text("variables")).scenarios.single()
         val tl = Timeline.build(s)
         val mixer = AudioMixer(tl, emptyMap(), MixSettings())
         val stats = mixer.prepare()
@@ -81,7 +81,7 @@ class AudioTest {
 
     @Test
     fun typingTapsAreSparse() {
-        val s = ScenarioValidator.parse(Resources.text("samples/02-variables.pyreels.json")).scenarios.single()
+        val s = ScenarioValidator.parse(Fixtures.text("variables")).scenarios.single()
         val taps = Timeline.build(s).sfx.filter { it.id == SfxIds.KEY_TAP }.map { it.timeMs }.sorted()
         for (k in 1 until taps.size) assertTrue(taps[k] - taps[k - 1] >= 60, "taps too close at ${taps[k]}")
     }

@@ -7,8 +7,10 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonPrimitive
 import studio.pyreels.core.Resources
+import studio.pyreels.core.model.Languages
 import studio.pyreels.core.model.Limits
 import studio.pyreels.core.model.Scenario
+import studio.pyreels.core.model.resolved
 import studio.pyreels.core.model.ScenarioBatch
 import studio.pyreels.core.model.Scene
 import studio.pyreels.core.model.typeId
@@ -82,8 +84,8 @@ object ScenarioValidator {
         if (problems.any { it.severity == Severity.ERROR }) return ParseResult(emptyList(), problems, isBatch)
 
         val scenarios = try {
-            if (isBatch) json.decodeFromJsonElement(ScenarioBatch.serializer(), obj).batch
-            else listOf(json.decodeFromJsonElement(Scenario.serializer(), obj))
+            (if (isBatch) json.decodeFromJsonElement(ScenarioBatch.serializer(), obj).batch
+            else listOf(json.decodeFromJsonElement(Scenario.serializer(), obj))).map { it.resolved() }
         } catch (e: Exception) {
             problems += Problem(Severity.ERROR, "decode", "تعذّر قراءة الملف: ${e.message?.take(160)}")
             return ParseResult(emptyList(), problems, isBatch)
@@ -255,8 +257,8 @@ object ScenarioValidator {
                         if (t.line > n) p += Problem(Severity.ERROR, "trace.line", "خطوة التتبّع ${k + 1} تشير للسطر ${t.line} والكود فيه $n أسطر فقط.", where(i, sc, "trace"), i, "trace")
                     }
                 }
-                if (sc.exec == "real" && sc.language != "python") {
-                    p += Problem(Severity.WARNING, "run.exec", "التنفيذ الحقيقي متاح لبايثون فقط؛ سيُعرض هذا المشهد بشكل محاكاة.", where(i, sc, "exec"), i, "exec")
+                if (sc.exec == "real" && !Languages.isPython(sc.language)) {
+                    p += Problem(Severity.WARNING, "run.exec", "التنفيذ الحقيقي متاح لبايثون فقط؛ سيُعرض هذا المشهد بالناتج والتتبّع المكتوبين (محاكاة).", where(i, sc, "exec"), i, "exec")
                 }
                 if (sc.output.lines().size > Limits.MAX_OUTPUT_LINES) p += Problem(Severity.WARNING, "run.output", "المخرجات طويلة؛ ستظهر آخر ${Limits.MAX_OUTPUT_LINES} أسطر فقط.", where(i, sc, "output"), i, "output")
             }

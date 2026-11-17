@@ -40,7 +40,6 @@ object AutoRepair {
         "teaser" to setOf("text", "challenge"),
     ).mapValues { it.value + setOf("type", "durationMs", "say", "sfx", "spoken", "speakCode", "transition") }
 
-    private val langAliases = mapOf("c++" to "cpp", "js" to "javascript", "py" to "python", "c#" to "csharp", "ts" to "typescript", "golang" to "go")
 
     fun repair(text: String): Result {
         val applied = ArrayList<String>()
@@ -65,7 +64,7 @@ object AutoRepair {
         (m["meta"] as? JsonObject)?.let { meta ->
             val mm = trimAll(meta).toMutableMap()
             (mm["theme"] as? JsonPrimitive)?.content?.let { if (it !in Themes.ALL) { mm["theme"] = JsonPrimitive(Themes.DARK); applied += "المظهر غير معروف → calm-dark." } }
-            (mm["ambient"] as? JsonPrimitive)?.content?.let { if (it !in AmbientMoods.ALL) { mm["ambient"] = JsonPrimitive("calm_pad"); applied += "خلفية صوتية غير معروفة → calm_pad." } }
+            (mm["ambient"] as? JsonPrimitive)?.content?.let { if (it !in AmbientMoods.ALL) { mm["ambient"] = JsonPrimitive("none"); applied += "خلفية صوتية غير معروفة → none." } }
             (mm["targetSeconds"] as? JsonPrimitive)?.content?.toDoubleOrNull()?.let { v ->
                 val c = v.toInt().coerceIn(30, 180)
                 if (c.toDouble() != v || mm["targetSeconds"].toString().contains('"')) { mm["targetSeconds"] = JsonPrimitive(c); applied += "المدة المستهدفة ضُبطت إلى $c ثانية." }
@@ -86,7 +85,8 @@ object AutoRepair {
             val list = cast.map { c ->
                 val o = (c as? JsonObject)?.let { trimAll(it) } ?: return@map c
                 val id = (o["id"] as? JsonPrimitive)?.content
-                if (id != null && id != normId(id)) { applied += "معرّف الشخصية «$id» → «${normId(id)}»."; JsonObject(o + ("id" to JsonPrimitive(normId(id)))) } else o
+                val withId = if (id != null && id != normId(id)) { applied += "معرّف الشخصية «$id» → «${normId(id)}»."; JsonObject(o + ("id" to JsonPrimitive(normId(id)))) } else o
+                (withId["language"] as? JsonPrimitive)?.content?.let { l -> val sl = normId(l); if (sl != l) JsonObject(withId + ("language" to JsonPrimitive(sl))) else withId } ?: withId
             }.toMutableList()
             if (list.none { (it as? JsonObject)?.get("id") == JsonPrimitive("ahmed") }) {
                 list.add(0, JsonObject(mapOf("id" to JsonPrimitive("ahmed"), "role" to JsonPrimitive("learner"), "name" to JsonPrimitive("أحمد"))))
@@ -104,8 +104,7 @@ object AutoRepair {
         return JsonObject(m)
     }
 
-    private fun normId(id: String) = id.trim().lowercase().replace(' ', '_').replace("c++", "cpp").replace("c#", "csharp")
-        .let { if (it == "js") "javascript" else it }
+    private fun normId(id: String) = studio.pyreels.core.model.Languages.slug(id)
 
     private fun repairScene(o: JsonObject, applied: MutableList<String>): JsonObject {
         val m = o.toMutableMap()
@@ -114,7 +113,7 @@ object AutoRepair {
             typeAliases[type]?.let { m["type"] = JsonPrimitive(it); applied += "نوع المشهد «$type» → «$it»." }
         }
         (m["sfx"] as? JsonPrimitive)?.content?.let { if (it !in SfxIds.ALL) { m.remove("sfx"); applied += "مؤثر صوتي غير معروف «$it» → الافتراضي." } }
-        (m["language"] as? JsonPrimitive)?.content?.let { l -> langAliases[l.lowercase()]?.let { m["language"] = JsonPrimitive(it) } ?: if (l != l.lowercase()) m["language"] = JsonPrimitive(l.lowercase()) else Unit }
+        (m["language"] as? JsonPrimitive)?.content?.let { l -> val id = studio.pyreels.core.model.Languages.slug(l); if (id != l) m["language"] = JsonPrimitive(id) }
         (m["from"] as? JsonPrimitive)?.content?.let { if (it != normId(it)) m["from"] = JsonPrimitive(normId(it)) }
         val t = (m["type"] as? JsonPrimitive)?.content
         sceneKeys[t]?.let { allowed ->

@@ -100,19 +100,6 @@ object QualityChecker {
             }
         }
 
-        // Silent gaps (no voice and no SFX) when there is no ambient bed
-        if (false) {
-            val audio = (timeline.sfx.map { it.timeMs to it.timeMs + 300 } + timeline.voices.map { it.startMs to it.startMs + it.durationMs }).sortedBy { it.first }
-            var cursor = 0L
-            for ((s, e) in audio) {
-                if (s - cursor > Limits.MAX_SILENT_GAP_MS) {
-                    val ts = timeline.sceneAt(cursor)
-                    p += Problem(Severity.INFO, "q.silence", "صمت تام ${fmt((s - cursor) / 1000.0)} ث. فعّل الخلفية الصوتية الهادئة.", "المشهد ${ts.index + 1}", ts.index)
-                }
-                cursor = maxOf(cursor, e)
-            }
-        }
-
         // Simultaneous moving elements (sampled at 5 fps)
         var worst = 0; var worstAt = 0L
         var t = 0L

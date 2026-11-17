@@ -14,7 +14,17 @@ object SyntaxHighlighter {
         "cpp" to setOf("int", "double", "float", "char", "bool", "void", "return", "if", "else", "for", "while", "true", "false", "nullptr", "include", "using", "namespace", "std", "cout", "cin", "endl", "auto", "const", "class", "struct", "new", "delete"),
         "javascript" to setOf("let", "const", "var", "function", "return", "if", "else", "for", "while", "true", "false", "null", "undefined", "new", "class", "this", "console", "of", "in", "=>", "async", "await"),
     )
-    private val generic = setOf("fun", "val", "var", "let", "const", "func", "fn", "return", "if", "else", "for", "while", "true", "false", "null", "nil", "class", "struct", "package", "import", "public", "static", "void", "int", "mut", "use", "echo")
+    /** Any other language (the app knows no language list): the common keywords of the major families. */
+    private val generic = setOf(
+        "fun", "val", "var", "let", "const", "func", "fn", "def", "function", "return", "if", "else", "elif", "elsif", "for", "while", "do", "end", "then",
+        "switch", "case", "break", "continue", "try", "catch", "except", "finally", "throw", "raise", "with", "as", "from", "in", "is", "not", "and", "or",
+        "true", "false", "True", "False", "null", "nil", "None", "undefined", "class", "struct", "enum", "interface", "trait", "impl", "package", "import",
+        "using", "include", "public", "private", "static", "final", "void", "int", "long", "float", "double", "bool", "string", "char", "mut", "use",
+        "new", "this", "self", "super", "async", "await", "yield", "lambda", "echo", "print", "println",
+    )
+    private val hashComment = setOf("python", "ruby", "bash", "r", "perl", "julia", "elixir", "nim", "powershell", "yaml", "makefile", "toml")
+    private val dashComment = setOf("lua", "sql", "haskell", "ada", "elm")
+    private val cLike = setOf("c", "cpp", "objc", "csharp")
 
     private val cache = object : LinkedHashMap<Pair<String, String>, List<Token>>(128, 0.75f, true) {
         override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Pair<String, String>, List<Token>>?) = size > 512
@@ -25,17 +35,17 @@ object SyntaxHighlighter {
     }
 
     private fun tokenize(line: String, language: String): List<Token> {
-        val kw = keywords[language] ?: generic
+        val kw = keywords[if (language in cLike) "cpp" else if (language == "typescript") "javascript" else language] ?: generic
         val out = ArrayList<Token>()
-        val commentStart = if (language == "python") "#" else "//"
+        val commentStart = when (language) { in hashComment -> "#"; in dashComment -> "--"; else -> "//" }
         var i = 0
         val buf = StringBuilder()
         fun flush() { if (buf.isNotEmpty()) { out += Token(buf.toString(), Kind.TEXT); buf.setLength(0) } }
         while (i < line.length) {
             val c = line[i]
             when {
-                line.startsWith(commentStart, i) || (language == "cpp" && c == '#' && line.trimStart().startsWith("#")) -> {
-                    flush(); out += Token(line.substring(i), if (c == '#' && language == "cpp") Kind.KEYWORD else Kind.COMMENT); i = line.length
+                line.startsWith(commentStart, i) || (language in cLike && c == '#' && line.trimStart().startsWith("#")) -> {
+                    flush(); out += Token(line.substring(i), if (c == '#' && language in cLike) Kind.KEYWORD else Kind.COMMENT); i = line.length
                 }
                 c == '"' || c == '\'' || c == '`' -> {
                     flush()

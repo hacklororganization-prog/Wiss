@@ -31,7 +31,9 @@ Unknown fields are ignored with a **warning** (forward compatibility); the impor
 
 ### `cast`
 
-`ahmed` (role `learner`) is mandatory and unique, plus 1–4 teachers (role `teacher`, `language` = `python`, `java`, `cpp`, `javascript`, `kotlin`, `csharp`, `go`, `rust`, `php`, … ). Optional `voice: {pitch, rate, locale}` overrides the persona's TTS mapping.
+`ahmed` (role `learner`) is mandatory and unique, plus 1–4 teachers (role `teacher`). A teacher is **any** programming language the creator chose: `id` = a short lowercase id (`cpp`, `zig`, …), `name` = how it is shown, `language` = the same id. Optional `voice: {pitch, rate, locale}` overrides the generated TTS mapping.
+
+A scene's `language` (code scenes) is any language id; when it is omitted it means the first teacher's language. `meta.pace` (`slow` / `calm` / `normal`) and `meta.sfx` (`off` / `soft` / `normal`) are creator settings with calm defaults.
 
 ## Scenes
 
@@ -73,7 +75,3 @@ Common optional fields: `say` (TTS + karaoke), `sfx` (override the default sound
 
 Every problem points at the exact place in Arabic, e.g. `المشهد 7 (chat) ← النص (text): النص طويل جدًا (150 حرفًا، الحد 136).`
 Errors block import; warnings and tips do not. The importer offers **safe auto-repair** (trim, aliases such as `"message"` → `chat`, unknown SFX → default, unknown fields removed, structural reordering) and a **repair prompt** file for the AI.
-
-## Samples
-
-`core/src/main/resources/pyreels/samples/`: `01-print` (1 teacher), `02-variables` (2), `03-if` (2, light theme), `04-for-loop` (3), `05-functions` (4) and `weekly-batch.pyreels.json` (7 linked episodes).

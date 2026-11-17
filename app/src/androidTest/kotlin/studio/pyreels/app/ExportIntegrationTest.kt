@@ -9,7 +9,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import studio.pyreels.app.engine.PreparedVideo
 import studio.pyreels.app.engine.export.VideoExporter
-import studio.pyreels.core.Resources
 import studio.pyreels.core.model.Limits
 import studio.pyreels.core.timeline.Timeline
 import studio.pyreels.core.validate.ScenarioValidator
@@ -21,13 +20,13 @@ class ExportIntegrationTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     private fun video(sample: String): PreparedVideo {
-        val s = ScenarioValidator.parse(Resources.text(sample)).scenarios.single()
+        val s = TestFixtures.scenario(sample)
         return PreparedVideo(s, Timeline.build(s), emptyMap(), emptyList())
     }
 
     @Test
     fun exportsVerifiedClip() = runBlocking {
-        val v = video("samples/02-variables.pyreels.json")
+        val v = video("variables")
         val out = File(context.cacheDir, "it_clip.mp4")
         // first 8 s (hook + recap + chat): long enough to cover a stage transition, short enough for emulators
         val result = VideoExporter(context).export(v, out, VideoExporter.Options(ranges = listOf(0L until 8_000L))) { }
@@ -41,8 +40,16 @@ class ExportIntegrationTest {
     }
 
     @Test
+    fun exportsClipInAnUnknownLanguage() = runBlocking {
+        val v = video("zig-variables")
+        val out = File(context.cacheDir, "it_zig.mp4")
+        val r = VideoExporter(context).export(v, out, VideoExporter.Options(ranges = listOf(0L until 6_000L))) { }
+        assertTrue(r.problems.toString(), r.ok)
+    }
+
+    @Test
     fun exportsTeaserRanges() = runBlocking {
-        val v = video("samples/04-for-loop.pyreels.json")
+        val v = video("for-loop")
         val ranges = studio.pyreels.core.publish.PublishPack.teaserWindow(v.timeline)
         val out = File(context.cacheDir, "it_teaser.mp4")
         val r = VideoExporter(context).export(v, out, VideoExporter.Options(ranges = ranges)) { }

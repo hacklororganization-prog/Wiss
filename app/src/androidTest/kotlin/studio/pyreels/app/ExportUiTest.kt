@@ -15,6 +15,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
 /**
  * The export path through the real UI: sample → editor → export screen → "Export video" starts the
@@ -24,6 +25,8 @@ import org.junit.Test
 class ExportUiTest {
     @get:Rule(order = 0) val hilt = HiltAndroidRule(this)
     @get:Rule(order = 1) val compose = createAndroidComposeRule<MainActivity>()
+
+    @Inject lateinit var projects: studio.pyreels.app.data.ProjectRepository
 
     @Before fun setUp() {
         hilt.inject()
@@ -38,10 +41,9 @@ class ExportUiTest {
 
     @Test
     fun exportStartsAndCancelsWithoutCrash() {
-        compose.onNodeWithText("أمثلة جاهزة").performScrollTo()
-        compose.onNodeWithText("print").performClick()
-        compose.waitUntil(15_000) { compose.onAllNodes(hasContentDescription("تصدير")).fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithContentDescription("تصدير").performClick()
+        kotlinx.coroutines.runBlocking { projects.create(TestFixtures.scenario("zig-variables"), null) }
+        waitFor("تصدير ونشر")
+        compose.onNodeWithText("تصدير ونشر").performClick()
         waitFor("تصدير ونشر")
         waitFor("تصدير الفيديو")
         compose.onNodeWithText("تصدير الفيديو").performScrollTo().performClick()

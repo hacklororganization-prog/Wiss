@@ -6,7 +6,11 @@ import studio.pyreels.core.model.Limits
 /** Answers of the setup wizard («إعداد الدرس»). Stored with the project and inside presets. */
 @Serializable
 data class Brief(
-    val teachers: List<String> = listOf("python"),
+    /** Teacher ids (one per language the creator added). */
+    val teachers: List<String> = emptyList(),
+    /** Display names and optional personality notes of the teachers, by id. */
+    val teacherNames: Map<String, String> = emptyMap(),
+    val teacherNotes: Map<String, String> = emptyMap(),
     val lessonId: String? = null,
     val lessonTitle: String = "",
     val level: String = "beginner",
@@ -30,10 +34,13 @@ data class Brief(
     val notes: String = "",
 ) {
     fun normalized(): Brief = copy(
-        teachers = teachers.distinct().take(Limits.MAX_TEACHERS).ifEmpty { listOf("python") },
+        teachers = teachers.distinct().take(Limits.MAX_TEACHERS),
         humor = humor.coerceIn(0, 5),
         targetSeconds = targetSeconds.coerceIn(Limits.MIN_TARGET_SECONDS, Limits.HARD_CAP_SECONDS),
     )
+
+    /** Display name of a teacher id. */
+    fun nameOf(id: String) = teacherNames[id]?.takeIf { it.isNotBlank() } ?: id
 
     companion object {
         val METHODS = linkedMapOf(
@@ -49,25 +56,14 @@ data class Brief(
     }
 }
 
-/** Saved style preset (section 11.7). The lesson topic is the only thing left to choose. */
+/** A style the creator saved (nothing is built in): all answers of the wizard except the topic. */
 @Serializable
 data class StylePreset(
     val id: String,
     val name: String,
     val brief: Brief,
     val builtIn: Boolean = false,
-) {
-    companion object {
-        val DEFAULTS = listOf(
-            StylePreset("calm", "دروس هادئة", Brief(teachers = listOf("python"), tone = "calm", humor = 1, methods = listOf("analogy", "visual_trace")), true),
-            StylePreset("funny", "دروس مضحكة", Brief(teachers = listOf("python", "javascript"), tone = "funny", humor = 4, methods = listOf("analogy", "mistake_fixing")), true),
-            StylePreset(
-                "compare", "مقارنة اللغات",
-                Brief(teachers = listOf("python", "java", "cpp"), tone = "entertaining", humor = 3, methods = listOf("comparison", "visual_trace")), true,
-            ),
-        )
-    }
-}
+)
 
 /** One episode in the local series history (section 11.1). */
 @Serializable
