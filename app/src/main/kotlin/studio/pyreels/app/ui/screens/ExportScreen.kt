@@ -201,12 +201,11 @@ fun ExportScreen(nav: Navigator, projectId: Long, modifier: Modifier, vm: Export
             if (report?.canExport == false) Text(ui.t("أصلح الأخطاء (✖) أولًا.", "Fix the errors (✖) first."), color = MaterialTheme.colorScheme.error)
             var stateTick by remember { mutableStateOf(0) }
             val plan = remember(job?.state, job?.message, stateTick) { studio.pyreels.app.engine.export.ExportState.current(context) }
-            if (plan.encodeSafe > 0 || plan.noPython || plan.noVoice) CalmCard {
+            if (plan.encodeSafe >= 2 || plan.noPython || plan.noVoice) CalmCard {
                 Text(ui.t("وضع التصدير الآمن مفعّل على هذا الجهاز", "Safe export mode is on for this device"), style = MaterialTheme.typography.titleSmall)
                 Text(
                     ui.t("توقّف تصدير سابق فجأة، فصار التطبيق يتجنب ما سبّب ذلك: ", "An earlier export stopped abruptly, so the app now avoids what caused it: ") +
                         listOfNotNull(
-                            if (plan.encodeSafe == 1) ui.t("ترميز أبطأ وأكثر توافقًا", "slower, more compatible encoding") else null,
                             if (plan.encodeSafe >= 2) ui.t("ترميز آمن بدقة 720×1280", "safe 720×1280 encoding") else null,
                             if (plan.noPython) ui.t("بلا تشغيل بايثون الحقيقي", "no real Python run") else null,
                             if (plan.noVoice) ui.t("بلا تعليق صوتي", "no voice-over") else null,

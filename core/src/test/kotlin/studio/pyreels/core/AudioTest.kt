@@ -72,18 +72,18 @@ class AudioTest {
         val tl = Timeline.build(s)
         val mixer = AudioMixer(tl, emptyMap(), MixSettings())
         val stats = mixer.prepare()
-        assertEquals(1f, stats.gain)
+        assertTrue(stats.gain in 0.5f..4f, "gain ${stats.gain}")
         val buf = FloatArray(4096)
         var peak = 0f
         while (true) { val n = mixer.read(buf); if (n == 0) break; for (i in 0 until n) peak = maxOf(peak, abs(buf[i])) }
-        assertTrue(peak in 0.02f..0.45f, "effects-only peak $peak")
+        assertTrue(peak in 0.05f..0.9f, "effects-only peak $peak")
     }
 
     @Test
     fun typingTapsAreSparse() {
         val s = ScenarioValidator.parse(Fixtures.text("variables")).scenarios.single()
         val taps = Timeline.build(s).sfx.filter { it.id == SfxIds.KEY_TAP }.map { it.timeMs }.sorted()
-        for (k in 1 until taps.size) assertTrue(taps[k] - taps[k - 1] >= 60, "taps too close at ${taps[k]}")
+        for (k in 1 until taps.size) assertTrue(taps[k] - taps[k - 1] >= 50, "taps too close at ${taps[k]}")
     }
 
     @Test

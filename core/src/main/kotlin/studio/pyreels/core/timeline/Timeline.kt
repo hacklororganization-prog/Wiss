@@ -114,6 +114,16 @@ class Timeline private constructor(
                     val appear = s + typingMs
                     val outgoing = sc.from == "ahmed"
                     sfx += SfxCue(appear, sc.sfx ?: if (outgoing) SfxIds.MSG_SEND else SfxIds.MSG_RECV, 0.8f, i)
+                    if (outgoing) {
+                        // Ahmed types his message letter by letter in the field: soft key taps follow the letters
+                        val from = s + 150; val span = max(1L, appear - s - 250)
+                        val n = sc.text.length.coerceAtLeast(1)
+                        var last = Long.MIN_VALUE
+                        for (c in 0 until n) {
+                            val at = from + span * c / n
+                            if (at - last >= 70 && at < appear - 60) { sfx += SfxCue(at, SfxIds.KEY_TAP, 0.45f, i * 733 + c); last = at }
+                        }
+                    }
                     if (sc.reactions.isNotEmpty()) sfx += SfxCue(appear + 900, SfxIds.HEART_PULSE, 0.5f, i)
                     messages += PlannedMessage(msgId++, i, sc.from, MessageKind.TEXT, sc.text, sc.code, s, appear, sc.reactions, sc.challenge, voice = voice, codeScreenshot = sc.codeStyle == "screenshot")
                     texts += TextCue(appear, s + d, sc.from, sc.text)
@@ -143,11 +153,11 @@ class Timeline private constructor(
                     val plan = typingPlan(sc.code, sc.typing, sc.typo, s + 350, s + d - 1_000, sc.focusLines, sc.language, i)
                     typing[i] = plan
                     var k = 0
-                    // one soft tap for every third key, never closer than 90 ms: comfortable, not busy
+                    // a soft tap for each key (never closer than 55 ms): a real keyboard feel, not a buzz
                     var lastTap = Long.MIN_VALUE
                     while (k < plan.times.size) {
-                        if (plan.times[k] - lastTap >= 90) { sfx += SfxCue(plan.times[k], SfxIds.KEY_TAP, 0.7f, i * 1009 + k); lastTap = plan.times[k] }
-                        k += 3
+                        if (plan.times[k] - lastTap >= 55) { sfx += SfxCue(plan.times[k], SfxIds.KEY_TAP, 0.65f, i * 1009 + k); lastTap = plan.times[k] }
+                        k++
                     }
                     lastCode = sc.code; lastLang = sc.language
                     sc.caption?.let { texts += TextCue(s + 300, s + d, teacher, it) }

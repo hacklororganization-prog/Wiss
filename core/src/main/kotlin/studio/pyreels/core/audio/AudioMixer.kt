@@ -26,7 +26,7 @@ data class MixSettings(
 
 /** Mix settings for a scenario: only the sound-effect level is user-selectable (there is no music bed). */
 fun mixSettingsFor(meta: studio.pyreels.core.model.Meta): MixSettings = MixSettings(
-    sfxGain = when (meta.sfx) { "off" -> 0f; "normal" -> 1.15f; else -> 0.8f },
+    sfxGain = when (meta.sfx) { "off" -> 0f; "normal" -> 1.3f; else -> 1.0f },
 )
 
 /**
@@ -85,17 +85,20 @@ class AudioMixer(
         // Without a voice the soundtrack is only sparse sound effects. Normalising those to the
         // voice loudness would boost every click by up to 12 dB, so they keep their designed
         // (soft) level and are not measured at all.
-        if (voices.isEmpty() || !settings.normalize) {
+        if (!settings.normalize) {
             normGain = 1f
             seek(0)
             return MixStats(-99.0, settings.targetLufs, normGain)
         }
+        // With a voice: the voice loudness target. Effects only: a lower target (-20 LUFS), so the
+        // video is clearly audible on a phone without the effects becoming loud.
+        val target = if (voices.isEmpty()) -20.0 else settings.targetLufs
         val lufs = measureLoudness()
         normGain = if (lufs > -70) {
-            10.0.pow((settings.targetLufs - lufs) / 20).toFloat().coerceIn(0.5f, 2.5f)
+            10.0.pow((target - lufs) / 20).toFloat().coerceIn(0.5f, if (voices.isEmpty()) 4f else 2.5f)
         } else 1f
         seek(0)
-        return MixStats(lufs, settings.targetLufs, normGain)
+        return MixStats(lufs, target, normGain)
     }
 
     fun seek(sample: Long) { position = sample.coerceIn(0, totalSamples); resetState() }

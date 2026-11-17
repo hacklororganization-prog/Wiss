@@ -44,14 +44,13 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.11" }
       - uses: gradle/actions/setup-gradle@v4
-      - name: Assemble debug + release
-        run: ./gradlew --no-daemon :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest
+      - name: Assemble release APK
+        run: ./gradlew --no-daemon :app:assembleRelease
       - uses: actions/upload-artifact@v4
         with:
           name: pyreels-studio-apk
           path: |
             app/build/outputs/apk/release/*.apk
-            app/build/outputs/apk/debug/*.apk
       - name: Publish the APK as a GitHub release (direct download)
         if: github.event_name == 'push'
         env:
@@ -62,14 +61,12 @@ jobs:
           gh release view latest-apk >/dev/null 2>&1 || gh release create latest-apk --prerelease --target "${{ github.sha }}" --title "PyReels Studio - latest build" --notes "first"
           gh release upload latest-apk PyReelsStudio.apk --clobber
           gh release edit latest-apk --notes "Install PyReelsStudio.apk (Android 10 or newer). Built from commit ${{ github.sha }}."
-      - uses: actions/upload-artifact@v4
-        with:
-          name: android-test-apk
-          path: app/build/outputs/apk/androidTest/debug/*.apk
 
   instrumented:
     # Android 10 (minSdk), 12 (the creator's phone) and 14 (latest behaviour changes)
     name: Instrumented tests (Android ${{ matrix.api }})
+    # heavy (3 emulators, ~30 min): only when started by hand from the Actions tab
+    if: github.event_name == 'workflow_dispatch'
     needs: build-apk
     runs-on: ubuntu-latest
     timeout-minutes: 80

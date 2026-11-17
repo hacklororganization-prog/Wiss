@@ -118,7 +118,8 @@ class ExportService : Service() {
         // If the previous export process died (native crash, killed…), avoid what it was doing: real
         // Python, the TTS voice, or the GPU/encoder path (CPU canvas, then 720x1280). Learned per device.
         val plan = ExportState.begin(this)
-        val safeLevel = plan.encodeSafe
+        // the CPU-canvas path (level 1) is the default: it is the one that works on every phone tested
+        val safeLevel = maxOf(1, plan.encodeSafe)
         studio.pyreels.app.CrashLog.crumb(this, "job ${jobIn.id} started: $plan")
         log("job ${jobIn.id} plan $plan")
         var job = jobIn.copy(state = ExportJobEntity.RUNNING, progress = 0f, message = "يجهّز الصوت والكود…")
@@ -137,7 +138,6 @@ class ExportService : Service() {
             if (safeLevel >= 2) options = options.copy(width = 720, height = 1280, videoBitrate = 4_000_000)
             else if (safeLevel == 1) options = options.copy(videoBitrate = minOf(options.videoBitrate, 6_000_000))
             val safeNotes = listOfNotNull(
-                if (safeLevel == 1) "ترميز أبطأ وأكثر توافقًا" else null,
                 if (safeLevel >= 2) "ترميز آمن بدقة 720×1280" else null,
                 if (plan.noPython) "بلا تشغيل بايثون الحقيقي" else null,
                 if (plan.noVoice) "بلا تعليق صوتي" else null,

@@ -30,7 +30,16 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
     private val headerH = 112f
     private val inputH = 112f
     private val listTop get() = headerTop + headerH
-    private val listBottom get() = h - inputH - 6f
+    private val listBottom get() = h - inputH - inputExtra - 6f
+    /** The message field grows (up to 4 lines) while Ahmed types a long message, like WhatsApp; the list moves up. */
+    private var inputExtra = 0f
+    private val fieldW get() = (w - 14f - 104f - 150f).toInt()
+
+    private fun composeLayout(chat: ChatView): android.text.StaticLayout? {
+        val content = chat.composeText?.take(chat.composeChars)?.replace("`", "")
+        if (content.isNullOrEmpty()) return null
+        return text.layout(content, fieldW, 32f, s.waText, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_NORMAL, chatRtl, spacing = 0.95f, maxLines = 4)
+    }
     private val bubbleMax = w * 0.78f
     private val avatarR = 26f
     private val bodySize = 40f
@@ -61,6 +70,7 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
     }
 
     fun draw(canvas: Canvas, chat: ChatView, engage: studio.pyreels.core.timeline.EngageChipView? = null) {
+        inputExtra = composeLayout(chat)?.let { maxOf(0f, it.height + 30f - 76f) } ?: 0f
         canvas.drawBitmap(wallpaper, 0f, 0f, null)
         drawMessages(canvas, chat)
         drawHeader(canvas, chat)
@@ -139,10 +149,10 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
     // ------------------------------------------------------------ input bar
 
     private fun drawInput(canvas: Canvas, chat: ChatView) {
-        val top = h - inputH
+        val top = h - inputH - inputExtra
         g.fill.color = s.waBar
         canvas.drawRect(0f, top, w, h, g.fill)
-        val cy = top + inputH / 2 - 4f
+        val cy = h - inputH / 2 - 4f // buttons stay at the bottom while the field grows upwards
         // round button (left in RTL): mic, or send while Ahmed types
         val composing = chat.composeText != null
         g.fill.color = s.waFab
@@ -153,27 +163,30 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         if (morph > 0f) { canvas.save(); canvas.rotate(-30f * (1f - morph), 52f, cy); canvas.scale(morph, morph, 52f, cy); g.iconSend(canvas, 50f, cy, 40f, 0xFFFFFFFF.toInt()); canvas.restore() }
         // field
         val fx0 = 104f; val fx1 = w - 14f
-        g.rect.set(fx0, cy - 38f, fx1, cy + 38f)
+        val fieldTop = cy - 38f - inputExtra
+        g.rect.set(fx0, fieldTop, fx1, cy + 38f)
         g.fill.color = s.waInput
         canvas.drawRoundRect(g.rect, 38f, 38f, g.fill)
         g.iconSmile(canvas, fx1 - 40f, cy, 40f, s.waIcon)
         g.iconCamera(canvas, fx0 + 40f, cy, 38f, s.waIcon)
         if (!composing) g.iconClip(canvas, fx0 + 96f, cy, 38f, s.waIcon)
-        val fieldW = (fx1 - fx0 - 150f).toInt()
-        val content = chat.composeText?.take(chat.composeChars)
-        val l = if (content.isNullOrEmpty()) {
-            text.layout("رسالة", fieldW, 32f, s.waIcon, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_NORMAL, 1, maxLines = 1)
-        } else {
-            // show the end of a long message, like a single-line field scrolls
-            text.layout(content.replace("`", "").takeLast(30), fieldW, 32f, s.waText, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_NORMAL, 1, maxLines = 1)
+        val fw = fieldW
+        val x0 = fx1 - 76f - fw
+        val l = composeLayout(chat)
+        if (l == null) {
+            val hint = text.layout("رسالة", fw, 32f, s.waIcon, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_NORMAL, chatRtl, maxLines = 1)
+            g.drawRtl(canvas, hint, x0, fw.toFloat(), cy - hint.height / 2f)
+            return
         }
-        g.drawRtl(canvas, l, fx1 - 76f - fieldW, fieldW.toFloat(), cy - l.height / 2f)
-        if (!content.isNullOrEmpty()) {
-            // caret after the last typed letter (left end of an RTL line)
-            val caretX = fx1 - 76f - text.maxLineWidth(l) - 4f
-            g.fill.color = s.waFab
-            canvas.drawRect(caretX - 3f, cy - 20f, caretX, cy + 20f, g.fill)
-        }
+        // the typed text wraps onto new lines when it reaches the edge of the field
+        val ty = if (inputExtra > 0f) fieldTop + 15f else cy - l.height / 2f
+        g.drawRtl(canvas, l, x0, fw.toFloat(), ty)
+        // caret after the last typed letter
+        val last = l.lineCount - 1
+        val ltr = l.getParagraphDirection(0) == Layout.DIR_LEFT_TO_RIGHT
+        val caretX = if (ltr) x0 + l.getLineRight(last) + 4f else x0 + l.getLineLeft(last) - 4f
+        g.fill.color = s.waFab
+        canvas.drawRect(caretX - 3f, ty + l.getLineTop(last) + 4f, caretX, ty + l.getLineBottom(last) - 4f, g.fill)
     }
 
     // ------------------------------------------------------------ messages
