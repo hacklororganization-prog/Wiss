@@ -133,10 +133,10 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
             }
         }
         val tw = (w - 360f).toInt()
-        val name = text.layout(chat.groupName, tw, 36f, s.waHeaderText, TextKit.Face.BOLD, Layout.Alignment.ALIGN_NORMAL, 1, spacing = 0.95f, maxLines = 1)
+        val name = text.layout(chat.groupName, tw, 36f, s.waHeaderText, TextKit.Face.BOLD, Layout.Alignment.ALIGN_NORMAL, chatRtl, spacing = 0.95f, maxLines = 1)
         val typing = chat.typingFrom?.takeIf { it != "ahmed" }
         val sub = if (typing != null) "${g.nameOf(typing)} يكتب…" else scenario.cast.joinToString("، ") { it.name }
-        val subL = text.layout(sub, tw, 26f, if (typing != null) s.waTyping else s.waHeaderSub, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_NORMAL, 1, spacing = 0.95f, maxLines = 1)
+        val subL = text.layout(sub, tw, 26f, if (typing != null) s.waTyping else s.waHeaderSub, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_NORMAL, chatRtl, spacing = 0.95f, maxLines = 1)
         val right = ax - 50f
         g.drawRtl(canvas, name, right - tw, tw.toFloat(), cy - name.height + 6f)
         g.drawRtl(canvas, subL, right - tw, tw.toFloat(), cy + 6f)
@@ -293,7 +293,7 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         val items = ArrayList<SysItem>()
         fun add(t: String, bg: Int, fg: Int, size: Float, lock: Boolean = false, maxW: Float = w - 140f) {
             val iconW = if (lock) size + 10f else 0f
-            val l = text.layout(t, (maxW - iconW).toInt(), size, fg, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_CENTER, 1, spacing = 0.95f)
+            val l = text.layout(t, (maxW - iconW).toInt(), size, fg, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_CENTER, chatRtl, spacing = 0.95f)
             val pw = text.maxLineWidth(l) + iconW + 44f
             items += SysItem(l, bg, fg, lock, pw, l.height + 22f)
         }
@@ -443,7 +443,7 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
             else -> Unit
         }
         if (m.challenge) {
-            val chip = text.layout("💬 تحدٍّ للتعليقات", iw.toInt(), 28f, g.c(g.p.focus), TextKit.Face.SEMI, Layout.Alignment.ALIGN_NORMAL, 1, maxLines = 1)
+            val chip = text.layout("💬 تحدٍّ للتعليقات", iw.toInt(), 28f, g.c(g.p.focus), TextKit.Face.SEMI, Layout.Alignment.ALIGN_NORMAL, chatRtl, maxLines = 1)
             g.drawRtl(canvas, chip, ix, iw, y + 10f)
         }
         // time + ticks at the bottom-left corner (RTL end)
@@ -492,7 +492,7 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
     private fun drawAnalogy(canvas: Canvas, m: ChatMessageView, x: Float, w: Float, yIn: Float): Float {
         var y = yIn + 8f
         m.analogyTitle?.let {
-            val l = text.layout("💡 $it", w.toInt(), 34f, g.c(g.p.focus), TextKit.Face.BOLD, Layout.Alignment.ALIGN_NORMAL, 1, spacing = 0.9f)
+            val l = text.layout("💡 $it", w.toInt(), 34f, g.c(g.p.focus), TextKit.Face.BOLD, Layout.Alignment.ALIGN_NORMAL, chatRtl, spacing = 0.9f)
             g.drawRtl(canvas, l, x, w, y); y += l.height + 14f
         }
         val items = m.analogyItems
@@ -518,7 +518,9 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
             g.rect2.set(bx + bw / 2 - tw / 2, y + 4f, bx + bw / 2 + tw / 2, y + 44f)
             g.fill.color = g.alpha(accent, 0.25f); canvas.drawRoundRect(g.rect2, 12f, 12f, g.fill)
             g.drawAt(canvas, tag, bx + 10f, y + 24f - tag.height / 2f)
-            val v = text.layout(value, (bw - 16).toInt(), 34f, s.waText, TextKit.Face.MONO_BOLD, Layout.Alignment.ALIGN_CENTER, 2, spacing = 0.9f, maxLines = 2)
+            // code-like values in the code font; Arabic words in the Arabic font (the code font has no Arabic letters)
+            val face = if (value.any { it.code in 0x0590..0x08FF }) TextKit.Face.BOLD else TextKit.Face.MONO_BOLD
+            val v = text.layout(value, (bw - 16).toInt(), 32f, s.waText, face, Layout.Alignment.ALIGN_CENTER, if (face == TextKit.Face.BOLD) chatRtl else 2, spacing = 0.9f, maxLines = 2)
             g.drawAt(canvas, v, bx + 8f, y + 106f - v.height / 2f)
         }
         return y + 160f

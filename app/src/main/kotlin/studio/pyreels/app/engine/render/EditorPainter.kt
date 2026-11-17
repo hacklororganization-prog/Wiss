@@ -220,59 +220,94 @@ class EditorPainter(private val g: Gfx, private val w: Float, private val h: Flo
         g.iconPlay(canvas, cx + 4f, cy, 52f * sc, s.kbBg)
     }
 
+    /** Cuts [t] with "…" so it fits [maxW] (nothing ever leaves its box). */
+    private fun fit(t: String, p: android.graphics.Paint, maxW: Float): String {
+        if (p.measureText(t) <= maxW) return t
+        var n = t.length
+        while (n > 1 && p.measureText(t, 0, n) + p.measureText("…") > maxW) n--
+        return t.take(n) + "…"
+    }
+
+    /**
+     * The memory (RAM) panel: every variable is a memory cell with its address, its name and its
+     * value; a changed value slides in over the old one. Long values are shortened, never overflow.
+     */
     private fun drawTracePanel(canvas: Canvas, code: CodeView, y: Float) {
         val x0 = 18f; val x1 = w - 18f
         g.rect.set(x0, y, x1, y + 158f)
         g.fill.color = g.alpha(s.edBar, 0.97f); canvas.drawRoundRect(g.rect, 24f, 24f, g.fill)
         g.stroke.color = g.alpha(g.c(g.p.focus), 0.35f); g.stroke.strokeWidth = 2f; canvas.drawRoundRect(g.rect, 24f, 24f, g.stroke)
-        val title = text.layout("المتغيرات", 300, 24f, g.c(g.p.textMuted), TextKit.Face.SEMI, Layout.Alignment.ALIGN_NORMAL, 1, maxLines = 1)
-        g.drawRtl(canvas, title, x1 - 320f, 300f, y + 8f)
-        // iteration + call stack chips on the left
+        // title with a small memory-chip icon
+        val chipX = x1 - 34f; val chipY = y + 24f
+        g.stroke.color = g.c(g.p.focus); g.stroke.strokeWidth = 2.5f
+        g.rect2.set(chipX - 12f, chipY - 9f, chipX + 12f, chipY + 9f); canvas.drawRoundRect(g.rect2, 3f, 3f, g.stroke)
+        for (k in -1..1) { canvas.drawLine(chipX + k * 7f, chipY - 13f, chipX + k * 7f, chipY - 9f, g.stroke); canvas.drawLine(chipX + k * 7f, chipY + 9f, chipX + k * 7f, chipY + 13f, g.stroke) }
+        val title = text.layout("الذاكرة (RAM)", 300, 24f, g.c(g.p.textMuted), TextKit.Face.SEMI, Layout.Alignment.ALIGN_NORMAL, 3, maxLines = 1)
+        g.drawRtl(canvas, title, x1 - 360f, 300f, y + 8f)
+        // iteration + call stack chips on the left (bounded: they never reach the cells' titles)
         var cx = x0 + 18f
+        val chipLimit = x0 + (x1 - x0) * 0.55f
         code.iteration?.let {
-            val l = text.layout("الدورة $it", 220, 28f, g.c(g.p.focus), TextKit.Face.BOLD, Layout.Alignment.ALIGN_CENTER, 1, maxLines = 1)
+            val l = text.layout("الدورة $it", 220, 28f, g.c(g.p.focus), TextKit.Face.BOLD, Layout.Alignment.ALIGN_CENTER, 3, maxLines = 1)
             val cw = text.maxLineWidth(l) + 36f
-            g.rect2.set(cx, y + 12f, cx + cw, y + 56f)
-            g.fill.color = g.alpha(g.c(g.p.focus), 0.16f); canvas.drawRoundRect(g.rect2, 22f, 22f, g.fill)
-            g.drawAt(canvas, l, cx + cw / 2 - 110f, y + 34f - l.height / 2f)
+            g.rect2.set(cx, y + 10f, cx + cw, y + 52f)
+            g.fill.color = g.alpha(g.c(g.p.focus), 0.16f); canvas.drawRoundRect(g.rect2, 21f, 21f, g.fill)
+            g.drawAt(canvas, l, cx + cw / 2 - 110f, y + 31f - l.height / 2f)
             cx += cw + 10f
         }
-        if (code.stack.isNotEmpty()) {
-            val st = code.stack.joinToString(" › ")
-            val sp = text.paint(TextKit.Face.MONO, 26f, g.c(g.p.codeFunction))
+        if (code.stack.isNotEmpty() && cx < chipLimit - 80f) {
+            val sp = text.paint(TextKit.Face.MONO, 24f, g.c(g.p.codeFunction))
+            val st = fit(code.stack.joinToString(" › "), sp, chipLimit - cx - 30f)
             val cw = sp.measureText(st) + 30f
-            g.rect2.set(cx, y + 12f, cx + cw, y + 56f)
-            g.fill.color = s.kbKey; canvas.drawRoundRect(g.rect2, 22f, 22f, g.fill)
-            canvas.drawText(st, cx + 15f, y + 44f, sp)
+            g.rect2.set(cx, y + 10f, cx + cw, y + 52f)
+            g.fill.color = s.kbKey; canvas.drawRoundRect(g.rect2, 21f, 21f, g.fill)
+            canvas.drawText(st, cx + 15f, y + 40f, sp)
         }
-        // variable boxes, right to left
+        // memory cells, right to left (RTL reading order)
+        val np = text.paint(TextKit.Face.MONO, 22f, g.c(g.p.textMuted))
+        val ap = text.paint(TextKit.Face.MONO, 18f, g.alpha(g.c(g.p.textMuted), 0.7f))
+        val vp = text.paint(TextKit.Face.MONO_BOLD, 32f, s.kbText)
+        val maxCell = (x1 - x0 - 40f) * 0.48f
         var bx = x1 - 18f
-        for (v in code.vars.take(4)) {
-            val np = text.paint(TextKit.Face.MONO, 24f, g.c(g.p.textMuted))
-            val vp = text.paint(TextKit.Face.MONO_BOLD, 34f, s.kbText)
-            val bw = max(120f, max(np.measureText(v.name), max(vp.measureText(v.value), v.previous?.let { vp.measureText(it) } ?: 0f)) + 40f)
-            if (bx - bw < x0 + 10f) break
+        var shown = 0
+        for ((idx, v) in code.vars.withIndex()) {
+            val name = fit(v.name, np, maxCell - 30f)
+            val value = fit(v.value, vp, maxCell - 30f)
+            val prev = v.previous?.let { fit(it, vp, maxCell - 30f) }
+            val bw = max(130f, max(np.measureText(name) + ap.measureText("0x00") + 46f, max(vp.measureText(value), prev?.let { vp.measureText(it) } ?: 0f) + 36f)).coerceAtMost(maxCell)
+            if (bx - bw < x0 + 70f) break
             val l0 = bx - bw
-            g.rect2.set(l0, y + 66f, bx, y + 144f)
-            g.fill.color = s.kbKey; canvas.drawRoundRect(g.rect2, 16f, 16f, g.fill)
+            g.rect2.set(l0, y + 62f, bx, y + 146f)
+            g.fill.color = s.kbKey; canvas.drawRoundRect(g.rect2, 14f, 14f, g.fill)
             val changing = v.change < 1f
             g.stroke.color = g.alpha(g.c(g.p.focus), if (changing) 0.35f + 0.65f * (1f - v.change) else 0.3f); g.stroke.strokeWidth = 3f
-            canvas.drawRoundRect(g.rect2, 16f, 16f, g.stroke)
-            g.fill.color = s.edBar
-            val nw = np.measureText(v.name) + 16f
-            canvas.drawRect(l0 + 14f, y + 54f, l0 + 14f + nw, y + 76f, g.fill)
-            canvas.drawText(v.name, l0 + 22f, y + 74f, np)
-            canvas.save(); canvas.clipRect(g.rect2)
-            val previous = v.previous
-            if (changing && previous != null) {
+            canvas.drawRoundRect(g.rect2, 14f, 14f, g.stroke)
+            // header row inside the cell: address (left) and name (right)
+            val addr = "0x" + (0x10 + idx * 8).toString(16).uppercase()
+            canvas.drawText(addr, l0 + 12f, y + 84f, ap)
+            canvas.drawText(name, bx - 12f - np.measureText(name), y + 85f, np)
+            g.fill.color = g.alpha(g.c(g.p.textMuted), 0.25f); canvas.drawRect(l0 + 10f, y + 93f, bx - 10f, y + 95f, g.fill)
+            canvas.save(); canvas.clipRect(l0 + 4f, y + 96f, bx - 4f, y + 144f)
+            if (changing && prev != null) {
                 vp.alpha = ((1f - v.change) * 255).toInt()
-                canvas.drawText(previous, l0 + 20f, y + 122f - v.change * 28f, vp)
+                canvas.drawText(prev, l0 + 18f, y + 132f - v.change * 26f, vp)
                 vp.alpha = (v.change * 255).toInt()
-                canvas.drawText(v.value, l0 + 20f, y + 122f + (1f - v.change) * 28f, vp)
+                canvas.drawText(value, l0 + 18f, y + 132f + (1f - v.change) * 26f, vp)
                 vp.alpha = 255
-            } else canvas.drawText(v.value, l0 + 20f, y + 122f, vp)
+            } else canvas.drawText(value, l0 + 18f, y + 132f, vp)
             canvas.restore()
-            bx = l0 - 14f
+            bx = l0 - 12f
+            shown++
+        }
+        // more variables than room: a small "+N" cell
+        val hidden = code.vars.size - shown
+        if (hidden > 0) {
+            val tp = text.paint(TextKit.Face.BOLD, 28f, g.c(g.p.focus))
+            val label = "+$hidden"
+            val cw = tp.measureText(label) + 28f
+            g.rect2.set(bx - cw, y + 62f, bx, y + 146f)
+            g.fill.color = g.alpha(g.c(g.p.focus), 0.14f); canvas.drawRoundRect(g.rect2, 14f, 14f, g.fill)
+            canvas.drawText(label, bx - cw + 14f, y + 114f, tp)
         }
     }
 
