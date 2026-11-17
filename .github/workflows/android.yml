@@ -72,7 +72,7 @@ jobs:
     name: Instrumented tests (Android ${{ matrix.api }})
     needs: build-apk
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 80
     strategy:
       fail-fast: false
       matrix:

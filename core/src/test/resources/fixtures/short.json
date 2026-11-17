@@ -1,0 +1,114 @@
+{
+  "schema": "pyreels/1",
+  "meta": {
+    "title": "اختبار تصدير قصير",
+    "lesson": {
+      "id": "short-export",
+      "concept": "المتغير"
+    },
+    "targetSeconds": 30,
+    "theme": "calm-dark",
+    "ambient": "none",
+    "pace": "normal",
+    "series": {
+      "name": "اختبار",
+      "episode": 1
+    },
+    "publish": {
+      "description": "اختبار قصير للتصدير الكامل من البداية إلى النهاية.",
+      "tiktokHashtags": [
+        "#a1",
+        "#b2",
+        "#c3",
+        "#d4",
+        "#e5"
+      ],
+      "instagramHashtags": [
+        "#f1",
+        "#g2",
+        "#h3",
+        "#i4",
+        "#j5"
+      ],
+      "pinnedComment": "ما الناتج؟"
+    }
+  },
+  "cast": [
+    {
+      "id": "ahmed",
+      "role": "learner",
+      "name": "أحمد"
+    },
+    {
+      "id": "zig",
+      "role": "teacher",
+      "name": "Zig",
+      "language": "zig"
+    }
+  ],
+  "scenes": [
+    {
+      "type": "hook_predict",
+      "code": "x = 2\nprint(x + 1)"
+    },
+    {
+      "type": "recap",
+      "text": "تعلّمنا الطباعة."
+    },
+    {
+      "type": "chat",
+      "from": "ahmed",
+      "text": "ما المتغير؟"
+    },
+    {
+      "type": "chat",
+      "from": "zig",
+      "text": "صندوق له اسم."
+    },
+    {
+      "type": "code_type",
+      "code": "x = 2\nprint(x + 1)",
+      "typing": "instant"
+    },
+    {
+      "type": "run",
+      "exec": "simulated",
+      "trace": [
+        {
+          "line": 1,
+          "vars": {
+            "x": 2
+          }
+        },
+        {
+          "line": 2,
+          "vars": {
+            "x": 2
+          },
+          "out": "3"
+        }
+      ],
+      "output": "3"
+    },
+    {
+      "type": "engage_moment",
+      "from": "zig",
+      "text": "أحسنت!",
+      "bridge": "نكمل."
+    },
+    {
+      "type": "reveal",
+      "answer": "3",
+      "text": "هذا هو الجواب."
+    },
+    {
+      "type": "key_sentence",
+      "text": "المتغير صندوق له اسم."
+    },
+    {
+      "type": "teaser",
+      "text": "القادم: الشروط.",
+      "challenge": "ماذا لو x = 5؟"
+    }
+  ]
+}

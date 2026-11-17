@@ -54,6 +54,7 @@
 
         <service
             android:name=".engine.export.ExportService"
+            android:process=":export"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 

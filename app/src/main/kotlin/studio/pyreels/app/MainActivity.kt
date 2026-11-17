@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,6 +63,10 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             val pending = runCatching { withContext(Dispatchers.IO) { db.jobs().unfinished() } }.getOrDefault(emptyList())
             if (pending.isNotEmpty()) ExportService.start(this@MainActivity)
+        }
+        // restarts an export whose process died (it never takes the app down with it)
+        lifecycleScope.launch {
+            repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.RESUMED) { studio.pyreels.app.engine.export.ExportWatchdog.watch(this@MainActivity, db) }
         }
         setContent {
             val dark by prefs.dark.collectAsState()

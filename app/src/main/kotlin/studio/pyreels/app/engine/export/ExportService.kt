@@ -81,6 +81,8 @@ class ExportService : Service() {
 
     private suspend fun runQueue() {
         acquireWakeLock()
+        // proves to the app that this (separate) export process is alive; see ExportWatchdog
+        val heartbeat = scope.launch(Dispatchers.IO) { while (true) { ExportState.beat(this@ExportService); kotlinx.coroutines.delay(2_000) } }
         try {
             val attempts = getSharedPreferences("export_attempts", MODE_PRIVATE)
             while (true) {
@@ -90,8 +92,8 @@ class ExportService : Service() {
                 // it: stop retrying instead of crashing on every launch.
                 val key = "job_${job.id}"
                 val tries = attempts.getInt(key, 0)
-                if (tries >= 3) {
-                    db.jobs().update(job.copy(state = ExportJobEntity.FAILED, message = "توقّف التصدير ثلاث مرات بشكل غير متوقع (حتى في الوضع الآمن). انسخ تقرير الأعطال الذي يظهر عند فتح التطبيق وأرسله للمطوّر."))
+                if (tries >= 4) {
+                    db.jobs().update(job.copy(state = ExportJobEntity.FAILED, message = "توقّف التصدير عدة مرات بشكل غير متوقع حتى في الوضع الآمن. اضغط «نسخ تقرير الأعطال» وأرسله للمطوّر."))
                     continue
                 }
                 attempts.edit().putInt(key, tries + 1).commit()
@@ -101,6 +103,8 @@ class ExportService : Service() {
         } catch (t: Throwable) {
             studio.pyreels.app.CrashLog.record(this, t, "export-queue")
         } finally {
+            heartbeat.cancel()
+            ExportState.clearBeat(this)
             releaseWakeLock()
             runCatching { ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE) }
             stopSelf()
@@ -111,26 +115,35 @@ class ExportService : Service() {
 
     private suspend fun runJob(jobIn: ExportJobEntity) {
         log("job ${jobIn.id} start quality=${jobIn.quality}")
-        // If the process died during an earlier export (native crash / killed), escalate: 1 = CPU canvas and
-        // default encoder settings, 2 = additionally 720x1280. The counter is cleared when a job ends normally.
-        val state = getSharedPreferences("export_state", MODE_PRIVATE)
-        val safeLevel = state.getInt("dirty", 0).coerceIn(0, 2)
-        state.edit().putInt("dirty", safeLevel + 1).commit()
-        studio.pyreels.app.CrashLog.crumb(this, "job ${jobIn.id} started (safe level $safeLevel)")
+        // If the previous export process died (native crash, killed…), avoid what it was doing: real
+        // Python, the TTS voice, or the GPU/encoder path (CPU canvas, then 720x1280). Learned per device.
+        val plan = ExportState.begin(this)
+        val safeLevel = plan.encodeSafe
+        studio.pyreels.app.CrashLog.crumb(this, "job ${jobIn.id} started: $plan")
+        log("job ${jobIn.id} plan $plan")
         var job = jobIn.copy(state = ExportJobEntity.RUNNING, progress = 0f, message = "يجهّز الصوت والكود…")
         db.jobs().update(job)
         try {
             val project = projects.get(job.projectId) ?: error("المشروع غير موجود")
             val scenario = project.scenario() ?: error("السيناريو غير صالح")
             // last resort (3rd attempt): no real Python run, the written trace is used
-            val prepared = engine.prepare(this, scenario, withPython = safeLevel < 2)
+            val prepared = engine.prepare(this, scenario, withVoice = !plan.noVoice, withPython = !plan.noPython) { stage ->
+                ExportState.stage(this, stage); studio.pyreels.app.CrashLog.crumb(this, "job ${job.id} $stage")
+            }
+            ExportState.stage(this, "encode")
             if (prepared.timeline.totalMs > Limits.HARD_CAP_SECONDS * 1000L) error("المدة تتجاوز ${Limits.HARD_CAP_SECONDS} ثانية")
             val mix = studio.pyreels.core.audio.mixSettingsFor(scenario.meta)
             var options = (if (job.quality == "high") VideoExporter.Options.high() else VideoExporter.Options.standard()).copy(mix = mix, safe = safeLevel)
             if (safeLevel >= 2) options = options.copy(width = 720, height = 1280, videoBitrate = 4_000_000)
             else if (safeLevel == 1) options = options.copy(videoBitrate = minOf(options.videoBitrate, 6_000_000))
-            if (safeLevel > 0) {
-                job = job.copy(message = "وضع آمن (المحاولة ${safeLevel + 1}): ترميز أبطأ وأكثر توافقًا"); db.jobs().update(job)
+            val safeNotes = listOfNotNull(
+                if (safeLevel == 1) "ترميز أبطأ وأكثر توافقًا" else null,
+                if (safeLevel >= 2) "ترميز آمن بدقة 720×1280" else null,
+                if (plan.noPython) "بلا تشغيل بايثون الحقيقي" else null,
+                if (plan.noVoice) "بلا تعليق صوتي" else null,
+            )
+            if (safeNotes.isNotEmpty()) {
+                job = job.copy(message = "وضع آمن: " + safeNotes.joinToString("، ")); db.jobs().update(job)
             }
             val stamp = SimpleDateFormat("yyyyMMdd_HHmm", Locale.US).format(Date())
             val base = "${scenario.meta.lesson.id}_${job.platform}_$stamp"
@@ -155,9 +168,10 @@ class ExportService : Service() {
                 // some phones' encoders reject the requested settings: retry once, gentler
                 studio.pyreels.app.CrashLog.record(this, t, "export-attempt-1")
                 lastPct = -1
-                attempt(VideoExporter.Options.standard().copy(videoBitrate = 5_000_000, mix = mix))
+                attempt(options.copy(videoBitrate = minOf(options.videoBitrate, 5_000_000), safe = maxOf(1, options.safe)))
             }
             studio.pyreels.app.CrashLog.crumb(this, "job ${job.id} encoded, saving")
+            ExportState.stage(this, "save")
             log("job ${job.id} encoded: ok=${verification.ok} ${verification.problems}")
             if (!verification.ok) error("فشل التحقق من الملف: ${verification.problems.joinToString()}")
             var packNote = ""
@@ -167,6 +181,7 @@ class ExportService : Service() {
             videoUri ?: error("تعذّر حفظ الفيديو")
             if (job.publishPack) {
                 job = job.copy(message = "يجهّز حزمة النشر…"); db.jobs().update(job)
+                ExportState.stage(this, "pack")
                 try {
                     writePublishPack(prepared, base, tree, job.coverTimeMs, safeLevel)
                 } catch (e: CancellationException) {
@@ -194,7 +209,7 @@ class ExportService : Service() {
         }
         finally {
             // reaching here means the process survived: this was not a hard crash
-            getSharedPreferences("export_state", MODE_PRIVATE).edit().putInt("dirty", 0).commit()
+            ExportState.end(this)
             studio.pyreels.app.CrashLog.crumb(this, "job ${job.id} finished")
         }
     }

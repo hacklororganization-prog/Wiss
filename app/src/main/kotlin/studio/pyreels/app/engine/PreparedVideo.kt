@@ -26,15 +26,20 @@ class VideoEngine @Inject constructor(
     /** Fast path for live editing: estimated voice durations, declared traces. */
     fun quick(scenario: Scenario): PreparedVideo = scenario.resolved().let { PreparedVideo(it, Timeline.build(it), emptyMap(), emptyList()) }
 
-    suspend fun prepare(context: Context, scenarioIn: Scenario, withVoice: Boolean = true, withPython: Boolean = true): PreparedVideo {
+    suspend fun prepare(
+        context: Context, scenarioIn: Scenario, withVoice: Boolean = true, withPython: Boolean = true,
+        onStage: (String) -> Unit = {},
+    ): PreparedVideo {
         val scenario = scenarioIn.resolved()
         val notes = ArrayList<String>()
         val runs = if (withPython) {
+            onStage("python")
             val (r, n) = python.runAll(context, scenario); notes += n; r
         } else emptyMap()
         var timeline = Timeline.build(scenario, runResults = runs)
         var pcm: Map<Int, FloatArray> = emptyMap()
         if (withVoice && timeline.voices.isNotEmpty()) {
+            onStage("tts")
             val v = voice.synthesize(context, scenario, timeline)
             v.warning?.let { notes += it }
             if (v.durations.isNotEmpty()) {

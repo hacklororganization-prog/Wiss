@@ -16,5 +16,8 @@ object AppModule {
     @Provides
     @Singleton
     fun database(@ApplicationContext context: Context): AppDatabase =
-        Room.databaseBuilder(context, AppDatabase::class.java, "pyreels.db").build()
+        Room.databaseBuilder(context, AppDatabase::class.java, "pyreels.db")
+            // the export runs in its own process (":export"): changes it writes must reach the screens
+            .enableMultiInstanceInvalidation()
+            .build()
 }

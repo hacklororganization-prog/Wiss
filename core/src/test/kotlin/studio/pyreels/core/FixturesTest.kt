@@ -101,6 +101,16 @@ class FixturesTest {
     }
 
     @Test
+    fun shortExportFixtureIsValidAndShort() {
+        // used by the on-device end-to-end export tests (a full export through the service, kept short)
+        val r = ScenarioValidator.parse(Fixtures.text("short"))
+        assertTrue(r.ok, r.problems.joinToString("\n") { it.render() })
+        val tl = Timeline.build(r.scenarios.single())
+        println("short total=${tl.totalMs}")
+        assertTrue(tl.totalMs in 20_000..60_000, "short total ${tl.totalMs}")
+    }
+
+    @Test
     fun resolvedIsIdempotent() {
         val s = Fixtures.scenario("arabic-lang")
         assertEquals(s, s.resolved())
