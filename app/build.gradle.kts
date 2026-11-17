@@ -16,7 +16,8 @@ android {
         applicationId = "studio.pyreels.app"
         minSdk = 29 // Android 10+
         targetSdk = 35
-        versionCode = 1
+        // increases with every CI run so each build can be installed over the previous one
+        versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
         versionName = "1.0.0"
         testInstrumentationRunner = "studio.pyreels.app.HiltTestRunner"
         ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64") }
@@ -24,8 +25,15 @@ android {
     }
 
     signingConfigs {
-        // A stable debug-style key checked into CI only via environment; falls back to the default debug key.
-        getByName("debug")
+        // ONE fixed key for every build (debug and release). With a random per-build key, Android refuses
+        // to install a new build over the previous one ("package appears to be invalid").
+        // This is a side-loading key, not a Play Store upload key.
+        create("pyreels") {
+            storeFile = file("pyreels.keystore")
+            storePassword = "pyreels-studio"
+            keyAlias = "pyreels"
+            keyPassword = "pyreels-studio"
+        }
     }
 
     buildTypes {
@@ -33,7 +41,10 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("pyreels")
+        }
+        debug {
+            signingConfig = signingConfigs.getByName("pyreels")
         }
     }
 
