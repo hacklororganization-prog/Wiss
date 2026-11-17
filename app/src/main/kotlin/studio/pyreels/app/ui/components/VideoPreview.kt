@@ -35,7 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.withFrameNanos
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.currentStateFlow
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
@@ -100,8 +100,13 @@ fun VideoPreview(
     val total = video.timeline.totalMs
     // no rendering or audio while the app is in the background
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val lifecycleState by lifecycle.currentStateFlow.collectAsState()
-    val active = playing && lifecycleState.isAtLeast(Lifecycle.State.RESUMED)
+    var resumed by remember { mutableStateOf(lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) }
+    DisposableEffect(lifecycle) {
+        val observer = LifecycleEventObserver { _, _ -> resumed = lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) }
+        lifecycle.addObserver(observer)
+        onDispose { lifecycle.removeObserver(observer) }
+    }
+    val active = playing && resumed
     val frameStepMs = 1000L / fps.coerceIn(5, 60)
     var rangeEnd by remember { mutableStateOf<Long?>(null) }
     var restart by remember { mutableIntStateOf(0) }
