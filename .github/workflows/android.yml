@@ -92,6 +92,7 @@ jobs:
             mkdir -p snapshots && adb exec-out run-as studio.pyreels.app tar c files/snapshots > snapshots/s.tar && tar xf snapshots/s.tar -C snapshots --strip-components=2 || true
             [ "${{ matrix.api }}" != "34" ] || for f in snapshots/*.jpg; do echo "SNAP-BEGIN $(basename $f)"; base64 -w 4000 "$f"; echo "SNAP-END"; done || true
             adb logcat -d -b crash | tail -80 || true
+            [ "${{ matrix.api }}" != "31" ] || bash ci/smoke_release.sh || touch tests_failed
             test ! -f tests_failed
       - if: always()
         uses: actions/upload-artifact@v4
