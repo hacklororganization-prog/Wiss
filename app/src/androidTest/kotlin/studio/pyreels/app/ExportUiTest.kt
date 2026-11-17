@@ -7,6 +7,8 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.printToString
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.platform.app.InstrumentationRegistry
@@ -36,8 +38,14 @@ class ExportUiTest {
         }
     }
 
-    private fun waitFor(text: String, ms: Long = 15_000) =
-        compose.waitUntil(ms) { compose.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty() }
+    /** On timeout the error contains the whole screen (including the export card's status text). */
+    private fun waitFor(text: String, ms: Long = 15_000) {
+        try {
+            compose.waitUntil(ms) { compose.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty() }
+        } catch (e: androidx.compose.ui.test.ComposeTimeoutException) {
+            throw AssertionError("waiting for «$text». Screen:\n" + compose.onRoot().printToString(40), e)
+        }
+    }
 
     @Test
     fun exportStartsAndCancelsWithoutCrash() {

@@ -40,7 +40,11 @@ class WizardFlowTest {
     @Inject lateinit var teachers: TeacherStore
     @Inject lateinit var projects: ProjectRepository
 
-    @Before fun setUp() { hilt.inject(); Intents.init() }
+    @Before fun setUp() {
+        hilt.inject(); Intents.init()
+        // the store survives between tests (it is persistent app data): start every test empty
+        teachers.teachers.value.forEach { teachers.remove(it.id) }
+    }
     @After fun tearDown() { Intents.release() }
 
     @Test
