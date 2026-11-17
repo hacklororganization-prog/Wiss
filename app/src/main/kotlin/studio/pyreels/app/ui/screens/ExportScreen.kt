@@ -190,6 +190,21 @@ fun ExportScreen(nav: Navigator, projectId: Long, modifier: Modifier, vm: Export
                 }
             }
             val running = job?.state == ExportJobEntity.RUNNING || job?.state == ExportJobEntity.QUEUED
+            // keep the screen awake while exporting: some phones stop background work when the screen sleeps
+            val view = androidx.compose.ui.platform.LocalView.current
+            androidx.compose.runtime.DisposableEffect(running) {
+                view.keepScreenOn = running
+                onDispose { view.keepScreenOn = false }
+            }
+            // elapsed time and a remaining-time estimate from the progress
+            var startedAt by remember { mutableLongStateOf(0L) }
+            var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
+            LaunchedEffect(running) {
+                if (running) {
+                    if (startedAt == 0L) startedAt = System.currentTimeMillis()
+                    while (true) { now = System.currentTimeMillis(); kotlinx.coroutines.delay(1_000) }
+                } else startedAt = 0L
+            }
             Button(
                 onClick = {
                     if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) notifPerm.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -224,6 +239,16 @@ fun ExportScreen(nav: Navigator, projectId: Long, modifier: Modifier, vm: Export
                     }, style = MaterialTheme.typography.titleMedium)
                     LinearProgressIndicator(progress = { j.progress }, modifier = Modifier.fillMaxWidth())
                     j.message?.let { Text(it, color = Muted, style = MaterialTheme.typography.bodySmall) }
+                    if (running && startedAt > 0L) {
+                        val elapsed = (now - startedAt).coerceAtLeast(0L)
+                        val left = if (j.progress > 0.03f) (elapsed / j.progress * (1f - j.progress)).toLong() else -1L
+                        fun mmss(ms: Long) = "%d:%02d".format(ms / 60_000, ms / 1000 % 60)
+                        Text(
+                            ui.t("مضى ${mmss(elapsed)}", "Elapsed ${mmss(elapsed)}") + (if (left >= 0) ui.t(" · المتبقي تقريبًا ${mmss(left)}", " · about ${mmss(left)} left") else "") +
+                                ui.t(" · اترك الشاشة مفتوحة", " · keep this screen open"),
+                            color = Muted, style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
                     if (running) OutlinedButton(onClick = { ExportService.cancel(context) }) { Text(ui.t("إلغاء", "Cancel")) }
                     if (j.state == ExportJobEntity.FAILED) OutlinedButton(onClick = {
                         val report = listOfNotNull(j.message, studio.pyreels.app.CrashLog.pending(context) ?: studio.pyreels.app.CrashLog.lastCrumb(context)).joinToString("\n\n")
@@ -234,6 +259,20 @@ fun ExportScreen(nav: Navigator, projectId: Long, modifier: Modifier, vm: Export
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(onClick = { openUri(context, uri, "video/mp4") }) { Text(ui.t("فتح", "Open")) }
                             OutlinedButton(onClick = { shareUri(context, uri, "video/mp4") }) { Text(ui.t("مشاركة", "Share")) }
+                            video?.scenario?.let { sc ->
+                                // share the video with its TikTok caption (also copied, many apps ignore shared text)
+                                OutlinedButton(onClick = {
+                                    val text = PublishPack.caption(sc).tiktokText()
+                                    copyText(context, text)
+                                    runCatching {
+                                        context.startActivity(android.content.Intent.createChooser(
+                                            android.content.Intent(android.content.Intent.ACTION_SEND).setType("video/mp4")
+                                                .putExtra(android.content.Intent.EXTRA_STREAM, uri).putExtra(android.content.Intent.EXTRA_TEXT, text)
+                                                .addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION), null,
+                                        ))
+                                    }
+                                }) { Text(ui.t("نشر مع الوصف والهاشتاغات", "Post with caption")) }
+                            }
                             OutlinedButton(onClick = { saveVideoAs.launch("${video?.scenario?.meta?.lesson?.id ?: "video"}.mp4") }) { Text(ui.t("حفظ باسم…", "Save as…")) }
                         }
                     }
