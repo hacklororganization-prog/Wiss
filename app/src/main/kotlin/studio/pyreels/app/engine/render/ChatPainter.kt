@@ -20,6 +20,8 @@ import kotlin.math.min
  */
 class ChatPainter(private val g: Gfx, private val scenario: Scenario, private val w: Float, private val h: Float) {
     private val s = g.skin
+    /** Bubble text direction: forced RTL for Arabic videos (so Latin names/words stay on the right), LTR for English. */
+    private val chatRtl = if (scenario.meta.language == "en") 2 else 3
     /** Language of the code shown in screenshot messages: the first teacher's. */
     private val codeLanguage = scenario.cast.firstOrNull { it.role == "teacher" }?.let { studio.pyreels.core.model.Languages.slug(it.language ?: it.id) } ?: "text"
     private val text = g.text
@@ -191,10 +193,10 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         laid[key]?.let { if (m.karaokeWord < 0) return it }
         val inner = (bubbleMax - 44f).toInt()
         val body = if (m.text.isBlank()) null else text.layout(
-            m.text.replace("`", ""), inner, bodySize, s.waText, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_NORMAL, 1,
+            m.text.replace("`", ""), inner, bodySize, s.waText, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_NORMAL, chatRtl,
             m.karaokeWord, g.c(g.p.focus), spacing = 0.92f,
         )
-        val name = if (m.outgoing || grouped) null else text.layout(g.nameOf(m.from), inner, 30f, g.accent(m.from), TextKit.Face.BOLD, Layout.Alignment.ALIGN_NORMAL, 1, spacing = 0.9f, maxLines = 1)
+        val name = if (m.outgoing || grouped) null else text.layout(g.nameOf(m.from), inner, 30f, g.accent(m.from), TextKit.Face.BOLD, Layout.Alignment.ALIGN_NORMAL, chatRtl, spacing = 0.9f, maxLines = 1)
         if (m.kind == MessageKind.STICKER) return Laid(null, null, null, 220f, 220f, 236f).also { laid[key] = it }
         val code = m.code?.let { codeLayout(it, inner - 30) }
         var contentW = max(body?.let { text.maxLineWidth(it) } ?: 0f, name?.let { text.maxLineWidth(it) } ?: 0f)
@@ -208,7 +210,7 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
             MessageKind.ANALOGY -> { contentW = bubbleMax; hh += 70f + (if (m.analogyItems.isEmpty()) 0f else 168f) }
             MessageKind.REVEAL -> {
                 contentW = bubbleMax
-                hh += 150f + (m.revealCode?.let { codeLayout(it, inner - 30, 28f).height + 40f } ?: 0f)
+                hh += revealBoxH(m, inner) + 18f + (m.revealCode?.let { codeLayout(it, inner - 30, 28f).height + 40f } ?: 0f)
             }
             else -> Unit
         }
@@ -509,6 +511,18 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
         return y + 160f
     }
 
+    /** The "✓ answer" label and the answer text; the box grows with the (up to 2-line) answer so nothing overlaps. */
+    private fun revealLayouts(m: ChatMessageView, w: Int): Pair<android.text.StaticLayout, android.text.StaticLayout> {
+        val label = text.layout("✓ الإجابة", w - 30, 28f, g.c(g.p.terminalOk), TextKit.Face.BOLD, Layout.Alignment.ALIGN_NORMAL, chatRtl, maxLines = 1)
+        val ans = text.layout(m.revealAnswer ?: "", w - 20, 48f, g.c(g.p.focus), TextKit.Face.BOLD, Layout.Alignment.ALIGN_CENTER, chatRtl, spacing = 0.95f, maxLines = 2)
+        return label to ans
+    }
+
+    private fun revealBoxH(m: ChatMessageView, w: Int): Float {
+        val (label, ans) = revealLayouts(m, w)
+        return 10f + label.height + 8f + ans.height + 16f
+    }
+
     private fun drawReveal(canvas: Canvas, m: ChatMessageView, x: Float, w: Float, yIn: Float): Float {
         var y = yIn + 10f
         m.revealCode?.let { code ->
@@ -518,13 +532,13 @@ class ChatPainter(private val g: Gfx, private val scenario: Scenario, private va
             drawHighlighted(canvas, code, x + 16f, y + 11f, 28f)
             y += cl.height + 36f
         }
-        g.rect.set(x, y, x + w, y + 132f)
+        val (label, ans) = revealLayouts(m, w.toInt())
+        val boxH = revealBoxH(m, w.toInt())
+        g.rect.set(x, y, x + w, y + boxH)
         g.fill.color = g.alpha(g.c(g.p.terminalOk), 0.14f); canvas.drawRoundRect(g.rect, 18f, 18f, g.fill)
-        val label = text.layout("✓ الإجابة", w.toInt() - 30, 28f, g.c(g.p.terminalOk), TextKit.Face.BOLD, Layout.Alignment.ALIGN_NORMAL, 1, maxLines = 1)
-        g.drawRtl(canvas, label, x, w - 20f, y + 8f)
-        val ans = text.layout(m.revealAnswer ?: "", w.toInt() - 20, 52f, g.c(g.p.focus), TextKit.Face.BOLD, Layout.Alignment.ALIGN_CENTER, 2, spacing = 0.9f, maxLines = 2)
-        g.drawAt(canvas, ans, x + 10f, y + 84f - ans.height / 2f)
-        return y + 146f
+        g.drawRtl(canvas, label, x, w - 20f, y + 10f)
+        g.drawAt(canvas, ans, x + 10f, y + 10f + label.height + 8f)
+        return y + boxH + 14f
     }
 
     /** Highlighted LTR code at (x, y) top-left. */

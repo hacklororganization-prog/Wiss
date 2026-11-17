@@ -72,6 +72,7 @@ class TextKit(private val fonts: Fonts) {
         val dir: TextDirectionHeuristic = when (rtl) {
             0 -> TextDirectionHeuristics.LTR
             1 -> TextDirectionHeuristics.FIRSTSTRONG_RTL
+            3 -> TextDirectionHeuristics.RTL // forced: Latin-first text (C++, Python …) still sits on the right
             else -> TextDirectionHeuristics.FIRSTSTRONG_LTR
         }
         val l = StaticLayout.Builder.obtain(content, 0, content.length, paint(face, size, color), width.coerceAtLeast(1))

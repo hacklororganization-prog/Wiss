@@ -39,6 +39,8 @@ class VideoExporter(private val context: Context) {
         /** Time ranges of the timeline to export (null = everything). Used for the promo teaser clip. */
         val ranges: List<LongRange>? = null,
         val mix: MixSettings = MixSettings(),
+        /** 0 = normal; 1 = safe (CPU canvas, default encoder profile); 2 = safe + 720×1280. Used after the process died while exporting. */
+        val safe: Int = 0,
     ) {
         companion object {
             fun standard() = Options()
@@ -201,7 +203,7 @@ class VideoExporter(private val context: Context) {
                 for (k in 0 until rangeFrames) {
                     currentCoroutineContext().ensureActive()
                     val t = range.first + k * 1000L / options.fps
-                    val canvas = if (Build.VERSION.SDK_INT >= 23) surface.lockHardwareCanvas() else surface.lockCanvas(null)
+                    val canvas = if (options.safe == 0) surface.lockHardwareCanvas() else surface.lockCanvas(null)
                     try {
                         canvas.save()
                         canvas.scale(options.width / Limits.WIDTH.toFloat(), options.height / Limits.HEIGHT.toFloat())
@@ -243,13 +245,14 @@ class VideoExporter(private val context: Context) {
             setInteger(MediaFormat.KEY_BIT_RATE, o.videoBitrate)
             setInteger(MediaFormat.KEY_FRAME_RATE, o.fps)
             setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1)
-            if (Build.VERSION.SDK_INT >= 29) setInteger(MediaFormat.KEY_MAX_B_FRAMES, 0)
+            if (o.safe == 0) setInteger(MediaFormat.KEY_MAX_B_FRAMES, 0)
+            if (o.safe > 0) setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 2)
         }
         val codecName = MediaCodecList(MediaCodecList.REGULAR_CODECS).findEncoderForFormat(format)
         val codec = if (codecName != null) MediaCodec.createByCodecName(codecName) else MediaCodec.createEncoderByType(mime)
         val caps = codec.codecInfo.getCapabilitiesForType(mime)
         val high = caps.profileLevels.firstOrNull { it.profile == MediaCodecInfo.CodecProfileLevel.AVCProfileHigh }
-        if (high != null) {
+        if (high != null && o.safe == 0) {
             format.setInteger(MediaFormat.KEY_PROFILE, MediaCodecInfo.CodecProfileLevel.AVCProfileHigh)
             format.setInteger(MediaFormat.KEY_LEVEL, min(high.level, MediaCodecInfo.CodecProfileLevel.AVCLevel41).coerceAtLeast(MediaCodecInfo.CodecProfileLevel.AVCLevel4))
         }

@@ -90,8 +90,8 @@ class ExportService : Service() {
                 // it: stop retrying instead of crashing on every launch.
                 val key = "job_${job.id}"
                 val tries = attempts.getInt(key, 0)
-                if (tries >= 2) {
-                    db.jobs().update(job.copy(state = ExportJobEntity.FAILED, message = "توقّف التصدير مرتين بشكل غير متوقع. جرّب الجودة القياسية أو أعد تشغيل الهاتف."))
+                if (tries >= 3) {
+                    db.jobs().update(job.copy(state = ExportJobEntity.FAILED, message = "توقّف التصدير ثلاث مرات بشكل غير متوقع (حتى في الوضع الآمن). انسخ تقرير الأعطال الذي يظهر عند فتح التطبيق وأرسله للمطوّر."))
                     continue
                 }
                 attempts.edit().putInt(key, tries + 1).commit()
@@ -111,15 +111,27 @@ class ExportService : Service() {
 
     private suspend fun runJob(jobIn: ExportJobEntity) {
         log("job ${jobIn.id} start quality=${jobIn.quality}")
+        // If the process died during an earlier export (native crash / killed), escalate: 1 = CPU canvas and
+        // default encoder settings, 2 = additionally 720x1280. The counter is cleared when a job ends normally.
+        val state = getSharedPreferences("export_state", MODE_PRIVATE)
+        val safeLevel = state.getInt("dirty", 0).coerceIn(0, 2)
+        state.edit().putInt("dirty", safeLevel + 1).commit()
+        studio.pyreels.app.CrashLog.crumb(this, "job ${jobIn.id} started (safe level $safeLevel)")
         var job = jobIn.copy(state = ExportJobEntity.RUNNING, progress = 0f, message = "يجهّز الصوت والكود…")
         db.jobs().update(job)
         try {
             val project = projects.get(job.projectId) ?: error("المشروع غير موجود")
             val scenario = project.scenario() ?: error("السيناريو غير صالح")
-            val prepared = engine.prepare(this, scenario)
+            // last resort (3rd attempt): no real Python run, the written trace is used
+            val prepared = engine.prepare(this, scenario, withPython = safeLevel < 2)
             if (prepared.timeline.totalMs > Limits.HARD_CAP_SECONDS * 1000L) error("المدة تتجاوز ${Limits.HARD_CAP_SECONDS} ثانية")
             val mix = studio.pyreels.core.audio.mixSettingsFor(scenario.meta)
-            val options = (if (job.quality == "high") VideoExporter.Options.high() else VideoExporter.Options.standard()).copy(mix = mix)
+            var options = (if (job.quality == "high") VideoExporter.Options.high() else VideoExporter.Options.standard()).copy(mix = mix, safe = safeLevel)
+            if (safeLevel >= 2) options = options.copy(width = 720, height = 1280, videoBitrate = 4_000_000)
+            else if (safeLevel == 1) options = options.copy(videoBitrate = minOf(options.videoBitrate, 6_000_000))
+            if (safeLevel > 0) {
+                job = job.copy(message = "وضع آمن (المحاولة ${safeLevel + 1}): ترميز أبطأ وأكثر توافقًا"); db.jobs().update(job)
+            }
             val stamp = SimpleDateFormat("yyyyMMdd_HHmm", Locale.US).format(Date())
             val base = "${scenario.meta.lesson.id}_${job.platform}_$stamp"
             val out = File(Storage.exportsDir(this), "$base.mp4")
@@ -129,6 +141,7 @@ class ExportService : Service() {
                 val pct = (p * (1f - packSteps) * 100).toInt()
                 if (pct != lastPct) {
                     lastPct = pct
+                    if (pct % 5 == 0) studio.pyreels.app.CrashLog.crumb(this, "job ${job.id} rendering $pct%")
                     notify(notification("تصدير «${scenario.meta.title}»", pct, false))
                     scope.launch { runCatching { db.jobs().update(job.copy(progress = pct / 100f, message = "يرسم الإطارات… $pct٪")) } }
                 }
@@ -144,6 +157,7 @@ class ExportService : Service() {
                 lastPct = -1
                 attempt(VideoExporter.Options.standard().copy(videoBitrate = 5_000_000, mix = mix))
             }
+            studio.pyreels.app.CrashLog.crumb(this, "job ${job.id} encoded, saving")
             log("job ${job.id} encoded: ok=${verification.ok} ${verification.problems}")
             if (!verification.ok) error("فشل التحقق من الملف: ${verification.problems.joinToString()}")
             var packNote = ""
@@ -154,7 +168,7 @@ class ExportService : Service() {
             if (job.publishPack) {
                 job = job.copy(message = "يجهّز حزمة النشر…"); db.jobs().update(job)
                 try {
-                    writePublishPack(prepared, base, tree, job.coverTimeMs)
+                    writePublishPack(prepared, base, tree, job.coverTimeMs, safeLevel)
                 } catch (e: CancellationException) {
                     throw e
                 } catch (t: Throwable) {
@@ -178,9 +192,14 @@ class ExportService : Service() {
             studio.pyreels.app.CrashLog.record(this, t, "export")
             runCatching { db.jobs().update(job.copy(state = ExportJobEntity.FAILED, message = "تعذّر التصدير: " + (t.message ?: t.javaClass.simpleName))) }
         }
+        finally {
+            // reaching here means the process survived: this was not a hard crash
+            getSharedPreferences("export_state", MODE_PRIVATE).edit().putInt("dirty", 0).commit()
+            studio.pyreels.app.CrashLog.crumb(this, "job ${job.id} finished")
+        }
     }
 
-    private suspend fun writePublishPack(prepared: studio.pyreels.app.engine.PreparedVideo, base: String, tree: Uri?, coverTimeMs: Long?) {
+    private suspend fun writePublishPack(prepared: studio.pyreels.app.engine.PreparedVideo, base: String, tree: Uri?, coverTimeMs: Long?, safe: Int) {
         val dir = Storage.exportsDir(this)
         fun save(file: File, name: String, kind: Storage.Kind) {
             if (tree != null) Storage.saveToTree(this, tree, file, name, kind) else Storage.saveToMediaStore(this, file, name, kind)
@@ -203,7 +222,7 @@ class ExportService : Service() {
         save(coverFile, "${base}_cover.png", Storage.Kind.IMAGE)
         // teaser clip (hook + build-up, no spoilers)
         val teaser = File(dir, "${base}_teaser.mp4")
-        val v = VideoExporter(this).export(prepared, teaser, VideoExporter.Options(ranges = PublishPack.teaserWindow(prepared.timeline), mix = studio.pyreels.core.audio.mixSettingsFor(prepared.scenario.meta))) { }
+        val v = VideoExporter(this).export(prepared, teaser, VideoExporter.Options(ranges = PublishPack.teaserWindow(prepared.timeline), mix = studio.pyreels.core.audio.mixSettingsFor(prepared.scenario.meta), safe = safe).let { if (safe >= 2) it.copy(width = 720, height = 1280, videoBitrate = 4_000_000) else it }) { }
         if (v.ok || v.problems.all { it.startsWith("duration") }) save(teaser, "${base}_teaser.mp4", Storage.Kind.VIDEO)
     }
 

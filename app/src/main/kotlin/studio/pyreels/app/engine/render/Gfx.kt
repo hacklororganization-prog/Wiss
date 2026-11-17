@@ -95,7 +95,9 @@ class Gfx(val text: TextKit, val skin: Skin, private val scenario: Scenario, pri
 
     /** Draws a layout so that its lines end at the right edge of [x, x+w] (RTL paragraphs). */
     fun drawRtl(canvas: Canvas, l: StaticLayout, x: Float, w: Float, y: Float) {
-        canvas.save(); canvas.translate(x + w - l.width, y); l.draw(canvas); canvas.restore()
+        // RTL paragraphs hug the right edge of the box, LTR (English) paragraphs the left edge
+        val ltr = l.getParagraphDirection(0) == android.text.Layout.DIR_LEFT_TO_RIGHT
+        canvas.save(); canvas.translate(if (ltr) x else x + w - l.width, y); l.draw(canvas); canvas.restore()
     }
 
     fun drawAt(canvas: Canvas, l: StaticLayout, x: Float, y: Float) {

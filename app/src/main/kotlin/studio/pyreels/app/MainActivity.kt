@@ -128,7 +128,7 @@ fun AppRoot(prefs: Prefs, incoming: String?, consumed: () -> Unit) {
 private fun CrashReportDialog() {
     val context = androidx.compose.ui.platform.LocalContext.current
     val ui = studio.pyreels.app.ui.theme.LocalUi.current
-    var report by remember { mutableStateOf(CrashLog.read(context)) }
+    var report by remember { mutableStateOf(CrashLog.pending(context)) }
     val text = report ?: return
     androidx.compose.material3.AlertDialog(
         onDismissRequest = { CrashLog.clear(context); report = null },
