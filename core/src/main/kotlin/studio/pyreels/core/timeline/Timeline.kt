@@ -440,7 +440,7 @@ class Timeline private constructor(
         val sc = ts.scene
         val l = t - ts.startMs
         val teacherNote = { text: String?, appearAt: Long, voice: VoiceCue? ->
-            text?.let { NoteView(teacher, it, Easing.window(t, appearAt, Easing.ENTER_MS), voice?.let { v -> wordIndex(v, t) } ?: -1) }
+            text?.let { NoteView(teacher, it, noteAppear(t, appearAt, it, voice), voice?.let { v -> wordIndex(v, t) } ?: -1) }
         }
         when (sc) {
             is Scene.CodeType -> {
@@ -506,7 +506,7 @@ class Timeline private constructor(
                     activeLine = -1, activeLineMix = 0f, focusLines = emptyList(), dim = 0f, zoom = 0f,
                     terminal = term.takeLast(Limits.MAX_OUTPUT_LINES + 1), terminalVisible = Easing.window(l, 0, Easing.ENTER_MS),
                     vars = emptyList(), iteration = null, stack = emptyList(),
-                    note = NoteView(p.from, p.explain, Easing.window(t, p.noteAt, Easing.ENTER_MS), p.voice?.let { wordIndex(it, t) } ?: -1)
+                    note = NoteView(p.from, p.explain, noteAppear(t, p.noteAt, p.explain, p.voice), p.voice?.let { wordIndex(it, t) } ?: -1)
                         .takeIf { t >= p.noteAt },
                     running = false, errorLine = if (t >= p.errorAt && !fixing) 1 else -1,
                     keyboard = if (fixing) Easing.window(t, p.fixTyping.start - 400, 380) * (1f - Easing.window(t, p.fixTyping.end + 200, 400)) else 0f,
@@ -517,6 +517,16 @@ class Timeline private constructor(
             }
             else -> error("not a code scene")
         }
+    }
+
+    /**
+     * A notification stays only as long as it takes to read it (or to hear it), then slides away like
+     * a real heads-up notification; the code returns to its place.
+     */
+    private fun noteAppear(t: Long, at: Long, text: String, voice: VoiceCue?): Float {
+        val read = DurationEstimator.minReadMs(text) + 1_500
+        val hold = max(3_000L, max(read, voice?.let { it.startMs + it.durationMs + 600 - at } ?: 0L))
+        return Easing.window(t, at, Easing.ENTER_MS) * (1f - Easing.window(t, at + hold, Easing.EXIT_MS))
     }
 
     private fun pressedKey(p: TypingPlan, idx: Int, t: Long): Char? {
