@@ -99,6 +99,7 @@ interface PresetDao {
 @Dao
 interface ExportJobDao {
     @Query("SELECT * FROM export_jobs WHERE id = :id") suspend fun get(id: Long): ExportJobEntity?
+    @Query("SELECT * FROM export_jobs ORDER BY id DESC LIMIT 1") suspend fun latest(): ExportJobEntity?
     @Query("SELECT * FROM export_jobs WHERE id = :id") fun observe(id: Long): Flow<ExportJobEntity?>
     @Query("SELECT * FROM export_jobs WHERE state IN ('queued','running') ORDER BY createdAt ASC") suspend fun unfinished(): List<ExportJobEntity>
     @Insert suspend fun insert(j: ExportJobEntity): Long

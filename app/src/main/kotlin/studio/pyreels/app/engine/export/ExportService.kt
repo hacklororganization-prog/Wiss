@@ -107,7 +107,10 @@ class ExportService : Service() {
         }
     }
 
+    private fun log(msg: String) { android.util.Log.i("PyReelsExport", msg) }
+
     private suspend fun runJob(jobIn: ExportJobEntity) {
+        log("job ${jobIn.id} start quality=${jobIn.quality}")
         var job = jobIn.copy(state = ExportJobEntity.RUNNING, progress = 0f, message = "يجهّز الصوت والكود…")
         db.jobs().update(job)
         try {
@@ -141,6 +144,7 @@ class ExportService : Service() {
                 lastPct = -1
                 attempt(VideoExporter.Options.standard().copy(videoBitrate = 5_000_000, mix = mix))
             }
+            log("job ${job.id} encoded: ok=${verification.ok} ${verification.problems}")
             if (!verification.ok) error("فشل التحقق من الملف: ${verification.problems.joinToString()}")
             var packNote = ""
             val tree = job.packTreeUri?.let { Uri.parse(it) }
@@ -167,8 +171,10 @@ class ExportService : Service() {
             out.delete()
         } catch (e: CancellationException) {
             // the coroutine is already cancelled: the state must still be written
+            log("job ${job.id} cancelled")
             withContext(NonCancellable) { runCatching { db.jobs().update(job.copy(state = ExportJobEntity.CANCELLED, message = "أُلغي التصدير")) } }
         } catch (t: Throwable) {
+            log("job ${job.id} FAILED: $t")
             studio.pyreels.app.CrashLog.record(this, t, "export")
             runCatching { db.jobs().update(job.copy(state = ExportJobEntity.FAILED, message = "تعذّر التصدير: " + (t.message ?: t.javaClass.simpleName))) }
         }
