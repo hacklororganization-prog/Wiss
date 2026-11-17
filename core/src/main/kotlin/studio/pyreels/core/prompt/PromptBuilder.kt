@@ -101,7 +101,11 @@ Common optional fields on every scene: `say` (boolean, read aloud by TTS), `sfx`
         sb.append("بطريقة: ${b.methods.joinToString("، ") { Brief.METHODS[it] ?: it }}. اللغة: ${Brief.STYLES[b.languageStyle] ?: b.languageStyle}. ")
         sb.append("المعلّمون: ${b.teachers.joinToString("، ") { b.nameOf(it) }}.\n")
         if (b.exampleMode == "custom" && b.customExample.isNotBlank()) sb.append("\nCreator's own example (use it):\n```\n${b.customExample}\n```\n")
-        if (b.teaserMode == "custom" && b.customTeaser.isNotBlank()) sb.append("\nNext-lesson teaser text: «${b.customTeaser}»\n")
+        // Recap and teaser come from the creator: the AI only rewrites them well, it never invents them.
+        if (b.customRecap.isNotBlank()) sb.append("\nRecap (the creator's words — rewrite them as ONE short, warm sentence, same meaning): «${b.customRecap.trim()}»\n")
+        else sb.append("\nRecap: the creator gave none — do NOT include a `recap` scene, and do not mention any previous episode.\n")
+        if (b.customTeaser.isNotBlank()) sb.append("\nNext lesson (the creator's words — rewrite them as a short, curious teaser, same topic): «${b.customTeaser.trim()}»\n")
+        else sb.append("\nNext lesson: the creator gave none — the `teaser` must NOT name or invent a topic; write a neutral \"see you in the next episode\" line with the comment challenge.\n")
         if (b.notes.isNotBlank()) sb.append("\nCreator notes: ${b.notes}\n")
 
         // 4
@@ -112,7 +116,7 @@ Common optional fields on every scene: `say` (boolean, read aloud by TTS), `sfx`
 | time | scene type(s) | purpose |
 |---|---|---|
 | 0–3 s | `hook_predict` (FIRST scene, exactly one) | signature hook «توقّع قبل أن أشغّل»: a tiny snippet + the fixed question «${studio.pyreels.core.model.Scene.HOOK_QUESTION}». Do NOT reveal the answer. |
-| 3–10 s | `recap` (second scene) | 5-second recall of the previous lesson |
+| 3–10 s | `recap` (second scene, ONLY if the creator gave a recap) | 5-second recall of the previous lesson |
 | 10–40 s | `chat` + one `analogy` | ONE idea only, explained with a real-life analogy, Ahmed asks real beginner questions |
 | 40–65 s | `code_type` + `run` | code typed naturally, then step-by-step execution with a visual `trace` |
 | ≈45–55 s | `engage_moment` (exactly one) | right after the first small win (first correct output): a warm message, then `bridge` back to the lesson |
@@ -201,7 +205,7 @@ Place `engage_moment` so that the scenes before it sum to ≈ 45–50 s.
         h(9, "Self-check (run silently before answering)")
         sb.append(
             """- [ ] Valid JSON, matches the schema, `schema` = `pyreels/1`.
-- [ ] First scene `hook_predict`, second `recap`, last `teaser`; exactly one `engage_moment`, one `reveal`, one `key_sentence`.
+- [ ] First scene `hook_predict`, second `recap` (only when the creator gave one), last `teaser`; exactly one `engage_moment`, one `reveal`, one `key_sentence`.
 - [ ] Exactly one concept; the hook's answer is revealed only in `reveal`.
 - [ ] Estimated total ≈ ${b.targetSeconds} s (± 10 %); the scenes before `engage_moment` sum to ≈ 45–50 s.
 - [ ] Every bubble ≤ ${Limits.MAX_LINES_PER_BUBBLE} lines of ≤ ${Limits.MAX_CHARS_PER_LINE} characters; code lines ≤ ${Limits.MAX_CODE_LINE_CHARS} characters.
@@ -225,8 +229,7 @@ Place `engage_moment` so that the scenes before it sum to ≈ 45–50 s.
         sb.append("Ahmed's current level: $ahmedLevel/4 — ${SeriesMemory.ahmedLevelDescription(ahmedLevel)}\n\n")
         sb.append("Earlier episodes (Ahmed already knows these; never re-explain them, but you may build on them):\n\n")
         sb.append(SeriesMemory.summary(input.history)).append("\n")
-        SeriesMemory.recapFor(input.history)?.let { sb.append("\nSuggested recap text: «$it»\n") }
-        sb.append("\nSuggested first question from Ahmed: «${SeriesMemory.suggestedQuestion(ahmedLevel, topic, input.history.lastOrNull()?.title)}»\n")
+
         input.weekly?.let { week ->
             sb.append("\n### Weekly batch contract\n\n")
             sb.append("Write ${week.size} episodes in this exact order:\n\n")

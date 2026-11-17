@@ -330,7 +330,9 @@ private fun VideoSettings(s: Scenario, edit: ((studio.pyreels.core.model.Meta) -
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(selected = m.frame == "phone", onClick = { edit { it.copy(frame = "phone") } }, label = { Text(ui.t("هاتف", "Phone")) })
             FilterChip(selected = m.frame == "large", onClick = { edit { it.copy(frame = "large") } }, label = { Text(ui.t("شاشة كبيرة", "Large screen")) })
+            FilterChip(selected = m.frame == "full", onClick = { edit { it.copy(frame = "full") } }, label = { Text(ui.t("ملء الشاشة", "Full screen")) })
         }
+        ToggleRow(ui.t("شريط التقدم أعلى الفيديو", "Progress bar on top"), m.progressBar) { v -> edit { it.copy(progressBar = v) } }
         Text(ui.t("لون المحادثة", "Chat colour"), style = MaterialTheme.typography.titleSmall)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             CHAT_COLORS.forEach { (k, v) -> FilterChip(selected = m.chatColor == k, onClick = { edit { it.copy(chatColor = k) } }, label = { Text(if (ui.english) k else v) }) }

@@ -24,6 +24,8 @@ data class Brief(
     val includeChallenge: Boolean = true,
     val teaserMode: String = "auto",
     val customTeaser: String = "",
+    /** What the previous episode taught, in the creator's own words (the AI polishes it). Empty = no recap. */
+    val customRecap: String = "",
     val voiceOver: Boolean = false,
     val voices: Map<String, String> = emptyMap(),
     val targetSeconds: Int = Limits.TARGET_SECONDS,
@@ -109,7 +111,7 @@ object SeriesMemory {
     }
 
     fun summary(history: List<EpisodeRecord>): String {
-        if (history.isEmpty()) return "هذه أول حلقة في السلسلة؛ أحمد لا يعرف شيئًا عن البرمجة بعد."
+        if (history.isEmpty()) return "(no earlier episodes recorded)"
         return history.sortedBy { it.episode }.joinToString("\n") { e ->
             "- الحلقة ${e.episode} (${e.lessonId}): ${e.title} — جملة اليوم: «${e.keySentence}»" +
                 (e.mistake?.let { " — الخطأ المعروض: $it" } ?: "") + (e.analogy?.let { " — التشبيه: $it" } ?: "")

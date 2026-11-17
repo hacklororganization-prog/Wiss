@@ -39,8 +39,10 @@ data class Meta(
     val groupName: String? = null,
     /** Publishing kit written by the AI: description, 5 TikTok + 5 Instagram hashtags, pinned comment. */
     val publish: PublishKit? = null,
-    /** "phone" (phone mock-up) or "large" (the app screen fills the whole safe area). */
+    /** "phone" (phone mock-up), "large" (the app fills the safe area) or "full" (the app fills the whole frame). */
     val frame: String = "phone",
+    /** Thin chapter progress bar at the top of the video. */
+    val progressBar: Boolean = true,
     /** Messenger accent: green, blue, purple, amber. */
     val chatColor: String = "green",
     /** Automatic celebration sticker after the first successful run. */

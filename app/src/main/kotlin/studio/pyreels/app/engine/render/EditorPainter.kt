@@ -14,7 +14,7 @@ import kotlin.math.min
  * being pressed, a ▶ run button, a variables (debugger) panel, a terminal sheet that slides up, and
  * the teacher's explanation arriving as a heads-up notification.
  */
-class EditorPainter(private val g: Gfx, private val w: Float, private val h: Float) {
+class EditorPainter(private val g: Gfx, private val w: Float, private val h: Float, private val groupName: String = "") {
     private val s = g.skin
     private val text = g.text
     private val barBottom = 150f
@@ -72,9 +72,13 @@ class EditorPainter(private val g: Gfx, private val w: Float, private val h: Flo
         return min(36f, min(byWidth, byHeight)).coerceAtLeast(22f)
     }
 
+    /** Height the WhatsApp notification takes at the top (the code moves down by this much: no overlap). */
     private fun noteHeight(msg: String): Float {
-        val l = text.layout(msg.replace("`", ""), (w - 170).toInt(), 34f, s.waText, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_NORMAL, 1, spacing = 0.92f)
-        return l.height + 26f + 44f
+        val textW = (w - 32f - 130f).toInt()
+        val body = text.layout(msg.replace("`", ""), textW, 30f, s.waText, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_NORMAL, 3, spacing = 0.92f, maxLines = 4)
+        val title = text.layout("x", textW, 28f, s.waText, TextKit.Face.BOLD, Layout.Alignment.ALIGN_NORMAL, 3, maxLines = 1)
+        // bottom of the notification minus the app bar it covers, plus a little air
+        return (40f + 16f + 34f + 6f + title.height + 4f + body.height + 10f + 54f + 14f - barBottom).coerceAtLeast(0f)
     }
 
     private fun drawCode(canvas: Canvas, code: CodeView, editorBottom: Float, shift: Float = 0f) {
@@ -340,19 +344,45 @@ class EditorPainter(private val g: Gfx, private val w: Float, private val h: Flo
     }
 
     /** The teacher's explanation drops from the top of the screen as a heads-up notification. */
+    /** The teacher's explanation drops in as a WhatsApp heads-up notification (app row, sender, text, actions). */
     private fun drawNotification(canvas: Canvas, from: String, msg: String, appear: Float, karaoke: Int) {
         if (appear <= 0.01f) return
-        val l = text.layout(msg.replace("`", ""), (w - 170).toInt(), 34f, s.waText, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_NORMAL, 1, karaoke, g.c(g.p.focus), spacing = 0.92f)
-        val name = text.layout(g.nameOf(from) + " · الآن", (w - 170).toInt(), 26f, g.accent(from), TextKit.Face.BOLD, Layout.Alignment.ALIGN_NORMAL, 1, maxLines = 1)
-        val hh = l.height + name.height + 44f
-        val top = 60f - (1f - appear) * (hh + 60f)
+        val x0 = 16f; val x1 = w - 16f
+        val textW = (x1 - x0 - 130f).toInt()
+        val muted = s.waTime
+        val green = 0xFF25D366.toInt()
+        val app = text.layout("WhatsApp • الآن", textW, 22f, muted, TextKit.Face.SEMI, Layout.Alignment.ALIGN_NORMAL, 3, maxLines = 1)
+        val sender = if (groupName.isNotBlank()) "${g.nameOf(from)} @ $groupName" else g.nameOf(from)
+        val title = text.layout(sender, textW, 28f, s.waText, TextKit.Face.BOLD, Layout.Alignment.ALIGN_NORMAL, 3, maxLines = 1)
+        val body = text.layout(msg.replace("`", ""), textW, 30f, s.waText, TextKit.Face.REGULAR, Layout.Alignment.ALIGN_NORMAL, 3, karaoke, g.c(g.p.focus), spacing = 0.92f, maxLines = 4)
+        val actionsH = 54f
+        val hh = 16f + 34f + 6f + title.height + 4f + body.height + 10f + actionsH
+        val top = 40f - (1f - appear) * (hh + 60f)
         g.withAlpha(canvas, appear, w, h) {
-            g.rect.set(16f, top, w - 16f, top + hh)
-            g.fill.color = g.alpha(0xFF000000.toInt(), 0.25f); canvas.drawRoundRect(16f, top + 6f, w - 16f, top + hh + 6f, 30f, 30f, g.fill)
-            g.fill.color = s.waIn; canvas.drawRoundRect(g.rect, 30f, 30f, g.fill)
-            g.avatar(canvas, from, w - 62f, top + 50f, 32f)
-            g.drawRtl(canvas, name, 36f, w - 150f, top + 14f)
-            g.drawRtl(canvas, l, 36f, w - 150f, top + 18f + name.height)
+            g.fill.color = g.alpha(0xFF000000.toInt(), 0.3f); canvas.drawRoundRect(x0, top + 8f, x1, top + hh + 8f, 34f, 34f, g.fill)
+            g.rect.set(x0, top, x1, top + hh)
+            g.fill.color = s.waIn; canvas.drawRoundRect(g.rect, 34f, 34f, g.fill)
+            // app row: the green WhatsApp-style icon (a speech bubble) and "WhatsApp • now"
+            val icx = x1 - 44f; val icy = top + 16f + 17f
+            g.fill.color = green; canvas.drawCircle(icx, icy, 17f, g.fill)
+            g.stroke.color = 0xFFFFFFFF.toInt(); g.stroke.strokeWidth = 3f
+            canvas.drawCircle(icx, icy, 9f, g.stroke)
+            g.path.reset(); g.path.moveTo(icx - 7f, icy + 6f); g.path.lineTo(icx - 11f, icy + 12f); g.path.lineTo(icx - 2f, icy + 9f)
+            canvas.drawPath(g.path, g.stroke)
+            g.drawRtl(canvas, app, x0 + 24f, x1 - x0 - 100f, icy - app.height / 2f)
+            // sender row with the avatar on the right, message below
+            var y = top + 16f + 34f + 6f
+            g.avatar(canvas, from, x1 - 50f, y + 30f, 30f)
+            g.drawRtl(canvas, title, x0 + 24f, x1 - x0 - 120f, y); y += title.height + 4f
+            g.drawRtl(canvas, body, x0 + 24f, x1 - x0 - 120f, y); y += body.height + 10f
+            // actions, like the real notification
+            g.fill.color = g.alpha(muted, 0.25f); canvas.drawRect(x0 + 24f, y, x1 - 24f, y + 2f, g.fill)
+            val ap = text.paint(TextKit.Face.SEMI, 26f, green)
+            val reply = "رد"; val read = "تحديد كمقروءة"
+            var ax = x1 - 120f
+            canvas.drawText(reply, ax - ap.measureText(reply), y + 38f, ap)
+            ax -= ap.measureText(reply) + 60f
+            canvas.drawText(read, ax - ap.measureText(read), y + 38f, ap)
         }
     }
 

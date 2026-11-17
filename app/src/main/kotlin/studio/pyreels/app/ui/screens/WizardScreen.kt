@@ -203,11 +203,13 @@ fun WizardScreen(nav: Navigator, route: Route.Wizard, modifier: Modifier, vm: Wi
                 ToggleRow(ui.t("إظهار خطأ شائع", "Include a common mistake"), b.includeMistake) { v -> vm.update { it.copy(includeMistake = v) } }
                 ToggleRow(ui.t("تحدٍّ في التعليقات", "Comment challenge"), b.includeChallenge) { v -> vm.update { it.copy(includeChallenge = v) } }
                 ToggleRow(ui.t("تعليق صوتي", "Voice-over"), b.voiceOver) { v -> vm.update { it.copy(voiceOver = v) } }
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(selected = b.teaserMode == "auto", onClick = { vm.update { it.copy(teaserMode = "auto") } }, label = { Text(ui.t("تشويق يكتبه الذكاء الاصطناعي", "AI-written teaser")) })
-                    FilterChip(selected = b.teaserMode == "custom", onClick = { vm.update { it.copy(teaserMode = "custom") } }, label = { Text(ui.t("تشويق مخصّص", "Custom teaser")) })
-                }
-                if (b.teaserMode == "custom") OutlinedTextField(b.customTeaser, { v -> vm.update { it.copy(customTeaser = v) } }, modifier = Modifier.fillMaxWidth())
+                // nothing is filled in for you: write your own words, the AI only rewrites them well
+                OutlinedTextField(b.customRecap, { v -> vm.update { it.copy(customRecap = v.take(200)) } }, modifier = Modifier.fillMaxWidth(), minLines = 2,
+                    label = { Text(ui.t("ماذا تعلّمنا في الحلقة السابقة؟ (اختياري)", "What did the last episode teach? (optional)")) },
+                    supportingText = { Text(ui.t("اكتبه بكلماتك وسيصيغه الذكاء الاصطناعي. اتركه فارغًا إن كانت أول حلقة.", "Your own words; the AI polishes them. Leave empty for a first episode.")) })
+                OutlinedTextField(b.customTeaser, { v -> vm.update { it.copy(customTeaser = v.take(200), teaserMode = if (v.isBlank()) "auto" else "custom") } }, modifier = Modifier.fillMaxWidth(), minLines = 2,
+                    label = { Text(ui.t("عن ماذا الحلقة القادمة؟ (اختياري)", "What is the next episode about? (optional)")) },
+                    supportingText = { Text(ui.t("إن تركته فارغًا لن يخترع الذكاء الاصطناعي موضوعًا.", "If empty, the AI will not invent a topic.")) })
                 Text(ui.t("المدة المستهدفة: ${b.targetSeconds} ث", "Target duration: ${b.targetSeconds} s"))
                 Slider(b.targetSeconds.toFloat(), { v -> vm.update { it.copy(targetSeconds = (v / 5).toInt() * 5) } }, valueRange = 60f..120f)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -218,6 +220,7 @@ fun WizardScreen(nav: Navigator, route: Route.Wizard, modifier: Modifier, vm: Wi
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FilterChip(selected = b.frame == "phone", onClick = { vm.update { it.copy(frame = "phone") } }, label = { Text(ui.t("هاتف", "Phone")) })
                     FilterChip(selected = b.frame == "large", onClick = { vm.update { it.copy(frame = "large") } }, label = { Text(ui.t("شاشة كبيرة", "Large screen")) })
+                    FilterChip(selected = b.frame == "full", onClick = { vm.update { it.copy(frame = "full") } }, label = { Text(ui.t("ملء الشاشة", "Full screen")) })
                 }
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     CHAT_COLORS.forEach { (k, v) -> FilterChip(selected = b.chatColor == k, onClick = { vm.update { it.copy(chatColor = k) } }, label = { Text(if (ui.english) k else v) }) }

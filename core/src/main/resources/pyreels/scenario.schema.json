@@ -1018,9 +1018,10 @@
             "frame": {
               "enum": [
                 "phone",
-                "large"
+                "large",
+                "full"
               ],
-              "description": "phone = phone mock-up; large = the app fills the safe area"
+              "description": "phone = phone mock-up; large = the app fills the safe area; full = the app fills the whole frame"
             },
             "chatColor": {
               "enum": [
@@ -1049,6 +1050,10 @@
                 "normal"
               ],
               "description": "Sound-effects level (default soft). There is no background music."
+            },
+            "progressBar": {
+              "type": "boolean",
+              "description": "Show the thin chapter progress bar at the top (default true)."
             }
           },
           "additionalProperties": false

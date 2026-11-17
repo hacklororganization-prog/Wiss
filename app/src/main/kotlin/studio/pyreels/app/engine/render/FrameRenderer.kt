@@ -45,24 +45,26 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
 
     // phone geometry (inside the safe area); "large" lets the app screen fill the safe area
     private val large = scenario.meta.frame == "large"
+    /** "full": the app screen fills the whole 1080×1920 frame (no phone, no lesson chip). */
+    private val full = scenario.meta.frame == "full"
     // The phone and the cards are centred on the frame (equal left and right margins).
-    private val phoneW = if (large) 960f else 850f
+    private val phoneW = if (full) W else if (large) 960f else 850f
     private val px0 = (W - phoneW) / 2
     private val px1 = (W + phoneW) / 2
     private val cardLeft = (W - 860f) / 2
     private val cardRight = (W + 860f) / 2
-    private val py0 = if (large) safeTop - 8f else safeTop + 6f
-    private val py1 = if (large) safeBottom + 8f else safeBottom - 6f
-    private val bezel = if (large) 4f else 13f
+    private val py0 = if (full) 0f else if (large) safeTop - 8f else safeTop + 6f
+    private val py1 = if (full) H else if (large) safeBottom + 8f else safeBottom - 6f
+    private val bezel = if (full) 0f else if (large) 4f else 13f
     private val sx0 = px0 + bezel
     private val sy0 = py0 + bezel
     private val sw = px1 - px0 - 2 * bezel
     private val sh = py1 - py0 - 2 * bezel
-    private val screenRadius = if (large) 40f else 54f
+    private val screenRadius = if (full) 0f else if (large) 40f else 54f
     private val screenClip = Path().apply { addRoundRect(0f, 0f, sw, sh, screenRadius, screenRadius, Path.Direction.CW) }
 
     private val chat = ChatPainter(g, scenario, sw, sh)
-    private val editor = EditorPainter(g, sw, sh)
+    private val editor = EditorPainter(g, sw, sh, scenario.meta.groupName ?: "مجموعة ${scenario.meta.title}")
 
     private val bgPaint = Paint().apply {
         shader = LinearGradient(0f, 0f, 0f, H, palette.backgroundTop.toInt(), palette.background.toInt(), Shader.TileMode.CLAMP)
@@ -92,7 +94,7 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
         background(canvas, frame.tMs)
         val phoneAlpha = frame.layers.filter { it.stage == Stage.CHAT || it.stage == Stage.CODE }.sumOf { it.alpha.toDouble() }.toFloat().coerceAtMost(1f)
         if (phoneAlpha > 0.01f) {
-            g.withAlpha(canvas, phoneAlpha, W, H) { phoneBody(canvas) }
+            if (!full) g.withAlpha(canvas, phoneAlpha, W, H) { phoneBody(canvas) }
             canvas.save()
             canvas.translate(sx0, sy0)
             canvas.clipPath(screenClip)
@@ -180,16 +182,22 @@ class FrameRenderer(context: Context, private val scenario: Scenario) {
     // ------------------------------------------------------------------ chrome
 
     private fun chrome(canvas: Canvas, f: Frame) {
-        // thin progress bar (fills from the right: RTL)
-        // progress bar split into the lesson's chapters (RTL: fills from the right)
+        // progress bar split into the lesson's chapters (RTL: fills from the right); can be hidden
+        if (scenario.meta.progressBar) drawProgress(canvas, f)
+        if (!full) drawLessonChip(canvas, f) // with "full" the app fills the frame: no chip on top of it
+    }
+
+    private fun drawProgress(canvas: Canvas, f: Frame) {
         val total = f.totalMs.coerceAtLeast(1).toFloat()
         g.fill.color = g.alpha(palette.textMuted.toInt(), 0.22f); canvas.drawRect(0f, 0f, W, 8f, g.fill)
         g.fill.color = palette.focus.toInt(); canvas.drawRect(W - W * f.progress, 0f, W, 8f, g.fill)
         g.fill.color = palette.background.toInt()
         for (b in chapterStarts) if (b > 0) { val x = W - W * (b / total); canvas.drawRect(x - 3f, 0f, x + 3f, 8f, g.fill) }
-        // lesson chip above the phone
+    }
+
+    private fun drawLessonChip(canvas: Canvas, f: Frame) {
         val title = (f.episode?.let { "الحلقة $it · " } ?: "") + f.title
-        val l = text.layout(title, (px1 - px0 - 80).toInt(), 32f, palette.text.toInt(), TextKit.Face.SEMI, Layout.Alignment.ALIGN_CENTER, 1, maxLines = 1)
+        val l = text.layout(title, (px1 - px0 - 80).toInt(), 32f, palette.text.toInt(), TextKit.Face.SEMI, Layout.Alignment.ALIGN_CENTER, 3, maxLines = 1)
         val tw = text.maxLineWidth(l) + 56f
         val cx = (px0 + px1) / 2
         val y = safeTop - 74f
